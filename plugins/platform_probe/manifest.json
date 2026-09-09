@@ -1,0 +1,116 @@
+{
+  "manifestVersion": 2,
+  "packageFormat": 2,
+  "id": "platform_probe",
+  "name": "Cloudflare Platform Probe",
+  "description": "Exercises install-time R2, KV, Queue, Durable Object and Cron provisioning.",
+  "publisher": { "id": "techify", "name": "Techify" },
+  "version": "1.0.0",
+  "apiVersion": 1,
+  "coreMinVersion": "1.1.0-beta.8",
+  "compatibilityDate": "2026-09-09",
+  "compatibilityFlags": ["nodejs_compat"],
+  "databaseDialects": ["d1", "postgres"],
+  "tablePrefix": "platform_probe_",
+  "engines": { "hostApi": 1, "coreApi": 1 },
+  "frontend": {
+    "entry": "frontend/entry.js",
+    "styles": ["frontend/styles.css"],
+    "isolation": "shadow",
+    "routes": [
+      {
+        "routeKey": "platform_probe.status",
+        "path": "/app/p/platform_probe"
+      }
+    ]
+  },
+  "resources": [
+    {
+      "name": "probe_bucket",
+      "capabilityVersion": 1,
+      "type": "r2",
+      "binding": "PROBE_BUCKET",
+      "required": true,
+      "retention": "delete_on_purge",
+      "configuration": {}
+    },
+    {
+      "name": "probe_kv",
+      "capabilityVersion": 1,
+      "type": "kv",
+      "binding": "PROBE_KV",
+      "required": true,
+      "retention": "delete_on_purge",
+      "configuration": {}
+    },
+    {
+      "name": "probe_dlq",
+      "capabilityVersion": 1,
+      "type": "queue",
+      "binding": "PROBE_DLQ",
+      "required": true,
+      "retention": "delete_on_purge",
+      "configuration": { "consumer": false }
+    },
+    {
+      "name": "probe_queue",
+      "capabilityVersion": 1,
+      "type": "queue",
+      "binding": "PROBE_QUEUE",
+      "required": true,
+      "retention": "delete_on_purge",
+      "configuration": {
+        "consumer": true,
+        "deadLetterResource": "probe_dlq",
+        "settings": { "batch_size": 5, "max_retries": 2 }
+      }
+    },
+    {
+      "name": "probe_object",
+      "capabilityVersion": 1,
+      "type": "durable_object",
+      "binding": "PROBE_OBJECT",
+      "required": true,
+      "retention": "preserve",
+      "configuration": {
+        "className": "PlatformProbeObject",
+        "storage": "sqlite"
+      }
+    },
+    {
+      "name": "hourly_probe",
+      "capabilityVersion": 1,
+      "type": "cron",
+      "binding": "PROBE_CRON",
+      "required": true,
+      "retention": "delete_on_purge",
+      "configuration": { "schedules": ["7 * * * *"] }
+    }
+  ],
+  "localizedMetadata": {
+    "pt-BR": {
+      "name": "Teste da plataforma Cloudflare",
+      "description": "Valida recursos provisionados pelo instalador.",
+      "menuTitles": { "platform_probe.status": "Teste Cloudflare" },
+      "permissionLabels": {
+        "platform_probe.status.read": "Executar e consultar o teste Cloudflare"
+      }
+    },
+    "en": {
+      "name": "Cloudflare platform probe",
+      "description": "Validates resources provisioned by the Installer.",
+      "menuTitles": { "platform_probe.status": "Cloudflare probe" },
+      "permissionLabels": {
+        "platform_probe.status.read": "Run and inspect the Cloudflare probe"
+      }
+    }
+  },
+  "permissions": ["platform_probe.status.read"],
+  "menu": [
+    {
+      "title": "Cloudflare probe",
+      "routeKey": "platform_probe.status",
+      "path": "/app/p/platform_probe"
+    }
+  ]
+}

@@ -1,0 +1,668 @@
+{
+  "catalogVersion": 1,
+  "name": "Techify",
+  "revision": "Ctl7rhHR4dytHtxwKAkJlmrmC7GiuCsB",
+  "publisher": {
+    "id": "techify",
+    "name": "Techify",
+    "keyId": "publisher-v1",
+    "publicKey": "NI6aWU3_wtcWyi_EQO_9Sy2Sbs22ur1lOHCytwn0stw"
+  },
+  "plugins": [
+    {
+      "id": "crm",
+      "name": "CRM",
+      "description": "Organize leads, acompanhe contatos comerciais e mantenha o histórico essencial do relacionamento com seus potenciais clientes.",
+      "categories": [
+        "Vendas e relacionamento"
+      ],
+      "releases": [
+        {
+          "version": "2.0.0",
+          "channel": "stable",
+          "manifest": {
+            "manifestVersion": 2,
+            "packageFormat": 2,
+            "id": "crm",
+            "name": "CRM",
+            "description": "Customer relationship management with leads and activities.",
+            "publisher": {
+              "id": "techify",
+              "name": "Techify"
+            },
+            "version": "2.0.0",
+            "apiVersion": 1,
+            "coreMinVersion": "1.1.0-beta.8",
+            "compatibilityDate": "2026-09-09",
+            "compatibilityFlags": [
+              "nodejs_compat"
+            ],
+            "databaseDialects": [
+              "d1",
+              "postgres"
+            ],
+            "tablePrefix": "crm_",
+            "engines": {
+              "hostApi": 1,
+              "coreApi": 1
+            },
+            "frontend": {
+              "entry": "frontend/entry.js",
+              "styles": [
+                "frontend/styles.css"
+              ],
+              "isolation": "light",
+              "routes": [
+                {
+                  "routeKey": "crm.home",
+                  "path": "/app/p/crm"
+                },
+                {
+                  "routeKey": "crm.leads",
+                  "path": "/app/p/crm/leads"
+                }
+              ]
+            },
+            "localizedMetadata": {
+              "pt-BR": {
+                "name": "CRM",
+                "description": "Gestão de leads e atividades comerciais.",
+                "menuTitles": {
+                  "crm.home": "CRM",
+                  "crm.leads": "Leads"
+                },
+                "permissionLabels": {
+                  "crm.lead.read": "Visualizar leads",
+                  "crm.lead.create": "Criar leads",
+                  "crm.lead.update": "Editar leads",
+                  "crm.lead.delete": "Excluir leads"
+                }
+              },
+              "en": {
+                "name": "CRM",
+                "description": "Lead and sales activity management.",
+                "menuTitles": {
+                  "crm.home": "CRM",
+                  "crm.leads": "Leads"
+                },
+                "permissionLabels": {
+                  "crm.lead.read": "View leads",
+                  "crm.lead.create": "Create leads",
+                  "crm.lead.update": "Edit leads",
+                  "crm.lead.delete": "Delete leads"
+                }
+              }
+            },
+            "permissions": [
+              "crm.lead.read",
+              "crm.lead.create",
+              "crm.lead.update",
+              "crm.lead.delete"
+            ],
+            "menu": [
+              {
+                "title": "CRM",
+                "routeKey": "crm.home",
+                "path": "/app/p/crm"
+              },
+              {
+                "title": "Leads",
+                "routeKey": "crm.leads",
+                "path": "/app/p/crm/leads"
+              }
+            ]
+          },
+          "artifact": {
+            "url": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/crm-v2.0.0/crm.plugin.zip",
+            "sha256": "IJKVqW0WX4Geyy12VlwNdsF0scWm-ZMbPZYcCbgS2xo",
+            "signature": "4TOm8TrvwuAhXfRc3U2c0rYKMHgQNPtFRYEHrcjKf59pjTEqT8cqwu-tkL05aqILa8fUQjN4raFbf8VXJJGLCg",
+            "bytes": 520015
+          }
+        }
+      ]
+    },
+    {
+      "id": "meeting_recorder",
+      "name": "Meeting Recorder",
+      "description": "Grave reuniões, importe áudios ou receba mensagens de voz do Telegram, com convites revogáveis, armazenamento privado, reprodução e transcrição.",
+      "categories": [
+        "Produtividade"
+      ],
+      "releases": [
+        {
+          "version": "2.0.0",
+          "channel": "stable",
+          "manifest": {
+            "manifestVersion": 2,
+            "packageFormat": 2,
+            "id": "meeting_recorder",
+            "name": "Meeting Recorder",
+            "description": "Record, upload and transcribe meetings with optional Telegram ingestion.",
+            "publisher": {
+              "id": "techify",
+              "name": "Techify"
+            },
+            "version": "2.0.0",
+            "apiVersion": 1,
+            "coreMinVersion": "1.1.0-beta.8",
+            "compatibilityDate": "2026-09-09",
+            "compatibilityFlags": [
+              "nodejs_compat"
+            ],
+            "databaseDialects": [
+              "d1",
+              "postgres"
+            ],
+            "tablePrefix": "meeting_recorder_",
+            "engines": {
+              "hostApi": 1,
+              "coreApi": 1
+            },
+            "frontend": {
+              "entry": "frontend/entry.js",
+              "styles": [
+                "frontend/styles.css"
+              ],
+              "isolation": "light",
+              "persistentSurface": true,
+              "routes": [
+                {
+                  "routeKey": "meeting_recorder.home",
+                  "path": "/app/p/meeting_recorder"
+                },
+                {
+                  "routeKey": "meeting_recorder.new",
+                  "path": "/app/p/meeting_recorder/new"
+                },
+                {
+                  "routeKey": "meeting_recorder.settings",
+                  "path": "/app/p/meeting_recorder/settings"
+                },
+                {
+                  "routeKey": "meeting_recorder.detail",
+                  "path": "/app/p/meeting_recorder/:recordingId"
+                }
+              ]
+            },
+            "publicRoutes": [
+              "/telegram/webhook"
+            ],
+            "secrets": [
+              {
+                "name": "TELEGRAM_BOT_TOKEN",
+                "label": "Telegram bot token",
+                "required": false,
+                "permission": "meeting_recorder.settings.update"
+              },
+              {
+                "name": "TELEGRAM_WEBHOOK_SECRET",
+                "label": "Telegram webhook secret",
+                "required": false,
+                "permission": "meeting_recorder.settings.update"
+              }
+            ],
+            "resources": [
+              {
+                "name": "ai",
+                "capabilityVersion": 1,
+                "type": "ai",
+                "binding": "AI",
+                "required": true,
+                "retention": "preserve",
+                "configuration": {}
+              },
+              {
+                "name": "storage",
+                "capabilityVersion": 1,
+                "type": "r2",
+                "binding": "STORAGE",
+                "required": false,
+                "retention": "preserve",
+                "configuration": {}
+              }
+            ],
+            "localizedMetadata": {
+              "pt-BR": {
+                "name": "Gravador de reuniões",
+                "description": "Gravação, upload e transcrição de reuniões.",
+                "menuTitles": {
+                  "meeting_recorder.home": "Gravador de reuniões"
+                }
+              },
+              "en": {
+                "name": "Meeting Recorder",
+                "description": "Meeting recording, upload and transcription.",
+                "menuTitles": {
+                  "meeting_recorder.home": "Meeting Recorder"
+                }
+              }
+            },
+            "permissions": [
+              "meeting_recorder.recording.read",
+              "meeting_recorder.recording.create",
+              "meeting_recorder.recording.update",
+              "meeting_recorder.recording.delete",
+              "meeting_recorder.recording.read_all",
+              "meeting_recorder.recording.manage_all",
+              "meeting_recorder.transcription.create",
+              "meeting_recorder.telegram_member.read",
+              "meeting_recorder.telegram_member.invite",
+              "meeting_recorder.telegram_member.delete",
+              "meeting_recorder.telegram_member.read_all",
+              "meeting_recorder.telegram_member.manage_all",
+              "meeting_recorder.settings.read",
+              "meeting_recorder.settings.update",
+              "meeting_recorder.storage.read"
+            ],
+            "menu": [
+              {
+                "title": "Meeting Recorder",
+                "routeKey": "meeting_recorder.home",
+                "path": "/app/p/meeting_recorder"
+              }
+            ]
+          },
+          "artifact": {
+            "url": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/meeting_recorder-v2.0.0/meeting_recorder.plugin.zip",
+            "sha256": "PbyZIA_f3Whs4-ZT8FCsxJ-IAaNoQrjo7gv4_4mjkAY",
+            "signature": "EMhNNn9g9eJH5KD4V3GbgzKIvTI-mtQVWd3nyj_Z54EaycJY6KcRV7ksK0ClwQMsXH3MyCcfsROjm8M4w6HuCQ",
+            "bytes": 562015
+          }
+        }
+      ]
+    },
+    {
+      "id": "meta_ads",
+      "name": "Meta Ads",
+      "description": "Conecte contas do Meta Ads ao Nexus Edge para acompanhar campanhas, conjuntos, anúncios e métricas de desempenho em um só lugar.",
+      "categories": [
+        "Marketing e mídia paga"
+      ],
+      "releases": [
+        {
+          "version": "2.0.0",
+          "channel": "stable",
+          "manifest": {
+            "manifestVersion": 2,
+            "packageFormat": 2,
+            "id": "meta_ads",
+            "name": "Meta Ads",
+            "description": "Manage Meta advertising accounts, campaigns and insights.",
+            "publisher": {
+              "id": "techify",
+              "name": "Techify"
+            },
+            "version": "2.0.0",
+            "apiVersion": 1,
+            "coreMinVersion": "1.1.0-beta.8",
+            "compatibilityDate": "2026-09-09",
+            "compatibilityFlags": [
+              "nodejs_compat"
+            ],
+            "databaseDialects": [
+              "d1",
+              "postgres"
+            ],
+            "tablePrefix": "meta_ads_",
+            "engines": {
+              "hostApi": 1,
+              "coreApi": 1
+            },
+            "frontend": {
+              "entry": "frontend/entry.js",
+              "styles": [
+                "frontend/styles.css"
+              ],
+              "isolation": "light",
+              "routes": [
+                {
+                  "routeKey": "meta_ads.dashboard",
+                  "path": "/app/p/meta_ads"
+                },
+                {
+                  "routeKey": "meta_ads.accounts",
+                  "path": "/app/p/meta_ads/accounts"
+                }
+              ]
+            },
+            "secrets": [
+              {
+                "name": "META_ACCESS_TOKEN",
+                "label": "Meta access token",
+                "required": false,
+                "permission": "meta_ads.account.update"
+              }
+            ],
+            "localizedMetadata": {
+              "pt-BR": {
+                "name": "Meta Ads",
+                "description": "Contas, campanhas, anúncios e métricas da Meta.",
+                "menuTitles": {
+                  "meta_ads.dashboard": "Meta Ads",
+                  "meta_ads.accounts": "Contas de anúncios"
+                }
+              },
+              "en": {
+                "name": "Meta Ads",
+                "description": "Meta accounts, campaigns, ads and insights.",
+                "menuTitles": {
+                  "meta_ads.dashboard": "Meta Ads",
+                  "meta_ads.accounts": "Ad accounts"
+                }
+              }
+            },
+            "permissions": [
+              "meta_ads.account.read",
+              "meta_ads.account.create",
+              "meta_ads.account.update",
+              "meta_ads.account.delete",
+              "meta_ads.campaign.read",
+              "meta_ads.campaign.update",
+              "meta_ads.adset.read",
+              "meta_ads.adset.update",
+              "meta_ads.ad.read",
+              "meta_ads.ad.update",
+              "meta_ads.insight.read"
+            ],
+            "menu": [
+              {
+                "title": "Meta Ads",
+                "routeKey": "meta_ads.dashboard",
+                "path": "/app/p/meta_ads"
+              },
+              {
+                "title": "Ad accounts",
+                "routeKey": "meta_ads.accounts",
+                "path": "/app/p/meta_ads/accounts"
+              }
+            ]
+          },
+          "artifact": {
+            "url": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/meta_ads-v2.0.0/meta_ads.plugin.zip",
+            "sha256": "ecWf24bKSaIrDFy5onomlJwDkeXqxOs5eEOGMaxweO8",
+            "signature": "gu4HO0FbAdbY2zcG9cZMJHZBUJpb3eaAHqtxKxqlNnZlgJ1scJbIOoiYIHlXXKXZsmZLSDHkEmAhXGPrnkPtAw",
+            "bytes": 531036
+          }
+        }
+      ]
+    },
+    {
+      "id": "platform_probe",
+      "name": "Cloudflare Platform Probe",
+      "description": "Valida o provisionamento genérico de D1, R2, KV, Queues, Durable Objects SQLite e Cron sem alterar o Core.",
+      "categories": [
+        "Desenvolvimento e conformidade"
+      ],
+      "releases": [
+        {
+          "version": "1.0.0",
+          "channel": "stable",
+          "manifest": {
+            "manifestVersion": 2,
+            "packageFormat": 2,
+            "id": "platform_probe",
+            "name": "Cloudflare Platform Probe",
+            "description": "Exercises install-time R2, KV, Queue, Durable Object and Cron provisioning.",
+            "publisher": {
+              "id": "techify",
+              "name": "Techify"
+            },
+            "version": "1.0.0",
+            "apiVersion": 1,
+            "coreMinVersion": "1.1.0-beta.8",
+            "compatibilityDate": "2026-09-09",
+            "compatibilityFlags": [
+              "nodejs_compat"
+            ],
+            "databaseDialects": [
+              "d1",
+              "postgres"
+            ],
+            "tablePrefix": "platform_probe_",
+            "engines": {
+              "hostApi": 1,
+              "coreApi": 1
+            },
+            "frontend": {
+              "entry": "frontend/entry.js",
+              "styles": [
+                "frontend/styles.css"
+              ],
+              "isolation": "shadow",
+              "routes": [
+                {
+                  "routeKey": "platform_probe.status",
+                  "path": "/app/p/platform_probe"
+                }
+              ]
+            },
+            "resources": [
+              {
+                "name": "probe_bucket",
+                "capabilityVersion": 1,
+                "type": "r2",
+                "binding": "PROBE_BUCKET",
+                "required": true,
+                "retention": "delete_on_purge",
+                "configuration": {}
+              },
+              {
+                "name": "probe_kv",
+                "capabilityVersion": 1,
+                "type": "kv",
+                "binding": "PROBE_KV",
+                "required": true,
+                "retention": "delete_on_purge",
+                "configuration": {}
+              },
+              {
+                "name": "probe_dlq",
+                "capabilityVersion": 1,
+                "type": "queue",
+                "binding": "PROBE_DLQ",
+                "required": true,
+                "retention": "delete_on_purge",
+                "configuration": {
+                  "consumer": false
+                }
+              },
+              {
+                "name": "probe_queue",
+                "capabilityVersion": 1,
+                "type": "queue",
+                "binding": "PROBE_QUEUE",
+                "required": true,
+                "retention": "delete_on_purge",
+                "configuration": {
+                  "consumer": true,
+                  "deadLetterResource": "probe_dlq",
+                  "settings": {
+                    "batch_size": 5,
+                    "max_retries": 2
+                  }
+                }
+              },
+              {
+                "name": "probe_object",
+                "capabilityVersion": 1,
+                "type": "durable_object",
+                "binding": "PROBE_OBJECT",
+                "required": true,
+                "retention": "preserve",
+                "configuration": {
+                  "className": "PlatformProbeObject",
+                  "storage": "sqlite"
+                }
+              },
+              {
+                "name": "hourly_probe",
+                "capabilityVersion": 1,
+                "type": "cron",
+                "binding": "PROBE_CRON",
+                "required": true,
+                "retention": "delete_on_purge",
+                "configuration": {
+                  "schedules": [
+                    "7 * * * *"
+                  ]
+                }
+              }
+            ],
+            "localizedMetadata": {
+              "pt-BR": {
+                "name": "Teste da plataforma Cloudflare",
+                "description": "Valida recursos provisionados pelo instalador.",
+                "menuTitles": {
+                  "platform_probe.status": "Teste Cloudflare"
+                },
+                "permissionLabels": {
+                  "platform_probe.status.read": "Executar e consultar o teste Cloudflare"
+                }
+              },
+              "en": {
+                "name": "Cloudflare platform probe",
+                "description": "Validates resources provisioned by the Installer.",
+                "menuTitles": {
+                  "platform_probe.status": "Cloudflare probe"
+                },
+                "permissionLabels": {
+                  "platform_probe.status.read": "Run and inspect the Cloudflare probe"
+                }
+              }
+            },
+            "permissions": [
+              "platform_probe.status.read"
+            ],
+            "menu": [
+              {
+                "title": "Cloudflare probe",
+                "routeKey": "platform_probe.status",
+                "path": "/app/p/platform_probe"
+              }
+            ]
+          },
+          "artifact": {
+            "url": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/platform_probe-v1.0.0/platform_probe.plugin.zip",
+            "sha256": "_03dxhkkmNGe2FJY2SB09erw69Zb-6XYcKTq_jjfiHM",
+            "signature": "WgPq5iyjx5_M-qP_5cgCQaC-nfvXnBbpCYuCtVeqMyLKt3t-SLetDhEWOrcHhgyx0tSwoP7wWB1_sKQpEcwWDA",
+            "bytes": 63055
+          }
+        }
+      ]
+    },
+    {
+      "id": "soletrando",
+      "name": "Soletrando",
+      "description": "Cadastre crianças, compartilhe links individuais de treino e acompanhe fases, tentativas, pontuação e progresso de soletração.",
+      "categories": [
+        "Educação"
+      ],
+      "releases": [
+        {
+          "version": "2.0.0",
+          "channel": "stable",
+          "manifest": {
+            "manifestVersion": 2,
+            "packageFormat": 2,
+            "id": "soletrando",
+            "name": "Soletrando",
+            "description": "Spelling practice with voice transcription and progress tracking.",
+            "publisher": {
+              "id": "techify",
+              "name": "Techify"
+            },
+            "version": "2.0.0",
+            "apiVersion": 1,
+            "coreMinVersion": "1.1.0-beta.8",
+            "compatibilityDate": "2026-09-09",
+            "compatibilityFlags": [
+              "nodejs_compat"
+            ],
+            "databaseDialects": [
+              "d1",
+              "postgres"
+            ],
+            "tablePrefix": "soletrando_",
+            "engines": {
+              "hostApi": 1,
+              "coreApi": 1
+            },
+            "frontend": {
+              "entry": "frontend/entry.js",
+              "styles": [
+                "frontend/styles.css"
+              ],
+              "isolation": "light",
+              "routes": [
+                {
+                  "routeKey": "soletrando.children",
+                  "path": "/app/p/soletrando"
+                },
+                {
+                  "routeKey": "soletrando.child",
+                  "path": "/app/p/soletrando/children/:childId"
+                }
+              ]
+            },
+            "publicRoutes": [
+              "/play"
+            ],
+            "resources": [
+              {
+                "name": "ai",
+                "capabilityVersion": 1,
+                "type": "ai",
+                "binding": "AI",
+                "required": true,
+                "retention": "preserve",
+                "configuration": {}
+              }
+            ],
+            "localizedMetadata": {
+              "pt-BR": {
+                "name": "Soletrando",
+                "description": "Treino de ortografia com voz e acompanhamento de progresso.",
+                "menuTitles": {
+                  "soletrando.children": "Soletrando"
+                }
+              },
+              "en": {
+                "name": "Spelling Practice",
+                "description": "Voice spelling practice and progress tracking.",
+                "menuTitles": {
+                  "soletrando.children": "Spelling Practice"
+                }
+              }
+            },
+            "permissions": [
+              "soletrando.child.read",
+              "soletrando.child.create",
+              "soletrando.child.update",
+              "soletrando.child.delete",
+              "soletrando.settings.read",
+              "soletrando.settings.update"
+            ],
+            "menu": [
+              {
+                "title": "Soletrando",
+                "routeKey": "soletrando.children",
+                "path": "/app/p/soletrando"
+              }
+            ]
+          },
+          "artifact": {
+            "url": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/soletrando-v2.0.0/soletrando.plugin.zip",
+            "sha256": "OxeKestcRJwvinGo4O4kyowj0lIIUV-PGH4GQmFpe28",
+            "signature": "aBxDwP891P-NINjA0X8v_AYgXLqRdX8ERzMrHmndkAHo1QZdH9iZGH6c83BGYCSLFwq3oZqKeVlYaLjN9GpgDw",
+            "bytes": 533435
+          }
+        }
+      ]
+    }
+  ],
+  "signature": {
+    "algorithm": "Ed25519",
+    "keyId": "publisher-v1",
+    "value": "W2WUJk9OhDzDzgyk6MB1lmJVLmWEEhmwinK0b6x-tu45Q_Gcd9IZiYS9Lqldbd4vQC26bEorZ1Cv-TrL6wZTCA"
+  }
+}

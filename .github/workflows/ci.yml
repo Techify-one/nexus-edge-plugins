@@ -1,0 +1,38 @@
+name: Validate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: corepack enable
+      - run: corepack prepare pnpm@11.19.0 --activate
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm format:check
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
+      - name: Generate an ephemeral signing key
+        run: |
+          node --input-type=module <<'NODE' >> "$GITHUB_ENV"
+          import { generateKeyPairSync } from "node:crypto";
+          const { privateKey } = generateKeyPairSync("ed25519");
+          process.stdout.write(`PLUGIN_SIGNING_PRIVATE_KEY=${privateKey.export({ format: "der", type: "pkcs8" }).toString("base64url")}\n`);
+          NODE
+      - name: Exercise signed packaging
+        run: |
+          pnpm package
+          pnpm marketplace
+          pnpm verify:packages

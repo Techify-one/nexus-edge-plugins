@@ -1,0 +1,71 @@
+{
+  "manifestVersion": 2,
+  "packageFormat": 2,
+  "id": "soletrando",
+  "name": "Soletrando",
+  "description": "Spelling practice with voice transcription and progress tracking.",
+  "publisher": { "id": "techify", "name": "Techify" },
+  "version": "2.0.0",
+  "apiVersion": 1,
+  "coreMinVersion": "1.1.0-beta.8",
+  "compatibilityDate": "2026-09-09",
+  "compatibilityFlags": ["nodejs_compat"],
+  "databaseDialects": ["d1", "postgres"],
+  "tablePrefix": "soletrando_",
+  "engines": { "hostApi": 1, "coreApi": 1 },
+  "frontend": {
+    "entry": "frontend/entry.js",
+    "styles": ["frontend/styles.css"],
+    "isolation": "light",
+    "routes": [
+      { "routeKey": "soletrando.children", "path": "/app/p/soletrando" },
+      {
+        "routeKey": "soletrando.child",
+        "path": "/app/p/soletrando/children/:childId"
+      }
+    ]
+  },
+  "publicRoutes": ["/play"],
+  "resources": [
+    {
+      "name": "ai",
+      "capabilityVersion": 1,
+      "type": "ai",
+      "binding": "AI",
+      "required": true,
+      "retention": "preserve",
+      "configuration": {}
+    }
+  ],
+  "localizedMetadata": {
+    "pt-BR": {
+      "name": "Soletrando",
+      "description": "Treino de ortografia com voz e acompanhamento de progresso.",
+      "menuTitles": {
+        "soletrando.children": "Soletrando"
+      }
+    },
+    "en": {
+      "name": "Spelling Practice",
+      "description": "Voice spelling practice and progress tracking.",
+      "menuTitles": {
+        "soletrando.children": "Spelling Practice"
+      }
+    }
+  },
+  "permissions": [
+    "soletrando.child.read",
+    "soletrando.child.create",
+    "soletrando.child.update",
+    "soletrando.child.delete",
+    "soletrando.settings.read",
+    "soletrando.settings.update"
+  ],
+  "menu": [
+    {
+      "title": "Soletrando",
+      "routeKey": "soletrando.children",
+      "path": "/app/p/soletrando"
+    }
+  ]
+}

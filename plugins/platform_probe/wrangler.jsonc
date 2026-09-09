@@ -1,0 +1,40 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "app-plugin-platform-probe",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-09",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "preview_urls": false,
+  "vars": { "DATABASE_PROVIDER": "d1" },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "nexus-edge-db",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations/d1",
+    },
+  ],
+  "r2_buckets": [
+    { "binding": "PROBE_BUCKET", "bucket_name": "nexus-platform-probe" },
+  ],
+  "kv_namespaces": [
+    { "binding": "PROBE_KV", "id": "00000000000000000000000000000000" },
+  ],
+  "queues": {
+    "producers": [
+      { "binding": "PROBE_QUEUE", "queue": "nexus-platform-probe" },
+      { "binding": "PROBE_DLQ", "queue": "nexus-platform-probe-dlq" },
+    ],
+    "consumers": [{ "queue": "nexus-platform-probe" }],
+  },
+  "durable_objects": {
+    "bindings": [
+      { "name": "PROBE_OBJECT", "class_name": "PlatformProbeObject" },
+    ],
+  },
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["PlatformProbeObject"] },
+  ],
+  "triggers": { "crons": ["7 * * * *"] },
+}

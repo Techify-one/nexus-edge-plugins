@@ -1,0 +1,4 @@
+{
+  "category": "Desenvolvimento e conformidade",
+  "description": "Valida o provisionamento genérico de D1, R2, KV, Queues, Durable Objects SQLite e Cron sem alterar o Core."
+}

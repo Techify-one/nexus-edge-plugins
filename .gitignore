@@ -1,0 +1,10 @@
+node_modules/
+dist/
+dist-types/
+release/
+.wrangler/
+sdk-release/
+*.tsbuildinfo
+.env
+.dev.vars
+*.pem

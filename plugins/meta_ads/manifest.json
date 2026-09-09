@@ -1,0 +1,79 @@
+{
+  "manifestVersion": 2,
+  "packageFormat": 2,
+  "id": "meta_ads",
+  "name": "Meta Ads",
+  "description": "Manage Meta advertising accounts, campaigns and insights.",
+  "publisher": { "id": "techify", "name": "Techify" },
+  "version": "2.0.0",
+  "apiVersion": 1,
+  "coreMinVersion": "1.1.0-beta.8",
+  "compatibilityDate": "2026-09-09",
+  "compatibilityFlags": ["nodejs_compat"],
+  "databaseDialects": ["d1", "postgres"],
+  "tablePrefix": "meta_ads_",
+  "engines": { "hostApi": 1, "coreApi": 1 },
+  "frontend": {
+    "entry": "frontend/entry.js",
+    "styles": ["frontend/styles.css"],
+    "isolation": "light",
+    "routes": [
+      { "routeKey": "meta_ads.dashboard", "path": "/app/p/meta_ads" },
+      {
+        "routeKey": "meta_ads.accounts",
+        "path": "/app/p/meta_ads/accounts"
+      }
+    ]
+  },
+  "secrets": [
+    {
+      "name": "META_ACCESS_TOKEN",
+      "label": "Meta access token",
+      "required": false,
+      "permission": "meta_ads.account.update"
+    }
+  ],
+  "localizedMetadata": {
+    "pt-BR": {
+      "name": "Meta Ads",
+      "description": "Contas, campanhas, anúncios e métricas da Meta.",
+      "menuTitles": {
+        "meta_ads.dashboard": "Meta Ads",
+        "meta_ads.accounts": "Contas de anúncios"
+      }
+    },
+    "en": {
+      "name": "Meta Ads",
+      "description": "Meta accounts, campaigns, ads and insights.",
+      "menuTitles": {
+        "meta_ads.dashboard": "Meta Ads",
+        "meta_ads.accounts": "Ad accounts"
+      }
+    }
+  },
+  "permissions": [
+    "meta_ads.account.read",
+    "meta_ads.account.create",
+    "meta_ads.account.update",
+    "meta_ads.account.delete",
+    "meta_ads.campaign.read",
+    "meta_ads.campaign.update",
+    "meta_ads.adset.read",
+    "meta_ads.adset.update",
+    "meta_ads.ad.read",
+    "meta_ads.ad.update",
+    "meta_ads.insight.read"
+  ],
+  "menu": [
+    {
+      "title": "Meta Ads",
+      "routeKey": "meta_ads.dashboard",
+      "path": "/app/p/meta_ads"
+    },
+    {
+      "title": "Ad accounts",
+      "routeKey": "meta_ads.accounts",
+      "path": "/app/p/meta_ads/accounts"
+    }
+  ]
+}

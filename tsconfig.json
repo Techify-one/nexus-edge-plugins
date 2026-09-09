@@ -1,0 +1,12 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/plugin-sdk" },
+    { "path": "plugins/crm" },
+    { "path": "plugins/meta_ads" },
+    { "path": "plugins/soletrando" },
+    { "path": "plugins/meeting_recorder" },
+    { "path": "plugins/platform_probe" },
+    { "path": "tsconfig.frontend.json" }
+  ]
+}

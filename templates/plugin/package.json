@@ -1,0 +1,21 @@
+{
+  "name": "@example/nexus-plugin-template",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "wrangler deploy --dry-run --outdir dist --config wrangler.jsonc && esbuild frontend/entry.ts --bundle --format=esm --platform=browser --target=es2022 --outfile=dist/frontend/entry.js && esbuild frontend/styles.css --bundle --outfile=dist/frontend/styles.css",
+    "package": "nexus-plugin-package .",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@nexus/plugin-sdk": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/plugin-sdk-v1.0.0/nexus-plugin-sdk-1.0.0.tgz",
+    "hono": "4.13.3"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20260908.1",
+    "esbuild": "0.28.2",
+    "typescript": "7.0.2",
+    "wrangler": "4.125.0"
+  }
+}

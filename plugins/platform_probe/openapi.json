@@ -1,0 +1,18 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Cloudflare Platform Probe API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/run": {
+      "post": {
+        "summary": "Exercise all provisioned Cloudflare resources",
+        "responses": {
+          "200": { "description": "Resource probe result" },
+          "403": { "description": "Permission denied" }
+        }
+      }
+    }
+  }
+}

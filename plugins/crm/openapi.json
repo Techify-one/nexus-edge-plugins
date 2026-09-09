@@ -1,0 +1,30 @@
+{
+  "openapi": "3.1.0",
+  "info": { "title": "Nexus CRM API", "version": "2.0.0" },
+  "paths": {
+    "/leads": {
+      "get": {
+        "summary": "List leads",
+        "responses": { "200": { "description": "Lead collection" } }
+      },
+      "post": {
+        "summary": "Create a lead",
+        "responses": { "201": { "description": "Created lead" } }
+      }
+    },
+    "/leads/{leadId}": {
+      "get": {
+        "summary": "Get a lead",
+        "responses": { "200": { "description": "Lead" } }
+      },
+      "patch": {
+        "summary": "Update a lead",
+        "responses": { "200": { "description": "Updated lead" } }
+      },
+      "delete": {
+        "summary": "Delete a lead",
+        "responses": { "204": { "description": "Deleted" } }
+      }
+    }
+  }
+}

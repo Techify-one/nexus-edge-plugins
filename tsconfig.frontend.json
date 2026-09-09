@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "jsx": "react-jsx",
+    "noEmit": true,
+    "types": ["vite/client", "@cloudflare/workers-types"]
+  },
+  "include": [
+    "frontend/src",
+    "plugins/*/frontend",
+    "plugins/soletrando/src/transcription-models.ts",
+    "plugins/soletrando/src/wav.ts"
+  ]
+}
