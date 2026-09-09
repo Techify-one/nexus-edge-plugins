@@ -16,7 +16,7 @@ import { LeadService } from "./services/leads.js";
 const app = new Hono<CrmEnv>();
 
 app.get("/health", (c) =>
-  c.json({ ok: true, plugin: "crm", version: "2.0.0" }),
+  c.json({ ok: true, plugin: "crm", version: "2.0.1" }),
 );
 app.use("/*", async (c, next) => {
   if (c.req.path === "/health") return next();

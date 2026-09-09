@@ -60,10 +60,13 @@ const sdkAsset = readdirSync("sdk-release")
   .sort()[0];
 if (!sdkAsset) throw new Error("SDK package was not generated");
 const sdkPath = join("sdk-release", sdkAsset);
-const sdkTag = "plugin-sdk-v1.0.0";
+const sdkManifest = JSON.parse(
+  readFileSync("packages/plugin-sdk/package.json", "utf8"),
+);
+const sdkTag = `plugin-sdk-v${sdkManifest.version}`;
 publishImmutable(
   sdkTag,
   sdkPath,
-  "Nexus Plugin SDK 1.0.0",
+  `Nexus Plugin SDK ${sdkManifest.version}`,
   `Public SDK artifact ${basename(sdkPath)}.`,
 );

@@ -21,7 +21,7 @@ O SDK publicado pode ser consumido sem checkout do Core:
 ```json
 {
   "dependencies": {
-    "@nexus/plugin-sdk": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/plugin-sdk-v1.0.0/nexus-plugin-sdk-1.0.0.tgz"
+    "@nexus/plugin-sdk": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/plugin-sdk-v1.1.0/nexus-plugin-sdk-1.1.0.tgz"
   }
 }
 ```

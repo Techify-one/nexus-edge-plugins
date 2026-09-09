@@ -51,7 +51,7 @@ import {
 } from "./telegram-links.js";
 import { transcribeAudio } from "./transcription.js";
 
-const VERSION = "2.0.0";
+const VERSION = "2.0.1";
 const CONSENT_VERSION = "2026-08-28";
 const mutablePostKey = (c: Context<MeetingRecorderEnv>): string => {
   const key = (c.req.header("Idempotency-Key") ?? "").trim();

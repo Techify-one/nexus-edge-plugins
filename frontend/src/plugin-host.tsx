@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "sonner";
-import type { PluginHostV1 } from "@nexus/plugin-sdk";
+import type { PluginHostV1, PluginPublicHostV1 } from "@nexus/plugin-sdk";
 import { I18nProvider } from "./i18n/index.js";
 import { ability } from "./lib/ability.js";
 
@@ -15,7 +15,9 @@ const permissionRules = (permissions: readonly string[]) =>
       : [];
   });
 
-export const preparePluginHost = (host: PluginHostV1): void => {
+type ReactPluginHost = PluginHostV1 | PluginPublicHostV1;
+
+export const preparePluginHost = (host: ReactPluginHost): void => {
   ability.update(permissionRules(host.permissions));
   try {
     localStorage.setItem("modular.language", host.locale);
@@ -28,7 +30,7 @@ export const PluginProviders = ({
   host,
   children,
 }: {
-  host: PluginHostV1;
+  host: ReactPluginHost;
   children: ReactNode;
 }) => {
   const queryClient = new QueryClient({
@@ -50,7 +52,7 @@ export const PluginProviders = ({
 
 export const mountReactPlugin = (
   container: HTMLElement,
-  host: PluginHostV1,
+  host: ReactPluginHost,
   content: ReactNode,
 ): { root: Root; dispose(): void } => {
   const root = createRoot(container);

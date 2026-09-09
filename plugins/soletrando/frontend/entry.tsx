@@ -3,6 +3,7 @@ import { definePlugin } from "@nexus/plugin-sdk";
 import { mountReactPlugin } from "../../../frontend/src/plugin-host.js";
 import ChildDetailPage from "./ChildDetailPage.js";
 import ChildrenPage from "./ChildrenPage.js";
+import PracticePage from "./PracticePage.js";
 import "../../../frontend/src/styles/globals.css";
 
 const SoletrandoRoutes = () => (
@@ -16,8 +17,17 @@ const SoletrandoRoutes = () => (
   </Routes>
 );
 
+const SoletrandoPublicRoutes = () => (
+  <Routes>
+    <Route path="/soletrando/c/:token" element={<PracticePage />} />
+  </Routes>
+);
+
 export default definePlugin({
   mountPage({ container, host }) {
     return mountReactPlugin(container, host, <SoletrandoRoutes />);
+  },
+  mountPublicPage({ container, host }) {
+    return mountReactPlugin(container, host, <SoletrandoPublicRoutes />);
   },
 });

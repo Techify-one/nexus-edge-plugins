@@ -32,6 +32,17 @@ export type PluginHostV1 = {
   };
 };
 
+export type PluginPublicHostV1 = {
+  readonly apiVersion: 1;
+  readonly pluginId: string;
+  readonly locale: PluginLocaleV1;
+  readonly theme: PluginThemeV1;
+  readonly permissions: readonly [];
+  api(path: string, init?: RequestInit): Promise<Response>;
+  navigate(path: string, options?: { replace?: boolean }): void;
+  notify(input: { message: string; tone?: "success" | "error" | "info" }): void;
+};
+
 export type PluginSessionV1 = Record<string, unknown> | void;
 
 export type PluginPageMountV1 = {
@@ -50,6 +61,11 @@ export type PluginModuleV1 = {
     host: PluginHostV1;
     route: PluginRouteV1;
     session?: PluginSessionV1;
+  }): Promise<PluginPageMountV1> | PluginPageMountV1;
+  mountPublicPage?(input: {
+    container: HTMLElement;
+    host: PluginPublicHostV1;
+    route: PluginRouteV1;
   }): Promise<PluginPageMountV1> | PluginPageMountV1;
   deactivate?(): Promise<void> | void;
 };
