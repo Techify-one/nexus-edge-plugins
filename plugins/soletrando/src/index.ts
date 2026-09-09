@@ -96,7 +96,7 @@ const isInstallerContext = (
 };
 
 app.get("/health", (c) =>
-  c.json({ ok: true, plugin: "soletrando", version: "2.0.1" }),
+  c.json({ ok: true, plugin: "soletrando", version: "2.0.2" }),
 );
 
 app.use("/*", async (c, next) => {

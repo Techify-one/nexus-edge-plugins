@@ -5,7 +5,7 @@
   "name": "Meta Ads",
   "description": "Manage Meta advertising accounts, campaigns and insights.",
   "publisher": { "id": "techify", "name": "Techify" },
-  "version": "2.0.1",
+  "version": "2.0.2",
   "apiVersion": 1,
   "coreMinVersion": "1.1.0-beta.8",
   "compatibilityDate": "2026-09-09",

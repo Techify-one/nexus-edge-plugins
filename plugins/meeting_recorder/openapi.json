@@ -1,14 +1,14 @@
 {
   "openapi": "3.1.0",
-  "info": { "title": "Nexus Meeting Recorder API", "version": "2.0.1" },
+  "info": { "title": "Nexus Meeting Recorder API", "version": "2.0.2" },
   "paths": {
-    "/overview": {
+    "/api/v1/p/meeting_recorder/overview": {
       "get": {
         "summary": "Read recorder overview",
         "responses": { "200": { "description": "Overview" } }
       }
     },
-    "/recordings": {
+    "/api/v1/p/meeting_recorder/recordings": {
       "get": {
         "summary": "List recordings",
         "responses": { "200": { "description": "Recordings" } }
@@ -18,7 +18,7 @@
         "responses": { "201": { "description": "Recording" } }
       }
     },
-    "/recordings/{recordingId}": {
+    "/api/v1/p/meeting_recorder/recordings/{recordingId}": {
       "get": {
         "summary": "Read a recording",
         "responses": { "200": { "description": "Recording" } }
@@ -32,7 +32,7 @@
         "responses": { "204": { "description": "Deleted" } }
       }
     },
-    "/settings": {
+    "/api/v1/p/meeting_recorder/settings": {
       "get": {
         "summary": "Read recorder settings",
         "responses": { "200": { "description": "Settings" } }
@@ -42,7 +42,7 @@
         "responses": { "200": { "description": "Updated settings" } }
       }
     },
-    "/public/telegram/webhook": {
+    "/api/v1/public/p/meeting_recorder/telegram/webhook": {
       "post": {
         "summary": "Receive Telegram updates through the Core gateway",
         "responses": { "200": { "description": "Update accepted" } }

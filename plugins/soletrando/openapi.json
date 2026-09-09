@@ -1,20 +1,20 @@
 {
   "openapi": "3.1.0",
-  "info": { "title": "Nexus Soletrando API", "version": "2.0.1" },
+  "info": { "title": "Nexus Soletrando API", "version": "2.0.2" },
   "paths": {
-    "/overview": {
+    "/api/v1/p/soletrando/overview": {
       "get": {
         "summary": "Read spelling overview",
         "responses": { "200": { "description": "Overview" } }
       }
     },
-    "/children": {
+    "/api/v1/p/soletrando/children": {
       "post": {
         "summary": "Create a child profile",
         "responses": { "201": { "description": "Created profile" } }
       }
     },
-    "/children/{childId}": {
+    "/api/v1/p/soletrando/children/{childId}": {
       "get": {
         "summary": "Read a child profile and progress",
         "responses": { "200": { "description": "Child profile" } }
@@ -28,7 +28,7 @@
         "responses": { "204": { "description": "Deleted" } }
       }
     },
-    "/play/{token}": {
+    "/api/v1/public/p/soletrando/play/{token}": {
       "get": {
         "summary": "Open a public spelling session",
         "responses": { "200": { "description": "Public session" } }

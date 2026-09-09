@@ -1,8 +1,8 @@
 {
   "openapi": "3.1.0",
-  "info": { "title": "Nexus CRM API", "version": "2.0.1" },
+  "info": { "title": "Nexus CRM API", "version": "2.0.2" },
   "paths": {
-    "/leads": {
+    "/api/v1/p/crm/leads": {
       "get": {
         "summary": "List leads",
         "responses": { "200": { "description": "Lead collection" } }
@@ -12,7 +12,7 @@
         "responses": { "201": { "description": "Created lead" } }
       }
     },
-    "/leads/{leadId}": {
+    "/api/v1/p/crm/leads/{leadId}": {
       "get": {
         "summary": "Get a lead",
         "responses": { "200": { "description": "Lead" } }

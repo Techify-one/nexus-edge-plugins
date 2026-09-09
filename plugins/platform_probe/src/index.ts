@@ -40,7 +40,7 @@ export class PlatformProbeObject extends DurableObject<Bindings> {
 
 const app = new Hono<Env>();
 app.get("/health", (c) =>
-  c.json({ ok: true, plugin: "platform_probe", version: "1.0.1" }),
+  c.json({ ok: true, plugin: "platform_probe", version: "1.0.2" }),
 );
 app.use("/*", async (c, next) => {
   if (c.req.path === "/health") return next();

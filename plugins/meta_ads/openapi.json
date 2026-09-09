@@ -1,8 +1,8 @@
 {
   "openapi": "3.1.0",
-  "info": { "title": "Nexus Meta Ads API", "version": "2.0.1" },
+  "info": { "title": "Nexus Meta Ads API", "version": "2.0.2" },
   "paths": {
-    "/accounts": {
+    "/api/v1/p/meta_ads/accounts": {
       "get": {
         "summary": "List configured ad accounts",
         "responses": { "200": { "description": "Ad accounts" } }
@@ -12,25 +12,25 @@
         "responses": { "201": { "description": "Created account" } }
       }
     },
-    "/campaigns": {
+    "/api/v1/p/meta_ads/campaigns": {
       "get": {
         "summary": "List campaigns",
         "responses": { "200": { "description": "Campaigns" } }
       }
     },
-    "/adsets": {
+    "/api/v1/p/meta_ads/adsets": {
       "get": {
         "summary": "List ad sets",
         "responses": { "200": { "description": "Ad sets" } }
       }
     },
-    "/ads": {
+    "/api/v1/p/meta_ads/ads": {
       "get": {
         "summary": "List ads",
         "responses": { "200": { "description": "Ads" } }
       }
     },
-    "/insights": {
+    "/api/v1/p/meta_ads/insights": {
       "get": {
         "summary": "Read advertising insights",
         "responses": { "200": { "description": "Insights" } }

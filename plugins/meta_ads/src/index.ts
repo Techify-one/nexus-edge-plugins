@@ -166,7 +166,7 @@ const insightItems = async (
 };
 
 app.get("/health", (c) =>
-  c.json({ ok: true, plugin: "meta_ads", version: "2.0.1" }),
+  c.json({ ok: true, plugin: "meta_ads", version: "2.0.2" }),
 );
 
 app.use("/*", async (c, next) => {
