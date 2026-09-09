@@ -1,7 +1,7 @@
 {
   "catalogVersion": 1,
   "name": "Techify",
-  "revision": "j5skhI4WgQBylUPtsNRLY-hsXAeRZa-1",
+  "revision": "mkGQ3uDOV210BeTOnFTC_SewEhIGTPEZ",
   "publisher": {
     "id": "techify",
     "name": "Techify",
@@ -18,7 +18,7 @@
       ],
       "releases": [
         {
-          "version": "2.0.2",
+          "version": "2.0.3",
           "channel": "stable",
           "manifest": {
             "manifestVersion": 2,
@@ -30,7 +30,7 @@
               "id": "techify",
               "name": "Techify"
             },
-            "version": "2.0.2",
+            "version": "2.0.3",
             "apiVersion": 1,
             "coreMinVersion": "1.1.0-beta.8",
             "compatibilityDate": "2026-09-09",
@@ -113,10 +113,10 @@
             ]
           },
           "artifact": {
-            "url": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/crm-v2.0.2/crm.plugin.zip",
-            "sha256": "rcAJi0Yz0Nn4fdaI_3OGSnWEoa929LQb2g6Pz572iCI",
-            "signature": "Qfmm_nE6oWwgDoFfDsDJtSRQSYOvv6qsTRMIklzz4xuBSSN4V8SxU1-j25n55o_KOoT2Vq5zHnTOTexFHFiHAA",
-            "bytes": 514654
+            "url": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/crm-v2.0.3/crm.plugin.zip",
+            "sha256": "23hlltf_mW-SMqSNtnPlJwgJqC_FGHxW6mfHxPYT56Y",
+            "signature": "0HeQzcw_PR_AmvO956G9FQO1zAVC-fCZwIFc6lbXNyAO31b5NCzoXR9YpUQaAkWK8jY8aOMETjdY8zQAGFi4CA",
+            "bytes": 514656
           }
         }
       ]
@@ -669,6 +669,6 @@
   "signature": {
     "algorithm": "Ed25519",
     "keyId": "publisher-v1",
-    "value": "in3_wRu3xJvZ24CiqPUKN6oUpfmoYzNZ9nmajzIg2FND0j0qkNYadl3K0PRkv3o75Vu6DfRDEWsfqli7IJVaDw"
+    "value": "ejeVZLZcuQSlam6e7cchW_SyrugLpbys-gnlGrltm1FycLSh3vCKQytkGhDcYHSHMAxibZ9QYzY12UKQhVL4Bw"
   }
 }
