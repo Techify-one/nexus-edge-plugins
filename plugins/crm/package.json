@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "wrangler deploy --dry-run --outdir dist --config wrangler.jsonc && node ../../scripts/build-frontend.mjs crm",
-    "package": "nexus-plugin-package .",
+    "package": "node ../../packages/plugin-sdk/dist/cli.js .",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {

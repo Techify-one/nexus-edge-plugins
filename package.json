@@ -12,7 +12,7 @@
     "test": "vitest run",
     "build": "pnpm --filter @nexus/plugin-sdk build && pnpm --filter './plugins/**' --workspace-concurrency=1 build",
     "package": "pnpm --filter './plugins/**' --workspace-concurrency=1 package",
-    "marketplace": "pnpm --filter @nexus/plugin-sdk build && nexus-marketplace-generate",
+    "marketplace": "pnpm --filter @nexus/plugin-sdk build && node packages/plugin-sdk/dist/marketplace-cli.js",
     "verify:packages": "node scripts/verify-packages.mjs",
     "format:check": "prettier --check ."
   },
