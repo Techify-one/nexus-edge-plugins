@@ -8,12 +8,12 @@
     "node": ">=24"
   },
   "scripts": {
-    "typecheck": "tsc -b --pretty false",
+    "typecheck": "pnpm --filter @nexus/plugin-sdk typecheck && pnpm --filter './*' --workspace-concurrency=1 typecheck && tsc -p tsconfig.frontend.json --pretty false",
     "test": "vitest run",
-    "build": "pnpm --filter @nexus/plugin-sdk build && pnpm --filter './plugins/**' --workspace-concurrency=1 build",
-    "package": "pnpm --filter './plugins/**' --workspace-concurrency=1 package",
-    "marketplace": "pnpm --filter @nexus/plugin-sdk build && node packages/plugin-sdk/dist/marketplace-cli.js",
-    "verify:packages": "node scripts/verify-packages.mjs",
+    "build": "pnpm --filter @nexus/plugin-sdk build && pnpm --filter './*' --workspace-concurrency=1 build",
+    "package": "pnpm --filter './*' --workspace-concurrency=1 package",
+    "marketplace": "pnpm --filter @nexus/plugin-sdk build && node .marketplace/packages/plugin-sdk/dist/marketplace-cli.js",
+    "verify:packages": "node .marketplace/scripts/verify-packages.mjs",
     "format:check": "prettier --check ."
   },
   "dependencies": {
