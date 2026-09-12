@@ -12,6 +12,9 @@ const root = resolve(repositoryRoot, "plugins", pluginId);
 await build({
   root,
   plugins: [react(), tailwindcss()],
+  define: {
+    "process.env.NODE_ENV": JSON.stringify("production"),
+  },
   build: {
     target: "es2022",
     emptyOutDir: false,

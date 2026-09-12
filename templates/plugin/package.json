@@ -9,7 +9,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@nexus/plugin-sdk": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/plugin-sdk-v1.1.1/nexus-plugin-sdk-1.1.1.tgz",
+    "@nexus/plugin-sdk": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/plugin-sdk-v1.1.2/nexus-plugin-sdk-1.1.2.tgz",
     "hono": "4.13.3"
   },
   "devDependencies": {

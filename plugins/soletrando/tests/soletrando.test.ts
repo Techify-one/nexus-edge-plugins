@@ -49,7 +49,7 @@ describe("Soletrando plugin", () => {
         expect.objectContaining({ type: "ai", binding: "AI" }),
       ]),
     );
-    expect(manifest.version).toBe("2.0.2");
+    expect(manifest.version).toBe("2.0.3");
     expect(manifest.permissions).toEqual(
       expect.arrayContaining([
         "soletrando.settings.read",

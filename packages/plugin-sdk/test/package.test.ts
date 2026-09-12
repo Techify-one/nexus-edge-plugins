@@ -1,6 +1,27 @@
 import { describe, expect, it } from "vitest";
 import { strToU8 } from "fflate";
-import { validatePluginOpenApi } from "../src/package.js";
+import {
+  validatePluginFrontend,
+  validatePluginOpenApi,
+} from "../src/package.js";
+
+describe("plugin frontend packaging policy", () => {
+  it("accepts browser-safe production bundles", () => {
+    expect(() =>
+      validatePluginFrontend(
+        strToU8('const mode = "production"; export { mode };'),
+      ),
+    ).not.toThrow();
+  });
+
+  it("rejects unresolved Node environment lookups", () => {
+    expect(() =>
+      validatePluginFrontend(
+        strToU8("export const mode = process.env.NODE_ENV;"),
+      ),
+    ).toThrow("PLUGIN_FRONTEND_NODE_ENV_UNRESOLVED");
+  });
+});
 
 describe("plugin OpenAPI packaging policy", () => {
   it("accepts authenticated and declared public gateway paths", () => {
