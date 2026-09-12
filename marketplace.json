@@ -1,0 +1,8 @@
+{
+  "name": "Techify",
+  "repository": "Techify-one/nexus-edge-plugins",
+  "publisher": {
+    "id": "techify",
+    "name": "Techify"
+  }
+}

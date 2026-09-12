@@ -7,9 +7,9 @@
     "types": ["vite/client", "@cloudflare/workers-types"]
   },
   "include": [
-    "frontend/src",
-    "plugins/*/frontend",
-    "plugins/soletrando/src/transcription-models.ts",
-    "plugins/soletrando/src/wav.ts"
+    ".marketplace/frontend/src",
+    "*/frontend",
+    "soletrando/src/transcription-models.ts",
+    "soletrando/src/wav.ts"
   ]
 }

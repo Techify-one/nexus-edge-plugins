@@ -1,0 +1,16 @@
+{
+  "name": "@techify/plugin-crm",
+  "version": "2.0.4",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "wrangler deploy --dry-run --outdir dist --config wrangler.jsonc && node ../.marketplace/scripts/build-frontend.mjs crm",
+    "package": "node ../.marketplace/packages/plugin-sdk/dist/cli.js .",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@nexus/plugin-sdk": "workspace:*",
+    "hono": "4.13.3",
+    "zod": "4.4.3"
+  }
+}
