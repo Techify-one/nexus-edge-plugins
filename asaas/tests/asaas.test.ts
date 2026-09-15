@@ -355,14 +355,36 @@ describe("Asaas plugin", () => {
     );
     expect(statement).toContain('tableId="plugin.asaas.statement"');
     expect(pix).toContain('tableId="plugin.asaas.pix_transfers"');
-    expect(pix).toContain("window.confirm");
+    expect(pix).toContain("<Modal");
+    expect(pix).toContain('title={t("asaas.pix.confirmationTitle")}');
+    expect(pix).not.toContain("window.confirm");
     expect(settings).toContain("runtime-secrets/ASAAS_API_KEY");
     expect(settings).toContain("runtime-secrets/ASAAS_WEBHOOK_TOKEN");
     expect(settings).toContain(
       "/api/v1/public/p/asaas/withdrawal-authorization",
     );
-    expect(settings).toContain("recentReauthHeaders");
+    expect(settings).not.toContain("recentReauthHeaders");
+    expect(settings).not.toContain("window.confirm");
+    expect(settings).toContain("<Modal");
     expect(settings).toContain('method: "PUT"');
     expect(settings).toContain('method: "DELETE"');
+  });
+
+  it("leaves plugin naming and navigation to the Core shell", () => {
+    const dashboard = readFileSync(
+      "asaas/frontend/AsaasDashboardPage.tsx",
+      "utf8",
+    );
+    const statement = readFileSync(
+      "asaas/frontend/AsaasStatementPage.tsx",
+      "utf8",
+    );
+    const settings = readFileSync(
+      "asaas/frontend/AsaasSettingsPage.tsx",
+      "utf8",
+    );
+    expect(dashboard).not.toContain("<PageHeader");
+    expect(statement).toContain('title={t("asaas.statement.sectionTitle")}');
+    expect(settings).toContain('title={t("asaas.settings.sectionTitle")}');
   });
 });

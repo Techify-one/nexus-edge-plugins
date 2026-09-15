@@ -12,6 +12,7 @@ export const asaasFrontendMessages = {
       "Configure uma chave de API de produção válida para consultar saldo, extrato e enviar Pix.",
     "asaas.configure": "Configurar chave de API",
     "asaas.statement.title": "Extrato Asaas",
+    "asaas.statement.sectionTitle": "Extrato",
     "asaas.statement.description":
       "Movimentações que impactaram o saldo da conta no período selecionado.",
     "asaas.statement.cardDescription":
@@ -42,8 +43,13 @@ export const asaasFrontendMessages = {
     "asaas.pix.warning":
       "Confira a chave e o valor. O envio usa dinheiro real da conta Asaas de produção e pode ser irreversível.",
     "asaas.pix.reviewAndSend": "Revisar e enviar Pix",
-    "asaas.pix.confirmRecipient":
-      "Confirma o Pix de {{value}} para {{name}} ({{document}}), no {{institution}}, chave {{key}}? Esta operação movimenta dinheiro real.",
+    "asaas.pix.confirmationTitle": "Confirmar envio do Pix",
+    "asaas.pix.confirmationDescription":
+      "Revise cuidadosamente o destinatário e o valor antes de confirmar.",
+    "asaas.pix.recipient": "Destinatário",
+    "asaas.pix.document": "CPF/CNPJ",
+    "asaas.pix.institution": "Instituição",
+    "asaas.pix.confirmAndSend": "Confirmar e enviar",
     "asaas.pix.submitted":
       "Pix enviado ao Asaas. Acompanhe o status até a conclusão.",
     "asaas.pix.lastSubmission": "Último Pix enviado",
@@ -59,6 +65,7 @@ export const asaasFrontendMessages = {
     "asaas.pix.authorization.APPROVED": "Aprovada",
     "asaas.pix.authorization.REFUSED": "Recusada",
     "asaas.settings.title": "Configurar Asaas",
+    "asaas.settings.sectionTitle": "Configuração",
     "asaas.settings.description":
       "Gerencie a credencial usada pelo Worker privado do plugin.",
     "asaas.settings.cardDescription":
@@ -76,10 +83,6 @@ export const asaasFrontendMessages = {
     "asaas.settings.delete": "Apagar chave",
     "asaas.settings.deleteConfirm":
       "Apagar a chave do Asaas? O plugin ficará desconectado até outra chave ser adicionada.",
-    "asaas.settings.savePassword":
-      "Confirme sua senha do Nexus para salvar a chave do Asaas:",
-    "asaas.settings.deletePassword":
-      "Confirme sua senha do Nexus para apagar a chave do Asaas:",
     "asaas.settings.invalidFormat":
       "Use uma chave de produção completa iniciada por $aact_prod_.",
     "asaas.settings.connectionOk":
@@ -121,12 +124,9 @@ export const asaasFrontendMessages = {
       "Informe a URL acima e o mesmo token no campo de autenticação do Asaas.",
     "asaas.settings.webhookScopeWarning":
       "Importante: ao ativar esse mecanismo, toda transferência criada via API será validada. O plugin aprova somente Pix que ele próprio registrou e cujos ID, valor e dados fornecidos pelo Asaas conferem; qualquer outra solicitação é recusada.",
-    "asaas.settings.webhookSavePassword":
-      "Confirme sua senha do Nexus para salvar o token do webhook Asaas:",
-    "asaas.settings.webhookDeletePassword":
-      "Confirme sua senha do Nexus para apagar o token do webhook Asaas:",
     "asaas.settings.webhookDeleteConfirm":
       "Apagar o token do webhook? O Asaas deixará de conseguir autorizar transferências automaticamente até a reconfiguração.",
+    "asaas.settings.deleteDialogTitle": "Confirmar exclusão",
     "errors.ASAAS_API_KEY_NOT_CONFIGURED":
       "Configure a chave de API do Asaas antes de continuar.",
     "errors.ASAAS_API_KEY_INVALID":
@@ -162,6 +162,7 @@ export const asaasFrontendMessages = {
       "Configure a valid production API key to view balance and statement or send Pix.",
     "asaas.configure": "Configure API key",
     "asaas.statement.title": "Asaas statement",
+    "asaas.statement.sectionTitle": "Statement",
     "asaas.statement.description":
       "Transactions that affected the account balance in the selected period.",
     "asaas.statement.cardDescription":
@@ -191,8 +192,13 @@ export const asaasFrontendMessages = {
     "asaas.pix.warning":
       "Check the key and amount. This sends real money from the production Asaas account and may be irreversible.",
     "asaas.pix.reviewAndSend": "Review and send Pix",
-    "asaas.pix.confirmRecipient":
-      "Confirm a Pix of {{value}} to {{name}} ({{document}}) at {{institution}}, key {{key}}? This operation moves real money.",
+    "asaas.pix.confirmationTitle": "Confirm Pix transfer",
+    "asaas.pix.confirmationDescription":
+      "Carefully review the recipient and amount before confirming.",
+    "asaas.pix.recipient": "Recipient",
+    "asaas.pix.document": "CPF/CNPJ",
+    "asaas.pix.institution": "Institution",
+    "asaas.pix.confirmAndSend": "Confirm and send",
     "asaas.pix.submitted": "Pix submitted to Asaas. Track it until completion.",
     "asaas.pix.lastSubmission": "Last submitted Pix",
     "asaas.pix.history": "Pix sent through Nexus",
@@ -207,6 +213,7 @@ export const asaasFrontendMessages = {
     "asaas.pix.authorization.APPROVED": "Approved",
     "asaas.pix.authorization.REFUSED": "Refused",
     "asaas.settings.title": "Configure Asaas",
+    "asaas.settings.sectionTitle": "Settings",
     "asaas.settings.description":
       "Manage the credential used by the private plugin Worker.",
     "asaas.settings.cardDescription":
@@ -224,10 +231,6 @@ export const asaasFrontendMessages = {
     "asaas.settings.delete": "Delete key",
     "asaas.settings.deleteConfirm":
       "Delete the Asaas key? The plugin will remain disconnected until another key is added.",
-    "asaas.settings.savePassword":
-      "Confirm your Nexus password to save the Asaas key:",
-    "asaas.settings.deletePassword":
-      "Confirm your Nexus password to delete the Asaas key:",
     "asaas.settings.invalidFormat":
       "Use a complete production key starting with $aact_prod_.",
     "asaas.settings.connectionOk":
@@ -269,12 +272,9 @@ export const asaasFrontendMessages = {
       "Enter the URL above and the same token in the Asaas authentication field.",
     "asaas.settings.webhookScopeWarning":
       "Important: once enabled, every transfer created through the API is validated. The plugin approves only Pix transfers it registered and whose ID, value, and details supplied by Asaas match; every other request is refused.",
-    "asaas.settings.webhookSavePassword":
-      "Confirm your Nexus password to save the Asaas webhook token:",
-    "asaas.settings.webhookDeletePassword":
-      "Confirm your Nexus password to delete the Asaas webhook token:",
     "asaas.settings.webhookDeleteConfirm":
       "Delete the webhook token? Asaas will be unable to authorize transfers automatically until it is configured again.",
+    "asaas.settings.deleteDialogTitle": "Confirm deletion",
     "errors.ASAAS_API_KEY_NOT_CONFIGURED": "Configure the Asaas API key first.",
     "errors.ASAAS_API_KEY_INVALID": "The Asaas API key is invalid or revoked.",
     "errors.ASAAS_API_KEY_FORMAT_INVALID":

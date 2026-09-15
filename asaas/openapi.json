@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Nexus Asaas API",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "description": "Private Nexus gateway for a personal Asaas account."
   },
   "paths": {

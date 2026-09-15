@@ -16,6 +16,7 @@ import {
   Skeleton,
   Textarea,
 } from "../../.marketplace/frontend/src/components/ui/index.js";
+import { Modal } from "../../.marketplace/frontend/src/components/ui/modal.js";
 import { can } from "../../.marketplace/frontend/src/lib/ability.js";
 import { useI18n } from "../../.marketplace/frontend/src/i18n/index.js";
 import { asaasApi, formatCurrency, formatDate } from "./api-client.js";
@@ -50,6 +51,22 @@ const localizedAmount = (value: string): number => {
   return Number(compact.replace(",", "."));
 };
 
+type PixDraft = {
+  numericAmount: number;
+  pixAddressKey: string;
+  pixAddressKeyType: PixKeyType;
+  description?: string | undefined;
+};
+
+type PixReview = PixDraft & {
+  recipient: {
+    ownerName: string;
+    ownerDocument: string;
+    institutionName: string;
+    pixKeyMasked: string;
+  };
+};
+
 export default function AsaasPixPage() {
   const { locale, t } = useI18n();
   const client = useQueryClient();
@@ -58,6 +75,7 @@ export default function AsaasPixPage() {
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
   const [lastTransfer, setLastTransfer] = useState<PixTransfer | null>(null);
+  const [review, setReview] = useState<PixReview | null>(null);
   const balance = useQuery({
     queryKey: ["asaas", "balance"],
     queryFn: asaasApi.balance,
@@ -70,34 +88,25 @@ export default function AsaasPixPage() {
     enabled: can("asaas.pix.read"),
     retry: false,
   });
-  const sendPix = useMutation({
-    mutationFn: async (input: {
-      numericAmount: number;
-      pixAddressKey: string;
-      pixAddressKeyType: PixKeyType;
-      description?: string | undefined;
-    }) => {
+  const reviewPix = useMutation({
+    mutationFn: async (input: PixDraft): Promise<PixReview> => {
       const { recipient } = await asaasApi.inspectPixKey(input);
-      const confirmed = window.confirm(
-        t("asaas.pix.confirmRecipient", {
-          value: formatCurrency(locale, input.numericAmount),
-          name: recipient.ownerName,
-          document: recipient.ownerDocument,
-          institution: recipient.institutionName,
-          key: recipient.pixKeyMasked,
-        }),
-      );
-      if (!confirmed) return null;
-      return asaasApi.sendPix({
+      return { ...input, recipient };
+    },
+    onSuccess: setReview,
+    onError: (error: Error) => toast.error(error.message),
+  });
+  const sendPix = useMutation({
+    mutationFn: (input: PixReview) =>
+      asaasApi.sendPix({
         value: input.numericAmount.toFixed(2),
         pixAddressKey: input.pixAddressKey,
         pixAddressKeyType: input.pixAddressKeyType,
         description: input.description,
-      });
-    },
+      }),
     onSuccess: (result) => {
-      if (!result) return;
       const { transfer } = result;
+      setReview(null);
       setLastTransfer(transfer);
       setPixKey("");
       setAmount("");
@@ -138,7 +147,7 @@ export default function AsaasPixPage() {
                   toast.error(t("asaas.pix.amountInvalid"));
                   return;
                 }
-                sendPix.mutate({
+                reviewPix.mutate({
                   numericAmount,
                   pixAddressKey: pixKey,
                   pixAddressKeyType: keyType,
@@ -204,7 +213,7 @@ export default function AsaasPixPage() {
                 {t("asaas.pix.warning")}
               </div>
               <Button
-                busy={sendPix.isPending}
+                busy={reviewPix.isPending}
                 disabled={!pixKey.trim() || !amount.trim()}
               >
                 <Send className="h-4 w-4" />
@@ -359,6 +368,70 @@ export default function AsaasPixPage() {
           )}
         </div>
       )}
+      <Modal
+        open={review !== null}
+        onOpenChange={(open) => {
+          if (!open && !sendPix.isPending) setReview(null);
+        }}
+        title={t("asaas.pix.confirmationTitle")}
+        description={t("asaas.pix.confirmationDescription")}
+      >
+        {review && (
+          <div className="space-y-5">
+            <dl className="grid gap-3 rounded-xl border bg-slate-50 p-4 text-sm dark:bg-slate-900 sm:grid-cols-2">
+              <div>
+                <dt className="text-slate-500">{t("asaas.pix.amount")}</dt>
+                <dd className="mt-1 text-lg font-bold text-slate-900 dark:text-slate-100">
+                  {formatCurrency(locale, review.numericAmount)}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-slate-500">{t("asaas.pix.recipient")}</dt>
+                <dd className="mt-1 font-semibold text-slate-900 dark:text-slate-100">
+                  {review.recipient.ownerName}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-slate-500">{t("asaas.pix.document")}</dt>
+                <dd className="mt-1 font-medium">
+                  {review.recipient.ownerDocument}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-slate-500">{t("asaas.pix.institution")}</dt>
+                <dd className="mt-1 font-medium">
+                  {review.recipient.institutionName}
+                </dd>
+              </div>
+              <div className="sm:col-span-2">
+                <dt className="text-slate-500">{t("asaas.pix.destination")}</dt>
+                <dd className="mt-1 font-medium">
+                  {review.pixAddressKeyType} · {review.recipient.pixKeyMasked}
+                </dd>
+              </div>
+            </dl>
+            <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-950">
+              {t("asaas.pix.warning")}
+            </div>
+            <div className="flex justify-end gap-3">
+              <Button
+                variant="secondary"
+                disabled={sendPix.isPending}
+                onClick={() => setReview(null)}
+              >
+                {t("common.cancel")}
+              </Button>
+              <Button
+                busy={sendPix.isPending}
+                onClick={() => sendPix.mutate(review)}
+              >
+                <Send className="h-4 w-4" />
+                {t("asaas.pix.confirmAndSend")}
+              </Button>
+            </div>
+          </div>
+        )}
+      </Modal>
     </>
   );
 }

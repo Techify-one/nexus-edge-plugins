@@ -91,7 +91,7 @@ const parseInteger = (
 };
 
 app.get("/health", (c) =>
-  c.json({ ok: true, plugin: "asaas", version: "1.1.0" }),
+  c.json({ ok: true, plugin: "asaas", version: "1.2.0" }),
 );
 
 app.use("/*", async (c, next) => {

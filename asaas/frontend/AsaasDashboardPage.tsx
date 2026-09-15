@@ -5,7 +5,6 @@ import {
   Button,
   Card,
   MetricCard,
-  PageHeader,
   Skeleton,
 } from "../../.marketplace/frontend/src/components/ui/index.js";
 import { can } from "../../.marketplace/frontend/src/lib/ability.js";
@@ -25,22 +24,18 @@ export default function AsaasDashboardPage() {
   });
   return (
     <>
-      <PageHeader
-        title={t("asaas.title")}
-        description={t("asaas.description")}
-        action={
-          mayReadBalance ? (
-            <Button
-              variant="secondary"
-              busy={balance.isFetching}
-              onClick={() => void balance.refetch()}
-            >
-              <RefreshCw className="h-4 w-4" />
-              {t("asaas.refresh")}
-            </Button>
-          ) : undefined
-        }
-      />
+      {mayReadBalance && (
+        <div className="mb-3 flex justify-end">
+          <Button
+            variant="secondary"
+            busy={balance.isFetching}
+            onClick={() => void balance.refetch()}
+          >
+            <RefreshCw className="h-4 w-4" />
+            {t("asaas.refresh")}
+          </Button>
+        </div>
+      )}
       {mayReadBalance &&
         (balance.isPending ? (
           <Skeleton className="h-28" />

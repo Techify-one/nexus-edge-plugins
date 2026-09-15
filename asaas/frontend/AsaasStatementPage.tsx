@@ -55,7 +55,7 @@ export default function AsaasStatementPage() {
   return (
     <>
       <PageHeader
-        title={t("asaas.statement.title")}
+        title={t("asaas.statement.sectionTitle")}
         description={t("asaas.statement.description")}
         action={
           <Button

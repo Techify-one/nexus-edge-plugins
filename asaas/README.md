@@ -14,8 +14,9 @@ Integra uma conta Asaas pessoa física de produção ao Nexus Edge para:
 A chave `ASAAS_API_KEY` é declarada como Worker Secret. O valor não entra no
 banco, no pacote, no catálogo nem nos logs e não pode ser lido de volta depois
 de salvo. A tela valida a chave, confirma que ela pertence a uma conta `FISICA`
-e faz uma consulta de saldo antes de armazená-la. Também exige confirmação
-recente da senha do Nexus para salvar, substituir ou apagar a credencial.
+e faz uma consulta de saldo antes de armazená-la. A sessão autenticada e a
+permissão `asaas.settings.update` autorizam salvar, substituir ou apagar as
+credenciais sem solicitar novamente a senha da conta Nexus.
 
 O envio de Pix exige permissão específica, consulta prévia da titularidade da
 chave, confirmação explícita do favorecido e um `Idempotency-Key`. O plugin

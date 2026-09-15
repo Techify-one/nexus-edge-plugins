@@ -19,11 +19,9 @@ import {
   PageHeader,
   PasswordInput,
 } from "../../.marketplace/frontend/src/components/ui/index.js";
+import { Modal } from "../../.marketplace/frontend/src/components/ui/modal.js";
 import { can } from "../../.marketplace/frontend/src/lib/ability.js";
-import {
-  api,
-  recentReauthHeaders,
-} from "../../.marketplace/frontend/src/lib/api/core-client.js";
+import { api } from "../../.marketplace/frontend/src/lib/api/core-client.js";
 import { useI18n } from "../../.marketplace/frontend/src/i18n/index.js";
 import { asaasApi, formatCurrency } from "./api-client.js";
 
@@ -44,6 +42,9 @@ export default function AsaasSettingsPage() {
   const client = useQueryClient();
   const [apiKey, setApiKey] = useState("");
   const [webhookToken, setWebhookToken] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState<"api" | "webhook" | null>(
+    null,
+  );
   const mayUpdate = can("asaas.settings.update");
   const webhookUrl = `${window.location.origin}/api/v1/public/p/asaas/withdrawal-authorization`;
   const secretStatus = useQuery({
@@ -58,12 +59,8 @@ export default function AsaasSettingsPage() {
   const saveKey = useMutation({
     mutationFn: async (value: string) => {
       await asaasApi.validateConnection(value);
-      const reauth = await recentReauthHeaders(
-        t("asaas.settings.savePassword"),
-      );
       await api("/api/v1/plugins/asaas/runtime-secrets/ASAAS_API_KEY", {
         method: "PUT",
-        headers: reauth,
         body: JSON.stringify({ value }),
       });
     },
@@ -88,16 +85,13 @@ export default function AsaasSettingsPage() {
   });
   const saveWebhookToken = useMutation({
     mutationFn: async (value: string) => {
-      const reauth = await recentReauthHeaders(
-        t("asaas.settings.webhookSavePassword"),
-      );
       await api("/api/v1/plugins/asaas/runtime-secrets/ASAAS_WEBHOOK_TOKEN", {
         method: "PUT",
-        headers: reauth,
         body: JSON.stringify({ value }),
       });
     },
     onSuccess: () => {
+      setDeleteTarget(null);
       setWebhookToken("");
       toast.success(t("asaas.settings.webhookSaved"));
       void client.invalidateQueries({ queryKey: ["asaas"] });
@@ -108,11 +102,9 @@ export default function AsaasSettingsPage() {
     mutationFn: async () =>
       api("/api/v1/plugins/asaas/runtime-secrets/ASAAS_WEBHOOK_TOKEN", {
         method: "DELETE",
-        headers: await recentReauthHeaders(
-          t("asaas.settings.webhookDeletePassword"),
-        ),
       }),
     onSuccess: () => {
+      setDeleteTarget(null);
       setWebhookToken("");
       toast.success(t("asaas.settings.webhookDeleted"));
       void client.invalidateQueries({ queryKey: ["asaas"] });
@@ -123,9 +115,9 @@ export default function AsaasSettingsPage() {
     mutationFn: async () =>
       api("/api/v1/plugins/asaas/runtime-secrets/ASAAS_API_KEY", {
         method: "DELETE",
-        headers: await recentReauthHeaders(t("asaas.settings.deletePassword")),
       }),
     onSuccess: () => {
+      setDeleteTarget(null);
       setApiKey("");
       toast.success(t("asaas.settings.deleted"));
       void client.invalidateQueries({ queryKey: ["asaas"] });
@@ -148,7 +140,7 @@ export default function AsaasSettingsPage() {
   return (
     <>
       <PageHeader
-        title={t("asaas.settings.title")}
+        title={t("asaas.settings.sectionTitle")}
         description={t("asaas.settings.description")}
       />
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.55fr)]">
@@ -181,10 +173,7 @@ export default function AsaasSettingsPage() {
                 variant="ghost"
                 className="text-red-600"
                 busy={deleteKey.isPending}
-                onClick={() => {
-                  if (window.confirm(t("asaas.settings.deleteConfirm")))
-                    deleteKey.mutate();
-                }}
+                onClick={() => setDeleteTarget("api")}
               >
                 <Trash2 className="h-4 w-4" />
                 {t("asaas.settings.delete")}
@@ -271,10 +260,7 @@ export default function AsaasSettingsPage() {
               variant="ghost"
               className="text-red-600"
               busy={deleteWebhookToken.isPending}
-              onClick={() => {
-                if (window.confirm(t("asaas.settings.webhookDeleteConfirm")))
-                  deleteWebhookToken.mutate();
-              }}
+              onClick={() => setDeleteTarget("webhook")}
             >
               <Trash2 className="h-4 w-4" />
               {t("asaas.settings.delete")}
@@ -376,6 +362,40 @@ export default function AsaasSettingsPage() {
           </div>
         </div>
       </Card>
+      <Modal
+        open={deleteTarget !== null}
+        onOpenChange={(open) => {
+          if (!open && !deleteKey.isPending && !deleteWebhookToken.isPending)
+            setDeleteTarget(null);
+        }}
+        title={t("asaas.settings.deleteDialogTitle")}
+        description={
+          deleteTarget === "webhook"
+            ? t("asaas.settings.webhookDeleteConfirm")
+            : t("asaas.settings.deleteConfirm")
+        }
+      >
+        <div className="flex justify-end gap-3">
+          <Button
+            variant="secondary"
+            disabled={deleteKey.isPending || deleteWebhookToken.isPending}
+            onClick={() => setDeleteTarget(null)}
+          >
+            {t("common.cancel")}
+          </Button>
+          <Button
+            variant="danger"
+            busy={deleteKey.isPending || deleteWebhookToken.isPending}
+            onClick={() => {
+              if (deleteTarget === "webhook") deleteWebhookToken.mutate();
+              else if (deleteTarget === "api") deleteKey.mutate();
+            }}
+          >
+            <Trash2 className="h-4 w-4" />
+            {t("asaas.settings.delete")}
+          </Button>
+        </div>
+      </Modal>
     </>
   );
 }
