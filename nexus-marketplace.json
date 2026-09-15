@@ -1,7 +1,7 @@
 {
   "catalogVersion": 1,
   "name": "Techify",
-  "revision": "Y_bFLo7AoysLRars7PQ3Ij4r8RzW2JEO",
+  "revision": "YuETx92Q-W3diRaF4xV9VbfVOfja9e6P",
   "publisher": {
     "id": "techify",
     "name": "Techify",
@@ -9,6 +9,154 @@
     "publicKey": "-kclRfCPFXgwfV668cAVLU_8zaLqyiVij0Kn76Z1OME"
   },
   "plugins": [
+    {
+      "id": "asaas",
+      "name": "Asaas",
+      "description": "Consulte saldo e extrato da sua conta Asaas pessoa física e envie Pix com confirmação e proteção contra duplicidade.",
+      "categories": [
+        "Finanças"
+      ],
+      "releases": [
+        {
+          "version": "1.0.0",
+          "channel": "stable",
+          "manifest": {
+            "manifestVersion": 2,
+            "packageFormat": 2,
+            "id": "asaas",
+            "name": "Asaas",
+            "description": "Personal Asaas account balance, statement and secure Pix transfers.",
+            "publisher": {
+              "id": "techify",
+              "name": "Techify"
+            },
+            "version": "1.0.0",
+            "apiVersion": 1,
+            "coreMinVersion": "1.1.0-beta.8",
+            "compatibilityDate": "2026-09-15",
+            "compatibilityFlags": [
+              "nodejs_compat"
+            ],
+            "databaseDialects": [
+              "d1",
+              "postgres"
+            ],
+            "tablePrefix": "asaas_",
+            "engines": {
+              "hostApi": 1,
+              "coreApi": 1
+            },
+            "frontend": {
+              "entry": "frontend/entry.js",
+              "styles": [
+                "frontend/styles.css"
+              ],
+              "isolation": "light",
+              "routes": [
+                {
+                  "routeKey": "asaas.overview",
+                  "path": "/app/p/asaas"
+                },
+                {
+                  "routeKey": "asaas.statement",
+                  "path": "/app/p/asaas/statement"
+                },
+                {
+                  "routeKey": "asaas.pix",
+                  "path": "/app/p/asaas/pix"
+                },
+                {
+                  "routeKey": "asaas.settings",
+                  "path": "/app/p/asaas/settings"
+                }
+              ]
+            },
+            "secrets": [
+              {
+                "name": "ASAAS_API_KEY",
+                "label": "Asaas production API key",
+                "required": false,
+                "permission": "asaas.settings.update"
+              }
+            ],
+            "localizedMetadata": {
+              "pt-BR": {
+                "name": "Asaas",
+                "description": "Saldo, extrato e Pix da conta Asaas pessoa física.",
+                "menuTitles": {
+                  "asaas.overview": "Asaas",
+                  "asaas.statement": "Extrato Asaas",
+                  "asaas.pix": "Fazer Pix",
+                  "asaas.settings": "Configurar Asaas"
+                },
+                "permissionLabels": {
+                  "asaas.balance.read": "Ver saldo da conta Asaas",
+                  "asaas.statement.read": "Ver extrato da conta Asaas",
+                  "asaas.pix.read": "Ver Pix enviados pelo Nexus",
+                  "asaas.pix.create": "Enviar Pix pela conta Asaas",
+                  "asaas.settings.read": "Ver configuração do Asaas",
+                  "asaas.settings.update": "Configurar a chave de API do Asaas"
+                }
+              },
+              "en": {
+                "name": "Asaas",
+                "description": "Balance, statement and Pix for a personal Asaas account.",
+                "menuTitles": {
+                  "asaas.overview": "Asaas",
+                  "asaas.statement": "Asaas statement",
+                  "asaas.pix": "Send Pix",
+                  "asaas.settings": "Configure Asaas"
+                },
+                "permissionLabels": {
+                  "asaas.balance.read": "View Asaas account balance",
+                  "asaas.statement.read": "View Asaas account statement",
+                  "asaas.pix.read": "View Pix sent through Nexus",
+                  "asaas.pix.create": "Send Pix from the Asaas account",
+                  "asaas.settings.read": "View Asaas configuration",
+                  "asaas.settings.update": "Configure the Asaas API key"
+                }
+              }
+            },
+            "permissions": [
+              "asaas.balance.read",
+              "asaas.statement.read",
+              "asaas.pix.read",
+              "asaas.pix.create",
+              "asaas.settings.read",
+              "asaas.settings.update"
+            ],
+            "menu": [
+              {
+                "title": "Asaas",
+                "routeKey": "asaas.overview",
+                "path": "/app/p/asaas"
+              },
+              {
+                "title": "Statement",
+                "routeKey": "asaas.statement",
+                "path": "/app/p/asaas/statement"
+              },
+              {
+                "title": "Send Pix",
+                "routeKey": "asaas.pix",
+                "path": "/app/p/asaas/pix"
+              },
+              {
+                "title": "Settings",
+                "routeKey": "asaas.settings",
+                "path": "/app/p/asaas/settings"
+              }
+            ]
+          },
+          "artifact": {
+            "url": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/asaas-v1.0.0/asaas.plugin.zip",
+            "sha256": "bUIaMqZlB_y8QDDKVBKcA_-HTmzxAx6hUGui2rnvQn0",
+            "signature": "AO_WCaT-nWLiRaG8MzYRSpIBCoTjUWhEzscGC9-n4Jt8AaUqN1P2voBeiRtwT33p4fn0-fMG0Fo7KmYW3NZmDw",
+            "bytes": 381072
+          }
+        }
+      ]
+    },
     {
       "id": "crm",
       "name": "CRM",
@@ -669,6 +817,6 @@
   "signature": {
     "algorithm": "Ed25519",
     "keyId": "publisher-v1",
-    "value": "PqhntYdccCThQbEP8B6PF8vkOkpGDi6ik139M0K4TtNPDdxA21sdzqxK-JBW9V944AIw9eBVjnBGNFWf24tEBg"
+    "value": "AILO57-fH53eYPILLP3yw9OLjv1CahP2Z-3dRMqsBQ1dwfN0UBVP4eSgLL6_hK3rLoH-AKRofMPxHfHZGrx8Dw"
   }
 }
