@@ -124,6 +124,18 @@ importers:
         specifier: 7.0.2
         version: 7.0.2
 
+  asaas:
+    dependencies:
+      "@nexus/plugin-sdk":
+        specifier: workspace:*
+        version: link:../.marketplace/packages/plugin-sdk
+      hono:
+        specifier: 4.13.3
+        version: 4.13.3
+      zod:
+        specifier: 4.4.3
+        version: 4.4.3
+
   crm:
     dependencies:
       "@nexus/plugin-sdk":
