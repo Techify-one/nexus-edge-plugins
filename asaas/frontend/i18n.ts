@@ -54,6 +54,10 @@ export const asaasFrontendMessages = {
       "As transferências iniciadas por este plugin aparecerão aqui.",
     "asaas.pix.refreshStatus": "Atualizar status no Asaas",
     "asaas.pix.statusUpdated": "Status atualizado no Asaas.",
+    "asaas.pix.authorization": "Autorização automática",
+    "asaas.pix.authorization.NOT_REQUESTED": "Aguardando webhook",
+    "asaas.pix.authorization.APPROVED": "Aprovada",
+    "asaas.pix.authorization.REFUSED": "Recusada",
     "asaas.settings.title": "Configurar Asaas",
     "asaas.settings.description":
       "Gerencie a credencial usada pelo Worker privado do plugin.",
@@ -89,6 +93,40 @@ export const asaasFrontendMessages = {
       "Este plugin aceita somente chaves do ambiente de produção do Asaas.",
     "asaas.settings.securityRotate":
       "Revogue e gere uma nova chave no Asaas se ela for compartilhada fora de um gerenciador de segredos.",
+    "asaas.settings.webhookTitle": "Autorização automática de Pix",
+    "asaas.settings.webhookDescription":
+      "Configure o webhook de autorização de saques do Asaas para eliminar a confirmação manual por token.",
+    "asaas.settings.webhookUrl": "URL do webhook de autorização",
+    "asaas.settings.webhookToken": "Token de autenticação do webhook",
+    "asaas.settings.webhookTokenPlaceholder":
+      "Gere ou informe um token secreto",
+    "asaas.settings.generateToken": "Gerar token",
+    "asaas.settings.saveWebhookToken": "Salvar token",
+    "asaas.settings.replaceWebhookToken": "Substituir token",
+    "asaas.settings.webhookSaved": "Token do webhook protegido com sucesso.",
+    "asaas.settings.webhookDeleted": "Token do webhook apagado.",
+    "asaas.settings.webhookInvalid":
+      "O token do webhook deve ter entre 32 e 255 caracteres.",
+    "asaas.settings.webhookCopyBeforeSave":
+      "Copie este token antes de salvar. Depois ele não poderá ser exibido novamente.",
+    "asaas.settings.copyToken": "Copiar token",
+    "asaas.settings.copyUrl": "Copiar URL",
+    "asaas.settings.copied": "Copiado.",
+    "asaas.settings.webhookStepsTitle": "Ativação no Asaas",
+    "asaas.settings.webhookStepOne":
+      "Gere um token, copie-o e salve-o no plugin.",
+    "asaas.settings.webhookStepTwo":
+      "No Asaas, abra Menu do usuário > Integrações > Mecanismos de segurança e ative o webhook de autorização de saques.",
+    "asaas.settings.webhookStepThree":
+      "Informe a URL acima e o mesmo token no campo de autenticação do Asaas.",
+    "asaas.settings.webhookScopeWarning":
+      "Importante: ao ativar esse mecanismo, toda transferência criada via API será validada. O plugin aprova somente Pix que ele próprio registrou e cujos ID, valor e dados fornecidos pelo Asaas conferem; qualquer outra solicitação é recusada.",
+    "asaas.settings.webhookSavePassword":
+      "Confirme sua senha do Nexus para salvar o token do webhook Asaas:",
+    "asaas.settings.webhookDeletePassword":
+      "Confirme sua senha do Nexus para apagar o token do webhook Asaas:",
+    "asaas.settings.webhookDeleteConfirm":
+      "Apagar o token do webhook? O Asaas deixará de conseguir autorizar transferências automaticamente até a reconfiguração.",
     "errors.ASAAS_API_KEY_NOT_CONFIGURED":
       "Configure a chave de API do Asaas antes de continuar.",
     "errors.ASAAS_API_KEY_INVALID":
@@ -164,6 +202,10 @@ export const asaasFrontendMessages = {
       "Transfers started by this plugin appear here.",
     "asaas.pix.refreshStatus": "Refresh status from Asaas",
     "asaas.pix.statusUpdated": "Status updated from Asaas.",
+    "asaas.pix.authorization": "Automatic authorization",
+    "asaas.pix.authorization.NOT_REQUESTED": "Awaiting webhook",
+    "asaas.pix.authorization.APPROVED": "Approved",
+    "asaas.pix.authorization.REFUSED": "Refused",
     "asaas.settings.title": "Configure Asaas",
     "asaas.settings.description":
       "Manage the credential used by the private plugin Worker.",
@@ -199,6 +241,40 @@ export const asaasFrontendMessages = {
       "This plugin accepts production Asaas API keys only.",
     "asaas.settings.securityRotate":
       "Revoke and issue a new Asaas key if it is shared outside a secret manager.",
+    "asaas.settings.webhookTitle": "Automatic Pix authorization",
+    "asaas.settings.webhookDescription":
+      "Configure the Asaas withdrawal authorization webhook to eliminate manual token confirmation.",
+    "asaas.settings.webhookUrl": "Authorization webhook URL",
+    "asaas.settings.webhookToken": "Webhook authentication token",
+    "asaas.settings.webhookTokenPlaceholder":
+      "Generate or enter a secret token",
+    "asaas.settings.generateToken": "Generate token",
+    "asaas.settings.saveWebhookToken": "Save token",
+    "asaas.settings.replaceWebhookToken": "Replace token",
+    "asaas.settings.webhookSaved": "Webhook token stored securely.",
+    "asaas.settings.webhookDeleted": "Webhook token deleted.",
+    "asaas.settings.webhookInvalid":
+      "The webhook token must be between 32 and 255 characters.",
+    "asaas.settings.webhookCopyBeforeSave":
+      "Copy this token before saving. It cannot be displayed again afterwards.",
+    "asaas.settings.copyToken": "Copy token",
+    "asaas.settings.copyUrl": "Copy URL",
+    "asaas.settings.copied": "Copied.",
+    "asaas.settings.webhookStepsTitle": "Enable it in Asaas",
+    "asaas.settings.webhookStepOne":
+      "Generate a token, copy it, and save it in the plugin.",
+    "asaas.settings.webhookStepTwo":
+      "In Asaas, open User menu > Integrations > Security mechanisms and enable the withdrawal authorization webhook.",
+    "asaas.settings.webhookStepThree":
+      "Enter the URL above and the same token in the Asaas authentication field.",
+    "asaas.settings.webhookScopeWarning":
+      "Important: once enabled, every transfer created through the API is validated. The plugin approves only Pix transfers it registered and whose ID, value, and details supplied by Asaas match; every other request is refused.",
+    "asaas.settings.webhookSavePassword":
+      "Confirm your Nexus password to save the Asaas webhook token:",
+    "asaas.settings.webhookDeletePassword":
+      "Confirm your Nexus password to delete the Asaas webhook token:",
+    "asaas.settings.webhookDeleteConfirm":
+      "Delete the webhook token? Asaas will be unable to authorize transfers automatically until it is configured again.",
     "errors.ASAAS_API_KEY_NOT_CONFIGURED": "Configure the Asaas API key first.",
     "errors.ASAAS_API_KEY_INVALID": "The Asaas API key is invalid or revoked.",
     "errors.ASAAS_API_KEY_FORMAT_INVALID":

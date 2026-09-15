@@ -3,6 +3,7 @@ import { createDatabase } from "@nexus/plugin-sdk/backend";
 import type {
   PluginContext,
   PluginInstallerContext,
+  PluginPublicContext,
 } from "@nexus/plugin-sdk/backend";
 import { z } from "zod";
 import type { AsaasEnv } from "./env.js";
@@ -21,6 +22,12 @@ import {
   validateProductionApiKey,
 } from "./asaas-client.js";
 import { PixTransferRepository, type PixTransferRecord } from "./repository.js";
+import {
+  decideWithdrawalAuthorization,
+  parseWithdrawalPayload,
+  pixKeyHash,
+  secureTokenMatches,
+} from "./withdrawal-authorization.js";
 
 const app = new Hono<AsaasEnv>();
 const IDEMPOTENCY_KEY = /^[A-Za-z0-9_.:-]{16,120}$/u;
@@ -84,14 +91,17 @@ const parseInteger = (
 };
 
 app.get("/health", (c) =>
-  c.json({ ok: true, plugin: "asaas", version: "1.0.0" }),
+  c.json({ ok: true, plugin: "asaas", version: "1.1.0" }),
 );
 
 app.use("/*", async (c, next) => {
   if (c.req.path === "/health") return next();
-  const encoded = c.req.header("X-Plugin-Context");
-  const installerEncoded = c.req.header("X-Plugin-Installer-Context");
-  if (Boolean(encoded) === Boolean(installerEncoded))
+  const encoded = {
+    user: c.req.header("X-Plugin-Context"),
+    public: c.req.header("X-Plugin-Public-Context"),
+    installer: c.req.header("X-Plugin-Installer-Context"),
+  };
+  if (Object.values(encoded).filter(Boolean).length !== 1)
     return c.json(
       {
         error: {
@@ -102,12 +112,12 @@ app.use("/*", async (c, next) => {
       401,
     );
   try {
-    const value = encoded ?? installerEncoded!;
+    const value = encoded.user ?? encoded.public ?? encoded.installer!;
     const normalized = value.replaceAll("-", "+").replaceAll("_", "/");
     const context = JSON.parse(
       atob(normalized.padEnd(Math.ceil(normalized.length / 4) * 4, "=")),
-    ) as PluginContext | PluginInstallerContext;
-    if (encoded) {
+    ) as PluginContext | PluginPublicContext | PluginInstallerContext;
+    if (encoded.user) {
       if (
         !("userId" in context) ||
         !context.userId ||
@@ -116,6 +126,14 @@ app.use("/*", async (c, next) => {
       )
         throw new Error("invalid context");
       c.set("pluginContext", context);
+    } else if (encoded.public) {
+      if (
+        !("pluginId" in context) ||
+        context.pluginId !== "asaas" ||
+        !context.requestId
+      )
+        throw new Error("invalid public context");
+      c.set("publicContext", context);
     } else {
       if (
         !("operationId" in context) ||
@@ -164,6 +182,7 @@ app.post("/__installer/smoke", async (c) => {
     requestHash: await sha256(key),
     pixKeyType: "EVP",
     pixKeyMasked: "installer-smoke",
+    pixKeyHash: await pixKeyHash("EVP", "00000000-0000-4000-8000-000000000000"),
     valueCents: 1,
     description: "Installer smoke",
     userId: installer.operationId,
@@ -274,6 +293,7 @@ export const asaasRoutes = new Hono<AsaasEnv>()
       requestHash,
       pixKeyType: input.pixAddressKeyType,
       pixKeyMasked: maskPixKey(input.pixAddressKeyType, pixAddressKey),
+      pixKeyHash: await pixKeyHash(input.pixAddressKeyType, pixAddressKey),
       valueCents,
       description: input.description,
       userId: context.userId,
@@ -356,6 +376,74 @@ export const asaasRoutes = new Hono<AsaasEnv>()
     }
     return c.json({ transfer: submitted, replayed: false }, 201);
   });
+
+app.post("/public/withdrawal-authorization", async (c) => {
+  const context = c.get("publicContext");
+  if (!context)
+    return c.json(
+      { status: "REFUSED", refuseReason: "Contexto público inválido" },
+      403,
+    );
+  const configuredToken = c.env.ASAAS_WEBHOOK_TOKEN ?? "";
+  const suppliedToken = c.req.header("asaas-access-token") ?? "";
+  if (
+    configuredToken.length < 32 ||
+    configuredToken.length > 255 ||
+    suppliedToken.length < 32 ||
+    suppliedToken.length > 255 ||
+    !(await secureTokenMatches(suppliedToken, configuredToken))
+  )
+    return c.json(
+      { status: "REFUSED", refuseReason: "Token do webhook inválido" },
+      401,
+    );
+  const contentLength = Number(c.req.header("Content-Length") ?? "0");
+  const payload =
+    Number.isFinite(contentLength) && contentLength <= 65_536
+      ? parseWithdrawalPayload(await c.req.text())
+      : null;
+  if (!payload)
+    return c.json({
+      status: "REFUSED",
+      refuseReason: "Solicitação de autorização inválida",
+    });
+  const record = payload.transfer?.id
+    ? await repository(c).getByAsaasTransferId(payload.transfer.id)
+    : null;
+  const decision = await decideWithdrawalAuthorization(payload, record);
+  if (!record)
+    return c.json({
+      status: "REFUSED",
+      refuseReason: decision.refuseReason,
+    });
+  const saved = await repository(c).decideAuthorization(
+    record.id,
+    decision.status,
+    decision.reason,
+    context.requestId,
+  );
+  const approved =
+    decision.status === "APPROVED" && saved.authorizationStatus === "APPROVED";
+  try {
+    await repository(c).audit(
+      approved
+        ? "asaas.withdrawal_authorization.approved"
+        : "asaas.withdrawal_authorization.refused",
+      saved,
+      context.requestId,
+      record.createdByUserId,
+    );
+  } catch {
+    // The durable authorization decision has already been persisted. A
+    // secondary audit failure must not make Asaas retry a valid decision.
+  }
+  return approved
+    ? c.json({ status: "APPROVED" as const })
+    : c.json({
+        status: "REFUSED" as const,
+        refuseReason: decision.refuseReason,
+      });
+});
 
 app.route("/", asaasRoutes);
 app.onError((error, c) => {

@@ -34,6 +34,9 @@ export type PixTransfer = {
   description: string | null;
   status: string;
   errorCode: string | null;
+  authorizationStatus: "NOT_REQUESTED" | "APPROVED" | "REFUSED";
+  authorizationReason: string | null;
+  authorizationDecidedAt: string | number | null;
   createdAt: string | number;
   updatedAt: string | number;
 };

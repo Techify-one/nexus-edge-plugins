@@ -10,10 +10,15 @@ export type PixTransferRecord = {
   asaasTransferId: string | null;
   pixKeyType: PixKeyType;
   pixKeyMasked: string;
+  pixKeyHash: string | null;
   valueCents: number;
   description: string | null;
   status: string;
   errorCode: string | null;
+  authorizationStatus: string;
+  authorizationReason: string | null;
+  authorizationRequestId: string | null;
+  authorizationDecidedAt: unknown | null;
   createdByUserId: string;
   createdAt: unknown;
   updatedAt: unknown;
@@ -24,6 +29,7 @@ type BeginTransferInput = {
   requestHash: string;
   pixKeyType: PixKeyType;
   pixKeyMasked: string;
+  pixKeyHash: string;
   valueCents: number;
   description?: string | undefined;
   userId: string;
@@ -32,8 +38,13 @@ type BeginTransferInput = {
 const select = `SELECT id, idempotency_key AS "idempotencyKey",
   request_hash AS "requestHash", external_reference AS "externalReference",
   asaas_transfer_id AS "asaasTransferId", pix_key_type AS "pixKeyType",
-  pix_key_masked AS "pixKeyMasked", value_cents AS "valueCents", description,
-  status, error_code AS "errorCode", created_by_user_id AS "createdByUserId",
+  pix_key_masked AS "pixKeyMasked", pix_key_hash AS "pixKeyHash",
+  value_cents AS "valueCents", description, status, error_code AS "errorCode",
+  authorization_status AS "authorizationStatus",
+  authorization_reason AS "authorizationReason",
+  authorization_request_id AS "authorizationRequestId",
+  authorization_decided_at AS "authorizationDecidedAt",
+  created_by_user_id AS "createdByUserId",
   created_at AS "createdAt", updated_at AS "updatedAt"
   FROM asaas_pix_transfers`;
 
@@ -64,6 +75,14 @@ export class PixTransferRepository {
     return row ? normalize(row) : null;
   }
 
+  async getByAsaasTransferId(id: string): Promise<PixTransferRecord | null> {
+    const row = await this.db.first<PixTransferRecord>(
+      `${select} WHERE asaas_transfer_id = ?`,
+      [id],
+    );
+    return row ? normalize(row) : null;
+  }
+
   async list(limit: number): Promise<PixTransferRecord[]> {
     const rows = await this.db.query<PixTransferRecord>(
       `${select} ORDER BY created_at DESC, id DESC LIMIT ?`,
@@ -84,9 +103,9 @@ export class PixTransferRepository {
       await this.db.execute(
         `INSERT INTO asaas_pix_transfers(
           id,idempotency_key,request_hash,external_reference,pix_key_type,
-          pix_key_masked,value_cents,description,status,created_by_user_id,
-          created_at,updated_at
-        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
+          pix_key_masked,pix_key_hash,value_cents,description,status,
+          created_by_user_id,created_at,updated_at
+        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
         [
           id,
           input.idempotencyKey,
@@ -94,6 +113,7 @@ export class PixTransferRepository {
           externalReference,
           input.pixKeyType,
           input.pixKeyMasked,
+          input.pixKeyHash,
           input.valueCents,
           input.description ?? null,
           "SUBMITTING",
@@ -153,6 +173,23 @@ export class PixTransferRepository {
     return (await this.get(id))!;
   }
 
+  async decideAuthorization(
+    id: string,
+    status: "APPROVED" | "REFUSED",
+    reason: string,
+    requestId: string,
+  ): Promise<PixTransferRecord> {
+    const now = dbTime(this.db);
+    await this.db.execute(
+      `UPDATE asaas_pix_transfers
+       SET authorization_status=?, authorization_reason=?,
+           authorization_request_id=?, authorization_decided_at=?, updated_at=?
+       WHERE id=? AND authorization_status='NOT_REQUESTED'`,
+      [status, reason, requestId, now, now, id],
+    );
+    return (await this.get(id))!;
+  }
+
   async audit(
     action: string,
     record: PixTransferRecord,
@@ -176,6 +213,7 @@ export class PixTransferRepository {
           pixKeyMasked: record.pixKeyMasked,
           valueCents: record.valueCents,
           status: record.status,
+          authorizationStatus: record.authorizationStatus,
         }),
         dbTime(this.db),
       ],

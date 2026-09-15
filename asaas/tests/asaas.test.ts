@@ -11,6 +11,13 @@ import {
   parseValueCents,
   validateStatementRange,
 } from "../src/asaas-client.js";
+import {
+  decideWithdrawalAuthorization,
+  parseWithdrawalPayload,
+  pixKeyHash,
+  secureTokenMatches,
+  type AuthorizableTransfer,
+} from "../src/withdrawal-authorization.js";
 
 const apiKey = `$aact_prod_${"a".repeat(60)}`;
 const env = {
@@ -28,6 +35,7 @@ describe("Asaas plugin", () => {
       tablePrefix: string;
       secrets: Array<Record<string, unknown>>;
       permissions: string[];
+      publicRoutes: string[];
     };
     expect(manifest.id).toBe("asaas");
     expect(manifest.tablePrefix).toBe("asaas_");
@@ -37,6 +45,13 @@ describe("Asaas plugin", () => {
       required: false,
       permission: "asaas.settings.update",
     });
+    expect(manifest.secrets).toContainEqual({
+      name: "ASAAS_WEBHOOK_TOKEN",
+      label: "Asaas withdrawal authorization webhook token",
+      required: false,
+      permission: "asaas.settings.update",
+    });
+    expect(manifest.publicRoutes).toEqual(["/withdrawal-authorization"]);
     expect(manifest.permissions).toContain("asaas.pix.create");
     expect(source).not.toContain("$aact_prod_000");
   });
@@ -193,6 +208,141 @@ describe("Asaas plugin", () => {
     );
   });
 
+  it("compares webhook tokens without accepting partial or different values", async () => {
+    const token = "a".repeat(43);
+    await expect(secureTokenMatches(token, token)).resolves.toBe(true);
+    await expect(secureTokenMatches(`${token}x`, token)).resolves.toBe(false);
+    await expect(secureTokenMatches(`${"a".repeat(42)}b`, token)).resolves.toBe(
+      false,
+    );
+  });
+
+  it("approves only a registered Pix authorization whose values match", async () => {
+    const record: AuthorizableTransfer = {
+      asaasTransferId: "transfer_12345678",
+      externalReference: "nexus-apx-registered",
+      pixKeyType: "EMAIL",
+      pixKeyHash: await pixKeyHash("EMAIL", "pessoa@example.com"),
+      valueCents: 2550,
+      description: "Teste",
+      authorizationStatus: "NOT_REQUESTED",
+      authorizationReason: null,
+    };
+    const payload = parseWithdrawalPayload(
+      JSON.stringify({
+        type: "TRANSFER",
+        transfer: {
+          id: "transfer_12345678",
+          value: 25.5,
+          operationType: "PIX",
+          externalReference: "nexus-apx-registered",
+          description: "Teste",
+          bankAccount: { pixAddressKey: "Pessoa@Example.com" },
+        },
+      }),
+    );
+    expect(payload).not.toBeNull();
+    await expect(
+      decideWithdrawalAuthorization(payload!, record),
+    ).resolves.toEqual({
+      status: "APPROVED",
+      reason: "REGISTERED_TRANSFER_MATCHED",
+    });
+  });
+
+  it("accepts a matching callback when Asaas omits its nullable Pix key", async () => {
+    const record: AuthorizableTransfer = {
+      asaasTransferId: "transfer_12345678",
+      externalReference: "nexus-apx-registered",
+      pixKeyType: "EMAIL",
+      pixKeyHash: await pixKeyHash("EMAIL", "pessoa@example.com"),
+      valueCents: 2550,
+      description: null,
+      authorizationStatus: "NOT_REQUESTED",
+      authorizationReason: null,
+    };
+    await expect(
+      decideWithdrawalAuthorization(
+        {
+          type: "TRANSFER",
+          transfer: {
+            id: "transfer_12345678",
+            value: 25.5,
+            operationType: "PIX",
+            externalReference: "nexus-apx-registered",
+            description: null,
+            bankAccount: { pixAddressKey: null },
+          },
+        },
+        record,
+      ),
+    ).resolves.toMatchObject({ status: "APPROVED" });
+  });
+
+  it("refuses unknown, altered and legacy transfer authorizations", async () => {
+    const record: AuthorizableTransfer = {
+      asaasTransferId: "transfer_12345678",
+      externalReference: "nexus-apx-registered",
+      pixKeyType: "EMAIL",
+      pixKeyHash: await pixKeyHash("EMAIL", "pessoa@example.com"),
+      valueCents: 2550,
+      description: "Teste",
+      authorizationStatus: "NOT_REQUESTED",
+      authorizationReason: null,
+    };
+    const matching = {
+      type: "TRANSFER",
+      transfer: {
+        id: "transfer_12345678",
+        value: 25.5,
+        operationType: "PIX",
+        externalReference: "nexus-apx-registered",
+        description: "Teste",
+        bankAccount: { pixAddressKey: "pessoa@example.com" },
+      },
+    };
+    await expect(
+      decideWithdrawalAuthorization(matching, null),
+    ).resolves.toMatchObject({
+      status: "REFUSED",
+      reason: "TRANSFER_NOT_FOUND",
+    });
+    await expect(
+      decideWithdrawalAuthorization(
+        { ...matching, transfer: { ...matching.transfer, value: 99 } },
+        record,
+      ),
+    ).resolves.toMatchObject({ status: "REFUSED", reason: "VALUE_MISMATCH" });
+    await expect(
+      decideWithdrawalAuthorization(
+        {
+          ...matching,
+          transfer: {
+            ...matching.transfer,
+            bankAccount: { pixAddressKey: "outra@example.com" },
+          },
+        },
+        record,
+      ),
+    ).resolves.toMatchObject({
+      status: "REFUSED",
+      reason: "DESTINATION_MISMATCH",
+    });
+    await expect(
+      decideWithdrawalAuthorization(matching, { ...record, pixKeyHash: null }),
+    ).resolves.toMatchObject({
+      status: "REFUSED",
+      reason: "DESTINATION_NOT_VERIFIABLE",
+    });
+  });
+
+  it("rejects malformed or oversized webhook payloads", () => {
+    expect(parseWithdrawalPayload("not json")).toBeNull();
+    expect(
+      parseWithdrawalPayload(`{"type":"${"x".repeat(70_000)}"}`),
+    ).toBeNull();
+  });
+
   it("uses the canonical configurable tables and the protected Core secret flow", () => {
     const statement = readFileSync(
       "asaas/frontend/AsaasStatementPage.tsx",
@@ -207,6 +357,10 @@ describe("Asaas plugin", () => {
     expect(pix).toContain('tableId="plugin.asaas.pix_transfers"');
     expect(pix).toContain("window.confirm");
     expect(settings).toContain("runtime-secrets/ASAAS_API_KEY");
+    expect(settings).toContain("runtime-secrets/ASAAS_WEBHOOK_TOKEN");
+    expect(settings).toContain(
+      "/api/v1/public/p/asaas/withdrawal-authorization",
+    );
     expect(settings).toContain("recentReauthHeaders");
     expect(settings).toContain('method: "PUT"');
     expect(settings).toContain('method: "DELETE"');

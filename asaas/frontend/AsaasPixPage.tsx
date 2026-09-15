@@ -30,6 +30,14 @@ const transferTone = (
   return "neutral";
 };
 
+const authorizationTone = (
+  status: PixTransfer["authorizationStatus"],
+): "neutral" | "success" | "danger" => {
+  if (status === "APPROVED") return "success";
+  if (status === "REFUSED") return "danger";
+  return "neutral";
+};
+
 const localizedAmount = (value: string): number => {
   const compact = value.trim().replace(/\s/gu, "");
   const comma = compact.lastIndexOf(",");
@@ -239,6 +247,16 @@ export default function AsaasPixPage() {
               <p className="mt-1 text-xl font-bold">
                 {formatCurrency(locale, lastTransfer.valueCents / 100)}
               </p>
+              <div className="mt-3 flex items-center gap-2 text-sm text-slate-500">
+                <span>{t("asaas.pix.authorization")}</span>
+                <Badge
+                  tone={authorizationTone(lastTransfer.authorizationStatus)}
+                >
+                  {t(
+                    `asaas.pix.authorization.${lastTransfer.authorizationStatus}`,
+                  )}
+                </Badge>
+              </div>
             </Card>
           )}
         </div>
@@ -297,6 +315,19 @@ export default function AsaasPixPage() {
                   size: 280,
                   minSize: 160,
                   maxSize: 620,
+                },
+                {
+                  key: "authorization_status",
+                  label: t("asaas.pix.authorization"),
+                  render: (row) => (
+                    <Badge tone={authorizationTone(row.authorizationStatus)}>
+                      {t(`asaas.pix.authorization.${row.authorizationStatus}`)}
+                    </Badge>
+                  ),
+                  sortValue: (row) => row.authorizationStatus,
+                  size: 170,
+                  minSize: 130,
+                  maxSize: 260,
                 },
                 {
                   key: "status",

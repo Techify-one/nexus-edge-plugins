@@ -5,13 +5,14 @@
   "name": "Asaas",
   "description": "Personal Asaas account balance, statement and secure Pix transfers.",
   "publisher": { "id": "techify", "name": "Techify" },
-  "version": "1.0.0",
+  "version": "1.1.0",
   "apiVersion": 1,
   "coreMinVersion": "1.1.0-beta.8",
   "compatibilityDate": "2026-09-15",
   "compatibilityFlags": ["nodejs_compat"],
   "databaseDialects": ["d1", "postgres"],
   "tablePrefix": "asaas_",
+  "publicRoutes": ["/withdrawal-authorization"],
   "engines": { "hostApi": 1, "coreApi": 1 },
   "frontend": {
     "entry": "frontend/entry.js",
@@ -28,6 +29,12 @@
     {
       "name": "ASAAS_API_KEY",
       "label": "Asaas production API key",
+      "required": false,
+      "permission": "asaas.settings.update"
+    },
+    {
+      "name": "ASAAS_WEBHOOK_TOKEN",
+      "label": "Asaas withdrawal authorization webhook token",
       "required": false,
       "permission": "asaas.settings.update"
     }
@@ -48,7 +55,7 @@
         "asaas.pix.read": "Ver Pix enviados pelo Nexus",
         "asaas.pix.create": "Enviar Pix pela conta Asaas",
         "asaas.settings.read": "Ver configuração do Asaas",
-        "asaas.settings.update": "Configurar a chave de API do Asaas"
+        "asaas.settings.update": "Configurar as credenciais do Asaas"
       }
     },
     "en": {
@@ -66,7 +73,7 @@
         "asaas.pix.read": "View Pix sent through Nexus",
         "asaas.pix.create": "Send Pix from the Asaas account",
         "asaas.settings.read": "View Asaas configuration",
-        "asaas.settings.update": "Configure the Asaas API key"
+        "asaas.settings.update": "Configure Asaas credentials"
       }
     }
   },

@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Nexus Asaas API",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "Private Nexus gateway for a personal Asaas account."
   },
   "paths": {
@@ -166,6 +166,38 @@
           }
         ],
         "responses": { "200": { "description": "Current transfer status" } }
+      }
+    },
+    "/api/v1/public/p/asaas/withdrawal-authorization": {
+      "post": {
+        "summary": "Authorize an Asaas withdrawal previously registered by Nexus",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "asaas-access-token",
+            "required": true,
+            "schema": { "type": "string", "minLength": 32, "maxLength": 255 }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["type", "transfer"],
+                "properties": {
+                  "type": { "type": "string", "const": "TRANSFER" },
+                  "transfer": { "type": "object" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "APPROVED or REFUSED decision" },
+          "401": { "description": "Webhook token rejected" }
+        }
       }
     }
   }
