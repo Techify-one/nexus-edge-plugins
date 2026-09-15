@@ -43,7 +43,19 @@ jobs:
       - name: Build and verify signed artifacts
         run: |
           test -n "$PLUGIN_SIGNING_PRIVATE_KEY"
-          pnpm package
+          for manifest in */manifest.json; do
+            plugin_dir="${manifest%/manifest.json}"
+            plugin_id="$(node -e 'const fs = require("node:fs"); const value = JSON.parse(fs.readFileSync(process.argv[1], "utf8")); process.stdout.write(value.id);' "$manifest")"
+            plugin_version="$(node -e 'const fs = require("node:fs"); const value = JSON.parse(fs.readFileSync(process.argv[1], "utf8")); process.stdout.write(value.version);' "$manifest")"
+            tag="${plugin_id}-v${plugin_version}"
+            archive="${plugin_id}.plugin.zip"
+            mkdir -p "${plugin_dir}/release"
+            if gh release view "$tag" >/dev/null 2>&1; then
+              gh release download "$tag" --pattern "$archive" --dir "${plugin_dir}/release" --clobber
+            else
+              pnpm --dir "$plugin_dir" package
+            fi
+          done
           pnpm marketplace
           pnpm verify:packages
           mkdir -p sdk-release
