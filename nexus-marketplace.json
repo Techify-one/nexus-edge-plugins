@@ -1,7 +1,7 @@
 {
   "catalogVersion": 1,
   "name": "Techify",
-  "revision": "YuETx92Q-W3diRaF4xV9VbfVOfja9e6P",
+  "revision": "NiPbxFqiHscafTeNhRLCEFzShQZ1CmK1",
   "publisher": {
     "id": "techify",
     "name": "Techify",
@@ -12,13 +12,13 @@
     {
       "id": "asaas",
       "name": "Asaas",
-      "description": "Consulte saldo e extrato da sua conta Asaas pessoa física e envie Pix com confirmação e proteção contra duplicidade.",
+      "description": "Consulte saldo e extrato da sua conta Asaas pessoa física e envie Pix com confirmação, proteção contra duplicidade e autorização segura por webhook.",
       "categories": [
         "Finanças"
       ],
       "releases": [
         {
-          "version": "1.0.0",
+          "version": "1.1.0",
           "channel": "stable",
           "manifest": {
             "manifestVersion": 2,
@@ -30,7 +30,7 @@
               "id": "techify",
               "name": "Techify"
             },
-            "version": "1.0.0",
+            "version": "1.1.0",
             "apiVersion": 1,
             "coreMinVersion": "1.1.0-beta.8",
             "compatibilityDate": "2026-09-15",
@@ -42,6 +42,9 @@
               "postgres"
             ],
             "tablePrefix": "asaas_",
+            "publicRoutes": [
+              "/withdrawal-authorization"
+            ],
             "engines": {
               "hostApi": 1,
               "coreApi": 1
@@ -77,6 +80,12 @@
                 "label": "Asaas production API key",
                 "required": false,
                 "permission": "asaas.settings.update"
+              },
+              {
+                "name": "ASAAS_WEBHOOK_TOKEN",
+                "label": "Asaas withdrawal authorization webhook token",
+                "required": false,
+                "permission": "asaas.settings.update"
               }
             ],
             "localizedMetadata": {
@@ -95,7 +104,7 @@
                   "asaas.pix.read": "Ver Pix enviados pelo Nexus",
                   "asaas.pix.create": "Enviar Pix pela conta Asaas",
                   "asaas.settings.read": "Ver configuração do Asaas",
-                  "asaas.settings.update": "Configurar a chave de API do Asaas"
+                  "asaas.settings.update": "Configurar as credenciais do Asaas"
                 }
               },
               "en": {
@@ -113,7 +122,7 @@
                   "asaas.pix.read": "View Pix sent through Nexus",
                   "asaas.pix.create": "Send Pix from the Asaas account",
                   "asaas.settings.read": "View Asaas configuration",
-                  "asaas.settings.update": "Configure the Asaas API key"
+                  "asaas.settings.update": "Configure Asaas credentials"
                 }
               }
             },
@@ -149,10 +158,10 @@
             ]
           },
           "artifact": {
-            "url": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/asaas-v1.0.0/asaas.plugin.zip",
-            "sha256": "bUIaMqZlB_y8QDDKVBKcA_-HTmzxAx6hUGui2rnvQn0",
-            "signature": "AO_WCaT-nWLiRaG8MzYRSpIBCoTjUWhEzscGC9-n4Jt8AaUqN1P2voBeiRtwT33p4fn0-fMG0Fo7KmYW3NZmDw",
-            "bytes": 381072
+            "url": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/asaas-v1.1.0/asaas.plugin.zip",
+            "sha256": "Yuttnh3J5iNeju-aPF6TmEggVX-fb3AoMOj6Yby8TlQ",
+            "signature": "aJt1lF2YSfuYD4AhQ04cpH8lnHhU19QPVr26sORYlCSyAtRhqmW2EZKlPQM4uHc4misgndd1RJv9jg5Ru7ENCw",
+            "bytes": 386530
           }
         }
       ]
@@ -817,6 +826,6 @@
   "signature": {
     "algorithm": "Ed25519",
     "keyId": "publisher-v1",
-    "value": "AILO57-fH53eYPILLP3yw9OLjv1CahP2Z-3dRMqsBQ1dwfN0UBVP4eSgLL6_hK3rLoH-AKRofMPxHfHZGrx8Dw"
+    "value": "3hxjxNSRfc8KBpxqH2RUXgYF6qcbdz2QtQ6Qs85JDZZwLh7LP7wNIepa_c7c3S8GBIU5SuzAyKgNRC0E19bIDA"
   }
 }
