@@ -59,7 +59,14 @@ jobs:
           pnpm marketplace
           pnpm verify:packages
           mkdir -p sdk-release
-          pnpm --filter @nexus/plugin-sdk pack --pack-destination "$GITHUB_WORKSPACE/sdk-release"
+          sdk_version="$(node -e 'const value = require("./.marketplace/packages/plugin-sdk/package.json"); process.stdout.write(value.version);')"
+          sdk_tag="plugin-sdk-v${sdk_version}"
+          sdk_archive="nexus-plugin-sdk-${sdk_version}.tgz"
+          if gh release view "$sdk_tag" >/dev/null 2>&1; then
+            gh release download "$sdk_tag" --pattern "$sdk_archive" --dir sdk-release --clobber
+          else
+            pnpm --filter @nexus/plugin-sdk pack --pack-destination "$GITHUB_WORKSPACE/sdk-release"
+          fi
       - name: Publish immutable releases
         run: node .marketplace/scripts/publish-releases.mjs
       - name: Publish signed catalog
