@@ -1,7 +1,7 @@
 {
   "catalogVersion": 1,
   "name": "Techify",
-  "revision": "0ylfZ4Bq8JxjqA53Fq9yRwPDjQa8a8G5",
+  "revision": "M-OnmsQGa8_AHUEjLFo8N0fpBU-ZZHu3",
   "publisher": {
     "id": "techify",
     "name": "Techify",
@@ -287,7 +287,7 @@
       ],
       "releases": [
         {
-          "version": "2.0.3",
+          "version": "2.0.4",
           "channel": "stable",
           "manifest": {
             "manifestVersion": 2,
@@ -299,7 +299,7 @@
               "id": "techify",
               "name": "Techify"
             },
-            "version": "2.0.3",
+            "version": "2.0.4",
             "apiVersion": 1,
             "coreMinVersion": "1.1.0-beta.8",
             "compatibilityDate": "2026-09-09",
@@ -420,10 +420,10 @@
             ]
           },
           "artifact": {
-            "url": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/meeting_recorder-v2.0.3/meeting_recorder.plugin.zip",
-            "sha256": "BIB48Wjw6rOtnaBfw9cQ9ebxVGPjS15p7Ku0E0h3oQs",
-            "signature": "e80xcesAie2vGK4mJgAgocs54yH-hVUo5BgzV2DEhTGssU02NgHT2tA-QAqUe61G8XYX7oVmKYK_w4T5-Q2pBA",
-            "bytes": 426778
+            "url": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/meeting_recorder-v2.0.4/meeting_recorder.plugin.zip",
+            "sha256": "2AmKswBVgdnrbBb4w9qQltVNXlgQtKinPOTMDJurY2o",
+            "signature": "c5OvMgxZml3d5a_rUcZ3s-6P_Ir1NwOD1eP0XSz4RJE3TvljZjiKW0ezYi5fQy0aVx35RyBAuRrSx37PGJWvDg",
+            "bytes": 421703
           }
         }
       ]
@@ -826,6 +826,6 @@
   "signature": {
     "algorithm": "Ed25519",
     "keyId": "publisher-v1",
-    "value": "KdW-GmuIA9-ApbFK_6MlEhm7TeydjYoMEEoGN3HHTQMePQ9e8aNpVG7r-eYZaBzOAQF29G3xDVUKGB_e7gsECw"
+    "value": "t3kBV9ck6Es191sYFVgZrc4unmPwU8RRV3uQLugNau3MEvgS-nJpuKDGFqKQGT5iFCIpl4W-lg9fY7PlA25MAw"
   }
 }
