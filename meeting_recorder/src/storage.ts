@@ -6,6 +6,7 @@ export const IMPORT_MAX_BYTES = 20 * 1024 * 1024;
 const mimeExtensions = new Map<string, string>([
   ["audio/webm", "webm"],
   ["audio/ogg", "ogg"],
+  ["audio/opus", "ogg"],
   ["audio/mpeg", "mp3"],
   ["audio/mp3", "mp3"],
   ["audio/mp4", "m4a"],
@@ -14,8 +15,32 @@ const mimeExtensions = new Map<string, string>([
   ["audio/x-wav", "wav"],
 ]);
 
+const extensionMimes = new Map<string, string>([
+  ["webm", "audio/webm"],
+  ["ogg", "audio/ogg"],
+  ["opus", "audio/ogg"],
+  ["mp3", "audio/mpeg"],
+  ["m4a", "audio/mp4"],
+  ["mp4", "audio/mp4"],
+  ["wav", "audio/wav"],
+]);
+
 export const normalizedMime = (value: string): string =>
   value.trim().toLowerCase().split(";")[0] ?? "";
+
+export const supportedAudioMime = (
+  value: string | null | undefined,
+): string | undefined => {
+  const mimeType = normalizedMime(value ?? "");
+  return mimeExtensions.has(mimeType) ? mimeType : undefined;
+};
+
+export const mimeForAudioFileName = (
+  fileName: string | undefined,
+): string | undefined => {
+  const extension = fileName?.split(".").at(-1)?.toLowerCase();
+  return extension ? extensionMimes.get(extension) : undefined;
+};
 
 export const extensionForMime = (mimeType: string): string => {
   const extension = mimeExtensions.get(normalizedMime(mimeType));

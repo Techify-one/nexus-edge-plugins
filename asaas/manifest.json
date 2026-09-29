@@ -1,0 +1,99 @@
+{
+  "manifestVersion": 2,
+  "packageFormat": 2,
+  "id": "asaas",
+  "name": "Asaas",
+  "description": "Personal Asaas account balance, statement and secure Pix transfers.",
+  "publisher": { "id": "techify", "name": "Techify" },
+  "version": "1.0.0",
+  "apiVersion": 1,
+  "coreMinVersion": "1.1.0-beta.8",
+  "compatibilityDate": "2026-09-15",
+  "compatibilityFlags": ["nodejs_compat"],
+  "databaseDialects": ["d1", "postgres"],
+  "tablePrefix": "asaas_",
+  "engines": { "hostApi": 1, "coreApi": 1 },
+  "frontend": {
+    "entry": "frontend/entry.js",
+    "styles": ["frontend/styles.css"],
+    "isolation": "light",
+    "routes": [
+      { "routeKey": "asaas.overview", "path": "/app/p/asaas" },
+      { "routeKey": "asaas.statement", "path": "/app/p/asaas/statement" },
+      { "routeKey": "asaas.pix", "path": "/app/p/asaas/pix" },
+      { "routeKey": "asaas.settings", "path": "/app/p/asaas/settings" }
+    ]
+  },
+  "secrets": [
+    {
+      "name": "ASAAS_API_KEY",
+      "label": "Asaas production API key",
+      "required": false,
+      "permission": "asaas.settings.update"
+    }
+  ],
+  "localizedMetadata": {
+    "pt-BR": {
+      "name": "Asaas",
+      "description": "Saldo, extrato e Pix da conta Asaas pessoa física.",
+      "menuTitles": {
+        "asaas.overview": "Asaas",
+        "asaas.statement": "Extrato Asaas",
+        "asaas.pix": "Fazer Pix",
+        "asaas.settings": "Configurar Asaas"
+      },
+      "permissionLabels": {
+        "asaas.balance.read": "Ver saldo da conta Asaas",
+        "asaas.statement.read": "Ver extrato da conta Asaas",
+        "asaas.pix.read": "Ver Pix enviados pelo Nexus",
+        "asaas.pix.create": "Enviar Pix pela conta Asaas",
+        "asaas.settings.read": "Ver configuração do Asaas",
+        "asaas.settings.update": "Configurar a chave de API do Asaas"
+      }
+    },
+    "en": {
+      "name": "Asaas",
+      "description": "Balance, statement and Pix for a personal Asaas account.",
+      "menuTitles": {
+        "asaas.overview": "Asaas",
+        "asaas.statement": "Asaas statement",
+        "asaas.pix": "Send Pix",
+        "asaas.settings": "Configure Asaas"
+      },
+      "permissionLabels": {
+        "asaas.balance.read": "View Asaas account balance",
+        "asaas.statement.read": "View Asaas account statement",
+        "asaas.pix.read": "View Pix sent through Nexus",
+        "asaas.pix.create": "Send Pix from the Asaas account",
+        "asaas.settings.read": "View Asaas configuration",
+        "asaas.settings.update": "Configure the Asaas API key"
+      }
+    }
+  },
+  "permissions": [
+    "asaas.balance.read",
+    "asaas.statement.read",
+    "asaas.pix.read",
+    "asaas.pix.create",
+    "asaas.settings.read",
+    "asaas.settings.update"
+  ],
+  "menu": [
+    { "title": "Asaas", "routeKey": "asaas.overview", "path": "/app/p/asaas" },
+    {
+      "title": "Statement",
+      "routeKey": "asaas.statement",
+      "path": "/app/p/asaas/statement"
+    },
+    {
+      "title": "Send Pix",
+      "routeKey": "asaas.pix",
+      "path": "/app/p/asaas/pix"
+    },
+    {
+      "title": "Settings",
+      "routeKey": "asaas.settings",
+      "path": "/app/p/asaas/settings"
+    }
+  ]
+}

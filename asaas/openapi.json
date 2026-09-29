@@ -1,0 +1,172 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Nexus Asaas API",
+    "version": "1.0.0",
+    "description": "Private Nexus gateway for a personal Asaas account."
+  },
+  "paths": {
+    "/api/v1/p/asaas/balance": {
+      "get": {
+        "summary": "Read the available Asaas balance",
+        "responses": { "200": { "description": "Available balance" } }
+      }
+    },
+    "/api/v1/p/asaas/statement": {
+      "get": {
+        "summary": "Read the paginated Asaas statement",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "startDate",
+            "required": true,
+            "schema": { "type": "string", "format": "date" }
+          },
+          {
+            "in": "query",
+            "name": "finishDate",
+            "required": true,
+            "schema": { "type": "string", "format": "date" }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "schema": { "type": "integer", "minimum": 0, "default": 0 }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            }
+          },
+          {
+            "in": "query",
+            "name": "order",
+            "schema": {
+              "type": "string",
+              "enum": ["asc", "desc"],
+              "default": "desc"
+            }
+          }
+        ],
+        "responses": { "200": { "description": "Statement entries" } }
+      }
+    },
+    "/api/v1/p/asaas/connection": {
+      "get": {
+        "summary": "Test the configured API key with a balance read",
+        "responses": { "200": { "description": "Connection accepted" } }
+      }
+    },
+    "/api/v1/p/asaas/connection/validate": {
+      "post": {
+        "summary": "Validate a production API key before saving it",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["apiKey"],
+                "properties": {
+                  "apiKey": { "type": "string", "writeOnly": true }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "Key accepted by Asaas" } }
+      }
+    },
+    "/api/v1/p/asaas/pix/address-keys/inspect": {
+      "post": {
+        "summary": "Resolve the Pix recipient before transfer confirmation",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["pixAddressKey", "pixAddressKeyType"],
+                "properties": {
+                  "pixAddressKey": { "type": "string" },
+                  "pixAddressKeyType": {
+                    "type": "string",
+                    "enum": ["CPF", "CNPJ", "EMAIL", "PHONE", "EVP"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Masked recipient identity" }
+        }
+      }
+    },
+    "/api/v1/p/asaas/pix/transfers": {
+      "get": {
+        "summary": "List Pix transfers initiated through Nexus",
+        "responses": { "200": { "description": "Local Pix transfer history" } }
+      },
+      "post": {
+        "summary": "Submit a Pix transfer to an external key",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": { "type": "string", "minLength": 16, "maxLength": 120 }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "value",
+                  "pixAddressKey",
+                  "pixAddressKeyType",
+                  "confirmed"
+                ],
+                "properties": {
+                  "value": {
+                    "oneOf": [{ "type": "string" }, { "type": "number" }]
+                  },
+                  "pixAddressKey": { "type": "string" },
+                  "pixAddressKeyType": {
+                    "type": "string",
+                    "enum": ["CPF", "CNPJ", "EMAIL", "PHONE", "EVP"]
+                  },
+                  "description": { "type": "string", "maxLength": 120 },
+                  "confirmed": { "type": "boolean", "const": true }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Pix submitted to Asaas" } }
+      }
+    },
+    "/api/v1/p/asaas/pix/transfers/{id}": {
+      "get": {
+        "summary": "Refresh a Pix transfer status from Asaas",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "200": { "description": "Current transfer status" } }
+      }
+    }
+  }
+}
