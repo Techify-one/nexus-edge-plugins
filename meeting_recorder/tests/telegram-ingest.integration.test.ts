@@ -421,6 +421,244 @@ describe("Meeting Recorder Telegram ingest", () => {
     expect(telegramFetch).toHaveBeenCalledTimes(5);
   });
 
+  it.each([
+    [
+      9100,
+      "meeting.m4a",
+      "application/octet-stream",
+      undefined,
+      "audio/mp4",
+      "m4a",
+    ],
+    [9101, "meeting.m4a", undefined, undefined, "audio/mp4", "m4a"],
+    [
+      9102,
+      "meeting.m4a",
+      "application/octet-stream",
+      "audio/x-m4a",
+      "audio/x-m4a",
+      "m4a",
+    ],
+    [
+      9103,
+      "meeting.mp3",
+      "application/octet-stream",
+      undefined,
+      "audio/mpeg",
+      "mp3",
+    ],
+    [
+      9104,
+      "meeting.ogg",
+      "application/octet-stream",
+      undefined,
+      "audio/ogg",
+      "ogg",
+    ],
+    [
+      9105,
+      "meeting.opus",
+      "application/octet-stream",
+      undefined,
+      "audio/ogg",
+      "ogg",
+    ],
+    [
+      9106,
+      "meeting.wav",
+      "application/octet-stream",
+      undefined,
+      "audio/wav",
+      "wav",
+    ],
+    [
+      9107,
+      "meeting.webm",
+      "application/octet-stream",
+      undefined,
+      "audio/webm",
+      "webm",
+    ],
+  ])(
+    "ingests Telegram audio %i (%s) with generic file headers",
+    async (
+      updateId,
+      fileName,
+      contentType,
+      telegramMime,
+      expectedMime,
+      extension,
+    ) => {
+      const audio = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]);
+      const sentMessages: string[] = [];
+      vi.stubGlobal(
+        "fetch",
+        vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+          const path = new URL(String(input)).pathname;
+          if (path.endsWith("/getFile"))
+            return Response.json({
+              ok: true,
+              result: {
+                file_path: `audio/${fileName}`,
+                file_size: audio.byteLength,
+              },
+            });
+          if (path.includes("/file/bot"))
+            return new Response(audio, {
+              headers: {
+                ...(contentType ? { "Content-Type": contentType } : {}),
+                "Content-Length": String(audio.byteLength),
+              },
+            });
+          if (path.endsWith("/sendMessage")) {
+            sentMessages.push(
+              (JSON.parse(String(init?.body)) as { text: string }).text,
+            );
+            return Response.json({ ok: true, result: { message_id: 100 } });
+          }
+          throw new Error(`Unexpected Telegram URL: ${path}`);
+        }),
+      );
+      const response = await app.request(
+        "/public/telegram/webhook",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Plugin-Public-Context": encodeContext({
+              pluginId: "meeting_recorder",
+              requestId: `req_format_${updateId}`,
+            }),
+            "X-Telegram-Bot-Api-Secret-Token": "s".repeat(32),
+          },
+          body: JSON.stringify({
+            update_id: updateId,
+            message: {
+              message_id: updateId,
+              date: 1_787_900_000,
+              from: { id: 424242, first_name: "Telegram" },
+              chat: { id: 424242 },
+              audio: {
+                file_id: `file-${updateId}`,
+                file_unique_id: `unique-${updateId}`,
+                file_name: fileName,
+                duration: 2,
+                file_size: audio.byteLength,
+                ...(telegramMime ? { mime_type: telegramMime } : {}),
+              },
+            },
+          }),
+        },
+        env,
+      );
+      expect(response.status).toBe(200);
+      const { recordingId } = (await response.json()) as {
+        recordingId: string;
+      };
+      expect(sentMessages).toEqual([
+        "Áudio recebido.",
+        "Iniciando transcrição.",
+        expect.stringContaining("Transcrição pronta."),
+      ]);
+      expect(
+        sqlite
+          .prepare(
+            `SELECT r.mime_type AS recordingMime, s.mime_type AS segmentMime,
+                    s.transcript_text AS transcript, e.status AS eventStatus
+               FROM meeting_recorder_recordings r
+               JOIN meeting_recorder_segments s ON s.recording_id = r.id
+               JOIN meeting_recorder_ingest_events e ON e.recording_id = r.id
+              WHERE r.id = ?`,
+          )
+          .get(recordingId),
+      ).toMatchObject({
+        recordingMime: expectedMime,
+        segmentMime: expectedMime,
+        transcript: "Audio recebido pelo Telegram e transcrito.",
+        eventStatus: "transcribed",
+      });
+      expect([...storage.objects.keys()]).toContain(
+        `recordings/${recordingId}/segments/000000.${extension}`,
+      );
+    },
+  );
+
+  it("rejects a Telegram audio file without a supported type or extension", async () => {
+    const audio = new Uint8Array([1, 2, 3, 4]);
+    const storedBefore = storage.objects.size;
+    const sentMessages: string[] = [];
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+        const path = new URL(String(input)).pathname;
+        if (path.endsWith("/getFile"))
+          return Response.json({
+            ok: true,
+            result: {
+              file_path: "audio/unknown.bin",
+              file_size: audio.byteLength,
+            },
+          });
+        if (path.includes("/file/bot"))
+          return new Response(audio, {
+            headers: { "Content-Type": "application/octet-stream" },
+          });
+        if (path.endsWith("/sendMessage")) {
+          sentMessages.push(
+            (JSON.parse(String(init?.body)) as { text: string }).text,
+          );
+          return Response.json({ ok: true, result: { message_id: 100 } });
+        }
+        throw new Error(`Unexpected Telegram URL: ${path}`);
+      }),
+    );
+    const response = await app.request(
+      "/public/telegram/webhook",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Plugin-Public-Context": encodeContext({
+            pluginId: "meeting_recorder",
+            requestId: "req_telegram_unknown_format",
+          }),
+          "X-Telegram-Bot-Api-Secret-Token": "s".repeat(32),
+        },
+        body: JSON.stringify({
+          update_id: 9108,
+          message: {
+            message_id: 9108,
+            date: 1_787_900_000,
+            from: { id: 424242, first_name: "Telegram" },
+            chat: { id: 424242 },
+            audio: {
+              file_id: "unknown-file",
+              file_unique_id: "unknown-unique",
+              file_name: "unknown.bin",
+              duration: 2,
+              file_size: audio.byteLength,
+            },
+          },
+        }),
+      },
+      env,
+    );
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({ ok: true, ignored: true });
+    expect(sentMessages).toEqual([
+      "Áudio recebido.",
+      expect.stringContaining("UNSUPPORTED_AUDIO_TYPE"),
+    ]);
+    expect(
+      sqlite
+        .prepare(
+          "SELECT status, error_code AS errorCode FROM meeting_recorder_ingest_events WHERE external_event_id = '9108'",
+        )
+        .get(),
+    ).toMatchObject({ status: "ignored", errorCode: "UNSUPPORTED_AUDIO_TYPE" });
+    expect(storage.objects.size).toBe(storedBefore);
+  });
+
   it("verifies, exposes, and disconnects the configured Telegram bot", async () => {
     let webhookConfigured = false;
     vi.stubGlobal(

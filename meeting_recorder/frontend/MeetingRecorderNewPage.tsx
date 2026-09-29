@@ -31,6 +31,7 @@ const audioMime = (file: File): string => {
     [
       "audio/webm",
       "audio/ogg",
+      "audio/opus",
       "audio/mpeg",
       "audio/mp3",
       "audio/mp4",
@@ -44,6 +45,7 @@ const audioMime = (file: File): string => {
   const byExtension: Record<string, string> = {
     webm: "audio/webm",
     ogg: "audio/ogg",
+    opus: "audio/ogg",
     mp3: "audio/mpeg",
     m4a: "audio/mp4",
     mp4: "audio/mp4",
@@ -289,7 +291,7 @@ function NewContent() {
               <Input
                 id="audio-file"
                 type="file"
-                accept="audio/webm,audio/ogg,audio/mpeg,audio/mp4,audio/wav,.m4a,.mp3,.ogg,.wav,.webm"
+                accept="audio/webm,audio/ogg,audio/opus,audio/mpeg,audio/mp4,audio/wav,.m4a,.mp3,.ogg,.opus,.wav,.webm"
                 onChange={(event) => setFile(event.target.files?.[0] ?? null)}
               />
             </div>

@@ -1708,7 +1708,11 @@ app.post("/public/telegram/webhook", async (c) => {
         "Telegram audio exceeds 20 MiB.",
       );
     failureStage = "downloading_audio";
-    const file = await downloadTelegramMedia(c.env.TELEGRAM_BOT_TOKEN, media);
+    const file = await downloadTelegramMedia(
+      c.env.TELEGRAM_BOT_TOKEN,
+      media,
+      Boolean(message.voice),
+    );
     failureStage = "validating_audio";
     extensionForMime(file.mimeType);
     const settings = await repository(c).settings();

@@ -1,4 +1,5 @@
 import { MeetingRecorderError } from "./errors.js";
+import { mimeForAudioFileName, supportedAudioMime } from "./storage.js";
 
 export type TelegramMedia = {
   file_id: string;
@@ -189,6 +190,7 @@ export async function sendTelegramMessage(
 export async function downloadTelegramMedia(
   token: string,
   media: TelegramMedia,
+  isVoice: boolean,
 ): Promise<{ bytes: ArrayBuffer; mimeType: string; fileName?: string }> {
   const file = await telegramCall<{ file_path?: string; file_size?: number }>(
     token,
@@ -277,9 +279,11 @@ export async function downloadTelegramMedia(
   return {
     bytes: bytes.buffer,
     mimeType:
-      media.mime_type ||
-      response.headers.get("Content-Type") ||
-      (media.file_name?.endsWith(".mp3") ? "audio/mpeg" : "audio/ogg"),
+      supportedAudioMime(media.mime_type) ??
+      supportedAudioMime(response.headers.get("Content-Type")) ??
+      mimeForAudioFileName(media.file_name) ??
+      mimeForAudioFileName(file.file_path) ??
+      (isVoice ? "audio/ogg" : ""),
     ...(media.file_name ? { fileName: media.file_name } : {}),
   };
 }
