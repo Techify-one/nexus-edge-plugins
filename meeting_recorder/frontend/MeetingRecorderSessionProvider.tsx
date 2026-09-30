@@ -8,6 +8,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { registerReloadGuard } from "../../.marketplace/frontend/src/lib/reload-guard.js";
 import { translate } from "../../.marketplace/frontend/src/i18n/index.js";
@@ -69,6 +70,13 @@ export function MeetingRecorderSessionProvider({
   children: ReactNode;
 }) {
   const [recording, setRecording] = useState<Recording | null>(null);
+  const queryClient = useQueryClient();
+  // The provider lives outside the route pages, so the recordings table and
+  // overview would keep showing stale data after a capture ends unless the
+  // shared cache is invalidated here.
+  const refreshLists = useCallback(() => {
+    void queryClient.invalidateQueries({ queryKey: ["meeting-recorder"] });
+  }, [queryClient]);
   const [state, setState] =
     useState<RecorderSessionContextValue["state"]>("idle");
   const [elapsedMs, setElapsedMs] = useState(0);
@@ -239,6 +247,7 @@ export function MeetingRecorderSessionProvider({
         setElapsedMs(0);
         setState("recording");
         segmenter.current.start();
+        refreshLists();
       } catch (error) {
         closeMedia.current?.();
         closeMedia.current = null;
@@ -246,7 +255,7 @@ export function MeetingRecorderSessionProvider({
         throw error;
       }
     },
-    [persistSegment, state],
+    [persistSegment, refreshLists, state],
   );
 
   const pause = useCallback(async () => {
@@ -258,7 +267,8 @@ export function MeetingRecorderSessionProvider({
       await localRecorderStore.saveSession(activeSession.current);
     }
     setState("paused");
-  }, [recording, state]);
+    refreshLists();
+  }, [recording, refreshLists, state]);
 
   const resume = useCallback(async () => {
     if (!recording || state !== "paused") return;
@@ -269,7 +279,8 @@ export function MeetingRecorderSessionProvider({
     }
     setState("recording");
     segmenter.current?.resume();
-  }, [recording, state]);
+    refreshLists();
+  }, [recording, refreshLists, state]);
 
   const stop = useCallback(async () => {
     if (!recording || state === "idle" || state === "finalizing") return;
@@ -299,6 +310,7 @@ export function MeetingRecorderSessionProvider({
       queue.current = null;
       setRecording(null);
       setState("idle");
+      refreshLists();
       toast.error(translate("meetingRecorder.recoveryPendingError"));
       return;
     }
@@ -328,6 +340,7 @@ export function MeetingRecorderSessionProvider({
       queue.current = null;
       setRecording(null);
       setState("idle");
+      refreshLists();
       toast.error(translate("meetingRecorder.recoveryPendingError"));
       return;
     }
@@ -361,7 +374,8 @@ export function MeetingRecorderSessionProvider({
     );
     setRecording(null);
     setState("idle");
-  }, [recording, state]);
+    refreshLists();
+  }, [recording, refreshLists, state]);
 
   const recover = useCallback(
     async (session: LocalSession) => {
@@ -424,11 +438,12 @@ export function MeetingRecorderSessionProvider({
           items.filter((item) => item.recordingId !== session.recordingId),
         );
         setQueueSnapshot(emptyQueue);
+        refreshLists();
       } finally {
         recoveryInProgress.current = false;
       }
     },
-    [state],
+    [refreshLists, state],
   );
 
   const continueCapture = useCallback(
@@ -518,6 +533,7 @@ export function MeetingRecorderSessionProvider({
         setState("recording");
         segmenter.current.start();
         pending.forEach((segment) => queue.current?.enqueue(segment));
+        refreshLists();
       } catch (error) {
         closeMedia.current?.();
         closeMedia.current = null;
@@ -525,7 +541,7 @@ export function MeetingRecorderSessionProvider({
         throw error;
       }
     },
-    [persistSegment, state],
+    [persistSegment, refreshLists, state],
   );
 
   useEffect(() => {

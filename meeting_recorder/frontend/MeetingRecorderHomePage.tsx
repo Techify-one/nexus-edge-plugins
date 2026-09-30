@@ -109,32 +109,6 @@ function HomeContent() {
     queryFn: recorderApi.defaults,
     enabled: can("meeting_recorder.recording.create"),
   });
-  const [startingCapture, setStartingCapture] = useState(false);
-  const startCapture = async () => {
-    if (!defaults.data || startingCapture || session.state !== "idle") return;
-    setStartingCapture(true);
-    try {
-      await session.start({
-        title: `${t("meetingRecorder.quickTitle")} ${formatDateTime(Date.now())}`,
-        sourceMode: "microphone",
-        language: defaults.data.defaultLanguage,
-        autoTranscribe: defaults.data.storageEnabled
-          ? defaults.data.autoTranscribe
-          : true,
-      });
-    } catch (error) {
-      toast.error(
-        error instanceof Error &&
-          hasTranslation(`meetingRecorder.error.${error.message}`)
-          ? translate(`meetingRecorder.error.${error.message}`)
-          : error instanceof Error
-            ? error.message
-            : t("meetingRecorder.loadFailed"),
-      );
-    } finally {
-      setStartingCapture(false);
-    }
-  };
   const changeSorting = useCallback((next: SortingState) => {
     setCursor(null);
     setSorting(next.length ? next : [{ id: "started_at", desc: true }]);
@@ -248,33 +222,17 @@ function HomeContent() {
               </Button>
             )}
             {can("meeting_recorder.recording.create") && (
-              <>
-                <Button
-                  busy={startingCapture}
-                  disabled={!defaults.data || session.state !== "idle"}
-                  onClick={() => void startCapture()}
-                >
-                  <Mic className="h-4 w-4" />
-                  {t("meetingRecorder.start")}
-                </Button>
-                <Button
-                  variant="secondary"
-                  disabled={defaults.isPending}
-                  onClick={() => navigate("/app/p/meeting_recorder/new")}
-                >
-                  <Plus className="h-4 w-4" />
-                  {t("meetingRecorder.new")}
-                </Button>
-              </>
+              <Button
+                disabled={defaults.isPending}
+                onClick={() => navigate("/app/p/meeting_recorder/new")}
+              >
+                <Plus className="h-4 w-4" />
+                {t("meetingRecorder.new")}
+              </Button>
             )}
           </div>
         }
       />
-      {defaults.data?.storageEnabled === false && (
-        <div className="mb-5 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-950">
-          {t("meetingRecorder.r2Disabled")}
-        </div>
-      )}
       <div className="mb-5 grid gap-3 sm:grid-cols-4">
         <MetricCard
           label={t("meetingRecorder.metric.duration")}

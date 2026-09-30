@@ -67,7 +67,6 @@ export const meetingRecorderFrontendMessages = {
     "meetingRecorder.consent":
       "Ao iniciar, você confirma que tem autorização das pessoas participantes para gravar e transcrever.",
     "meetingRecorder.start": "Iniciar gravação",
-    "meetingRecorder.quickTitle": "Gravação",
     "meetingRecorder.uploadTitle": "Enviar áudio",
     "meetingRecorder.uploadDescription":
       "Importe um áudio pronto e receba a transcrição.",
@@ -386,7 +385,6 @@ export const meetingRecorderFrontendMessages = {
     "meetingRecorder.consent":
       "By starting, you confirm that you are authorized by the participants to record and transcribe.",
     "meetingRecorder.start": "Start recording",
-    "meetingRecorder.quickTitle": "Recording",
     "meetingRecorder.uploadTitle": "Upload audio",
     "meetingRecorder.uploadDescription":
       "Import existing audio and receive its transcript.",

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Download, Pencil, Play, Trash2 } from "lucide-react";
+import { Check, Download, Info, Pencil, Trash2, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -8,7 +8,6 @@ import {
   Button,
   Card,
   Input,
-  PageHeader,
   Skeleton,
 } from "../../.marketplace/frontend/src/components/ui/index.js";
 import { can } from "../../.marketplace/frontend/src/lib/ability.js";
@@ -160,65 +159,228 @@ function DetailContent() {
     URL.revokeObjectURL(url);
   };
 
+  const statusTone =
+    item.effectiveCaptureStatus === "complete"
+      ? "success"
+      : item.effectiveCaptureStatus === "interrupted"
+        ? "danger"
+        : "warning";
+  const hasAudio = audioSegments.length > 0;
+  const transcriptText = transcript.data?.text ?? "";
+  const minutes = Math.floor(item.timelineDurationMs / 60_000);
+  const seconds = Math.round((item.timelineDurationMs % 60_000) / 1_000);
+  const durationLabel =
+    minutes > 0
+      ? `${minutes}min ${String(seconds).padStart(2, "0")}s`
+      : `${seconds}s`;
+  const submitTitle = () => {
+    if (title.trim() && title.trim() !== item.title) rename.mutate();
+    else setEditingTitle(false);
+  };
+  const metrics: Array<{ label: string; value: string }> = [
+    { label: t("meetingRecorder.column.duration"), value: durationLabel },
+    {
+      label: t("meetingRecorder.column.size"),
+      value: hasAudio
+        ? `${(item.totalBytes / 1024 / 1024).toFixed(1)} MB`
+        : "-",
+    },
+    { label: t("meetingRecorder.column.owner"), value: item.ownerName ?? "-" },
+    {
+      label: t("meetingRecorder.segments"),
+      value: String(segments.data?.items.length ?? 0),
+    },
+  ];
+
   return (
     <>
-      <PageHeader
-        title={item.title}
-        description={`${t(`meetingRecorder.source.${item.ingestSource}`)} · ${formatDateTime(item.startedAt)}`}
-        action={
-          <Badge
-            tone={item.captureStatus === "complete" ? "success" : "warning"}
-          >
-            {t(
-              statusKeys[item.effectiveCaptureStatus] ??
-                "meetingRecorder.status.interrupted",
-            )}
-          </Badge>
-        }
-      />
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(320px,0.8fr)]">
-        <div className="space-y-5">
-          <Card>
-            <h2 className="font-bold">{t("meetingRecorder.audio")}</h2>
-            {activeAudio ? (
-              <>
-                <audio
-                  className="mt-4 w-full"
-                  controls
-                  src={segmentAudioUrl(recordingId, activeAudio.sequence)}
-                  onEnded={() =>
-                    setPlaylistIndex((index) =>
-                      Math.min(index + 1, audioSegments.length - 1),
-                    )
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0 flex-1">
+          {editingTitle ? (
+            <form
+              className="flex max-w-2xl items-center gap-2"
+              onSubmit={(event) => {
+                event.preventDefault();
+                submitTitle();
+              }}
+            >
+              <Input
+                autoFocus
+                aria-label={t("meetingRecorder.rename")}
+                value={title}
+                maxLength={200}
+                onChange={(event) => setTitle(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Escape") {
+                    setTitle(item.title);
+                    setEditingTitle(false);
                   }
-                />
-                <p className="mt-2 text-xs text-slate-500">
-                  {t("meetingRecorder.segmentProgress", {
-                    current: playlistIndex + 1,
-                    total: audioSegments.length,
-                  })}
+                }}
+              />
+              <Button
+                type="submit"
+                busy={rename.isPending}
+                disabled={!title.trim()}
+                aria-label={t("common.save")}
+              >
+                <Check className="h-4 w-4" />
+                {t("common.save")}
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                aria-label={t("common.cancel")}
+                onClick={() => {
+                  setTitle(item.title);
+                  setEditingTitle(false);
+                }}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </form>
+          ) : (
+            <div className="flex items-start gap-2">
+              <h1 className="min-w-0 break-words text-2xl font-bold tracking-tight">
+                {item.title}
+              </h1>
+              {can("meeting_recorder.recording.update") && (
+                <Button
+                  variant="ghost"
+                  className="mt-0.5 shrink-0 px-2"
+                  aria-label={t("meetingRecorder.rename")}
+                  title={t("meetingRecorder.rename")}
+                  onClick={() => setEditingTitle(true)}
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+          )}
+          <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-slate-500">
+            <Badge tone={statusTone}>
+              {t(
+                statusKeys[item.effectiveCaptureStatus] ??
+                  "meetingRecorder.status.interrupted",
+              )}
+            </Badge>
+            <span>
+              {t(`meetingRecorder.source.${item.ingestSource}`)} ·{" "}
+              {formatDateTime(item.startedAt)}
+            </span>
+          </p>
+        </div>
+        <div className="flex shrink-0 items-center gap-2">
+          <Button
+            variant="secondary"
+            disabled={!transcriptText}
+            onClick={() => void downloadTranscript()}
+          >
+            <Download className="h-4 w-4" />
+            {t("meetingRecorder.download")}
+          </Button>
+          {can("meeting_recorder.recording.delete") && (
+            <Button
+              variant="danger"
+              busy={remove.isPending}
+              aria-label={t("common.delete")}
+              onClick={() =>
+                confirm(
+                  t("meetingRecorder.deleteConfirm", { name: item.title }),
+                ) && remove.mutate()
+              }
+            >
+              <Trash2 className="h-4 w-4" />
+              {t("common.delete")}
+            </Button>
+          )}
+        </div>
+      </div>
+
+      <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {metrics.map((metric) => (
+          <Card key={metric.label} className="p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+              {metric.label}
+            </p>
+            <p className="mt-1 break-words text-lg font-bold tabular-nums">
+              {metric.value}
+            </p>
+          </Card>
+        ))}
+      </div>
+
+      <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <Card className="min-w-0">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <h2 className="font-bold">{t("meetingRecorder.transcript")}</h2>
+            {can("meeting_recorder.transcription.create") &&
+              hasTranscribableAudio && (
+                <Button
+                  variant="secondary"
+                  busy={transcribe.isPending}
+                  onClick={() => transcribe.mutate()}
+                >
+                  {t("meetingRecorder.transcribe")}
+                </Button>
+              )}
+          </div>
+          {transcriptText ? (
+            <div className="max-w-3xl space-y-4 text-[15px] leading-7 text-slate-700">
+              {transcriptText.split(/\n{2,}/u).map((paragraph, index) => (
+                <p key={index} className="whitespace-pre-wrap">
+                  {paragraph}
                 </p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {audioSegments.map((segment, index) => (
-                    <Button
-                      key={segment.id}
-                      variant={
-                        index === playlistIndex ? "primary" : "secondary"
-                      }
-                      className="px-3"
-                      onClick={() => setPlaylistIndex(index)}
-                      aria-label={t("meetingRecorder.playSegment", {
-                        number: segment.sequence + 1,
-                      })}
-                    >
-                      <Play className="h-3.5 w-3.5" />
-                      {segment.sequence + 1}
-                    </Button>
-                  ))}
-                </div>
-              </>
-            ) : (
-              <p className="mt-3 text-sm text-slate-500">
+              ))}
+            </div>
+          ) : (
+            <p className="rounded-xl bg-slate-50 p-4 text-sm text-slate-500">
+              {t("meetingRecorder.noTranscript")}
+            </p>
+          )}
+        </Card>
+
+        <Card
+          className={`min-w-0 lg:sticky lg:top-4 ${hasAudio ? "order-first lg:order-none" : ""}`}
+        >
+          <h2 className="font-bold">{t("meetingRecorder.audio")}</h2>
+          {activeAudio ? (
+            <>
+              <audio
+                className="mt-3 w-full"
+                controls
+                src={segmentAudioUrl(recordingId, activeAudio.sequence)}
+                onEnded={() =>
+                  setPlaylistIndex((index) =>
+                    Math.min(index + 1, audioSegments.length - 1),
+                  )
+                }
+              />
+              <p className="mt-2 text-xs text-slate-500">
+                {t("meetingRecorder.segmentProgress", {
+                  current: playlistIndex + 1,
+                  total: audioSegments.length,
+                })}
+              </p>
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {audioSegments.map((segment, index) => (
+                  <Button
+                    key={segment.id}
+                    variant={index === playlistIndex ? "primary" : "secondary"}
+                    className="h-8 min-w-8 px-2 text-xs"
+                    onClick={() => setPlaylistIndex(index)}
+                    aria-label={t("meetingRecorder.playSegment", {
+                      number: segment.sequence + 1,
+                    })}
+                  >
+                    {segment.sequence + 1}
+                  </Button>
+                ))}
+              </div>
+            </>
+          ) : (
+            <p className="mt-3 flex items-start gap-2 text-sm text-slate-500">
+              <Info className="mt-0.5 h-4 w-4 shrink-0" />
+              <span>
                 {t(
                   segments.data?.items.some(
                     (segment) => segment.storageStatus === "missing",
@@ -226,120 +388,10 @@ function DetailContent() {
                     ? "meetingRecorder.audioNotRetained"
                     : "meetingRecorder.noAudio",
                 )}
-              </p>
-            )}
-          </Card>
-          <Card>
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <h2 className="font-bold">{t("meetingRecorder.transcript")}</h2>
-              <div className="flex gap-2">
-                {can("meeting_recorder.transcription.create") &&
-                  hasTranscribableAudio && (
-                    <Button
-                      variant="secondary"
-                      busy={transcribe.isPending}
-                      onClick={() => transcribe.mutate()}
-                    >
-                      {t("meetingRecorder.transcribe")}
-                    </Button>
-                  )}
-                <Button
-                  variant="ghost"
-                  onClick={() => void downloadTranscript()}
-                >
-                  <Download className="h-4 w-4" />
-                  {t("meetingRecorder.download")}
-                </Button>
-              </div>
-            </div>
-            <div className="mt-4 whitespace-pre-wrap rounded-xl bg-slate-50 p-4 text-sm leading-6 text-slate-700">
-              {transcript.data?.text || t("meetingRecorder.noTranscript")}
-            </div>
-          </Card>
-        </div>
-        <div className="space-y-5">
-          <Card>
-            <h2 className="font-bold">{t("meetingRecorder.details")}</h2>
-            <dl className="mt-4 space-y-3 text-sm">
-              <div className="flex justify-between gap-4">
-                <dt className="text-slate-500">
-                  {t("meetingRecorder.column.duration")}
-                </dt>
-                <dd>{Math.round(item.timelineDurationMs / 1000)}s</dd>
-              </div>
-              <div className="flex justify-between gap-4">
-                <dt className="text-slate-500">
-                  {t("meetingRecorder.column.size")}
-                </dt>
-                <dd>{(item.totalBytes / 1024 / 1024).toFixed(1)} MB</dd>
-              </div>
-              <div className="flex justify-between gap-4">
-                <dt className="text-slate-500">
-                  {t("meetingRecorder.column.owner")}
-                </dt>
-                <dd>{item.ownerName ?? "—"}</dd>
-              </div>
-              <div className="flex justify-between gap-4">
-                <dt className="text-slate-500">
-                  {t("meetingRecorder.segments")}
-                </dt>
-                <dd>{segments.data?.items.length ?? 0}</dd>
-              </div>
-            </dl>
-          </Card>
-          {can("meeting_recorder.recording.update") && (
-            <Card>
-              <h2 className="font-bold">{t("meetingRecorder.rename")}</h2>
-              {editingTitle ? (
-                <div className="mt-3 flex gap-2">
-                  <Input
-                    value={title}
-                    onChange={(event) => setTitle(event.target.value)}
-                  />
-                  <Button
-                    busy={rename.isPending}
-                    disabled={!title.trim()}
-                    onClick={() => rename.mutate()}
-                  >
-                    {t("common.save")}
-                  </Button>
-                </div>
-              ) : (
-                <Button
-                  className="mt-3"
-                  variant="secondary"
-                  onClick={() => setEditingTitle(true)}
-                >
-                  <Pencil className="h-4 w-4" />
-                  {t("common.edit")}
-                </Button>
-              )}
-            </Card>
+              </span>
+            </p>
           )}
-          {can("meeting_recorder.recording.delete") && (
-            <Card className="border-red-200">
-              <h2 className="font-bold text-red-700">
-                {t("meetingRecorder.dangerZone")}
-              </h2>
-              <p className="mt-2 text-sm text-slate-500">
-                {t("meetingRecorder.deleteDescription")}
-              </p>
-              <Button
-                className="mt-4"
-                variant="danger"
-                busy={remove.isPending}
-                onClick={() =>
-                  confirm(
-                    t("meetingRecorder.deleteConfirm", { name: item.title }),
-                  ) && remove.mutate()
-                }
-              >
-                <Trash2 className="h-4 w-4" />
-                {t("common.delete")}
-              </Button>
-            </Card>
-          )}
-        </div>
+        </Card>
       </div>
     </>
   );
