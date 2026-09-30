@@ -1,6 +1,6 @@
 {
   "name": "@techify/plugin-meeting-recorder",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "private": true,
   "type": "module",
   "scripts": {
