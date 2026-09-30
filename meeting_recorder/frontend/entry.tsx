@@ -91,7 +91,6 @@ export default definePlugin({
     return {
       dispose() {
         if (active.current === mount) updateMount(active, null);
-        container.replaceChildren();
       },
     };
   },

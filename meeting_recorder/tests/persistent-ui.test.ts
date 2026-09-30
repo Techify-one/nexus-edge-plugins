@@ -11,6 +11,7 @@ describe("Meeting Recorder dynamic lifecycle", () => {
     expect(entry).toContain("mountSurface");
     expect(entry).toContain("createPortal");
     expect(entry).toContain("MeetingRecorderSessionProvider");
+    expect(entry).not.toContain("container.replaceChildren()");
   });
 
   it("refreshes the shared query cache when a capture starts or ends", () => {
