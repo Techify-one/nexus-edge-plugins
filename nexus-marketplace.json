@@ -1,7 +1,7 @@
 {
   "catalogVersion": 1,
   "name": "Techify",
-  "revision": "M-OnmsQGa8_AHUEjLFo8N0fpBU-ZZHu3",
+  "revision": "Gqmo2qSAYWO3bkC3Gh7qAopV2iTKv-t4",
   "publisher": {
     "id": "techify",
     "name": "Techify",
@@ -281,25 +281,25 @@
     {
       "id": "meeting_recorder",
       "name": "Meeting Recorder",
-      "description": "Grave reuniões, importe áudios ou receba mensagens de voz do Telegram, com convites revogáveis, armazenamento privado, reprodução e transcrição.",
+      "description": "Grave reuniões e transcreva diretamente no navegador, sem R2. Ative armazenamento privado e reprodução de áudio quando quiser; importe arquivos ou receba mensagens de voz do Telegram.",
       "categories": [
         "Produtividade"
       ],
       "releases": [
         {
-          "version": "2.0.4",
+          "version": "2.1.0",
           "channel": "stable",
           "manifest": {
             "manifestVersion": 2,
             "packageFormat": 2,
             "id": "meeting_recorder",
             "name": "Meeting Recorder",
-            "description": "Record, upload and transcribe meetings with optional Telegram ingestion.",
+            "description": "Record and transcribe meetings without R2; optionally retain audio with private storage and receive Telegram audio.",
             "publisher": {
               "id": "techify",
               "name": "Techify"
             },
-            "version": "2.0.4",
+            "version": "2.1.0",
             "apiVersion": 1,
             "coreMinVersion": "1.1.0-beta.8",
             "compatibilityDate": "2026-09-09",
@@ -381,7 +381,7 @@
             "localizedMetadata": {
               "pt-BR": {
                 "name": "Gravador de reuniões",
-                "description": "Gravação, upload e transcrição de reuniões.",
+                "description": "Grave e transcreva sem R2; ative armazenamento de áudio quando quiser.",
                 "menuTitles": {
                   "meeting_recorder.home": "Gravador de reuniões"
                 }
@@ -420,10 +420,10 @@
             ]
           },
           "artifact": {
-            "url": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/meeting_recorder-v2.0.4/meeting_recorder.plugin.zip",
-            "sha256": "2AmKswBVgdnrbBb4w9qQltVNXlgQtKinPOTMDJurY2o",
-            "signature": "c5OvMgxZml3d5a_rUcZ3s-6P_Ir1NwOD1eP0XSz4RJE3TvljZjiKW0ezYi5fQy0aVx35RyBAuRrSx37PGJWvDg",
-            "bytes": 421703
+            "url": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/meeting_recorder-v2.1.0/meeting_recorder.plugin.zip",
+            "sha256": "zdU5DCOChHOYS_mqZhpa_eN8ZA1lIl9bQzGslCaRe2E",
+            "signature": "OQUOxMYZ0HslOjo2XS7GK37N0kma92jN1Q7I4Qb16_s2v748LiLCUU17JkMuxpGWzfNkYRjsziIvmsvUXTSZCw",
+            "bytes": 424681
           }
         }
       ]
@@ -826,6 +826,6 @@
   "signature": {
     "algorithm": "Ed25519",
     "keyId": "publisher-v1",
-    "value": "t3kBV9ck6Es191sYFVgZrc4unmPwU8RRV3uQLugNau3MEvgS-nJpuKDGFqKQGT5iFCIpl4W-lg9fY7PlA25MAw"
+    "value": "VqrdL1xPUt3tEv5OjjaoeNnCTzpzE0KY4YMuO9t_CvzBwg_Wf5lpclfKrzXIPlRr2WVLDVguRDCvsjPF8kLwBw"
   }
 }
