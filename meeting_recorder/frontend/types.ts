@@ -16,6 +16,8 @@ export type Recording = {
     | "deleting";
   effectiveCaptureStatus: string;
   transcriptionStatus: string;
+  autoTranscribe: boolean;
+  audioStorageMode: "r2" | "transient";
   language: "pt-BR" | "en" | "auto";
   mimeType: string;
   storedSegmentCount: number;
@@ -70,6 +72,9 @@ export type LocalSession = {
   startedAt: number;
   accumulatedMs: number;
   state: "recording" | "paused" | "interrupted" | "finalizing";
+  storageEnabled?: boolean;
+  language?: "pt-BR" | "en" | "auto";
+  autoTranscribe?: boolean;
 };
 
 export type Transcript = {

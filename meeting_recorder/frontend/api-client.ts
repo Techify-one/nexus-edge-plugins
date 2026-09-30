@@ -217,9 +217,12 @@ export async function sha256Base64(blob: Blob): Promise<string> {
   return btoa(binary);
 }
 
-export async function uploadSegment(segment: LocalSegment): Promise<void> {
+export async function uploadSegment(
+  segment: LocalSegment,
+  storageEnabled = true,
+): Promise<void> {
   const response = await fetch(
-    `${base}/recordings/${encodeURIComponent(segment.recordingId)}/segments/${segment.sequence}`,
+    `${base}/recordings/${encodeURIComponent(segment.recordingId)}/segments/${segment.sequence}${storageEnabled ? "" : "/transient"}`,
     {
       method: "PUT",
       credentials: "include",

@@ -51,7 +51,7 @@ import {
 } from "./telegram-links.js";
 import { transcribeAudio } from "./transcription.js";
 
-const VERSION = "2.0.3";
+const VERSION = "2.1.0";
 const CONSENT_VERSION = "2026-08-28";
 const mutablePostKey = (c: Context<MeetingRecorderEnv>): string => {
   const key = (c.req.header("Idempotency-Key") ?? "").trim();
@@ -257,10 +257,15 @@ async function transcribeTransientSegment(input: {
   const repo = new MeetingRecorderRepository(input.db);
   const lease = await repo.claimTransientTranscription(input.segment);
   try {
+    const previous =
+      input.segment.sequence > 0
+        ? await repo.segment(input.recording.id, input.segment.sequence - 1)
+        : null;
     const transcript = await transcribeAudio(
       input.env,
       input.bytes,
       input.recording.language,
+      previous?.transcriptText ?? "",
     );
     await repo.completeTranscription(
       input.segment,
@@ -420,10 +425,15 @@ app.get("/recordings", async (c) => {
 
 app.post("/recordings", async (c) => {
   const context = requirePermission(c, "meeting_recorder.recording.create");
-  requireStorage(c.env);
   mutablePostKey(c);
   const input = createRecordingInput.parse(await c.req.json());
   extensionForMime(input.mimeType);
+  if (!c.env.STORAGE && !input.autoTranscribe)
+    throw new MeetingRecorderError(
+      422,
+      "TRANSCRIPTION_REQUIRED",
+      "Transcription is required when audio storage is disabled.",
+    );
   const recording = await repository(c).create({
     clientSessionId: input.clientSessionId,
     title: input.title,
@@ -432,6 +442,7 @@ app.post("/recordings", async (c) => {
     mimeType: input.mimeType,
     segmentDurationMs: input.segmentDurationMs,
     autoTranscribe: input.autoTranscribe,
+    audioStorageMode: c.env.STORAGE ? "r2" : "transient",
     consentVersion: input.consentVersion,
     ...(input.meetingPlatform
       ? { meetingPlatform: input.meetingPlatform }
@@ -646,6 +657,12 @@ app.put("/recordings/:recordingId/segments/:sequence", async (c) => {
     "meeting_recorder.recording.update",
     "meeting_recorder.recording.manage_all",
   );
+  if (recording.audioStorageMode !== "r2")
+    throw new MeetingRecorderError(
+      409,
+      "INVALID_CAPTURE_STATE",
+      "This recording does not store audio in R2.",
+    );
   assertNotDeleting(recording);
   if (
     !["recording", "paused", "interrupted", "finalizing"].includes(
@@ -784,6 +801,180 @@ app.put("/recordings/:recordingId/segments/:sequence", async (c) => {
   );
 });
 
+app.put("/recordings/:recordingId/segments/:sequence/transient", async (c) => {
+  const context = requirePermission(c, "meeting_recorder.transcription.create");
+  const recording = requireRecordingAccess(
+    context,
+    await repository(c).recording(c.req.param("recordingId")),
+    "meeting_recorder.recording.update",
+    "meeting_recorder.recording.manage_all",
+  );
+  assertNotDeleting(recording);
+  if (
+    recording.ingestSource !== "live" ||
+    recording.audioStorageMode !== "transient" ||
+    !recording.autoTranscribe
+  )
+    throw new MeetingRecorderError(
+      409,
+      "INVALID_CAPTURE_STATE",
+      "This recording does not accept transient audio.",
+    );
+  if (
+    recording.captureStatus === "complete" &&
+    recording.expectedLastSequence === null
+  )
+    throw new MeetingRecorderError(
+      409,
+      "INVALID_CAPTURE_STATE",
+      "This recording cannot be transcribed.",
+    );
+  const sequence = boundedInteger(
+    c.req.param("sequence"),
+    0,
+    2_000,
+    "sequence",
+  );
+  if ((c.req.header("X-Client-Session-Id") ?? "") !== recording.clientSessionId)
+    throw new MeetingRecorderError(
+      409,
+      "CLIENT_SESSION_MISMATCH",
+      "The client session does not match this recording.",
+    );
+  const sizeBytes = boundedInteger(
+    c.req.header("X-Segment-Bytes"),
+    1,
+    LIVE_SEGMENT_MAX_BYTES,
+    "X-Segment-Bytes",
+  );
+  const durationMs = boundedInteger(
+    c.req.header("X-Segment-Duration-Ms"),
+    1_000,
+    35_000,
+    "X-Segment-Duration-Ms",
+  );
+  const startOffsetMs = boundedInteger(
+    c.req.header("X-Segment-Start-Ms"),
+    0,
+    14_400_000,
+    "X-Segment-Start-Ms",
+  );
+  const checksum = c.req.header("X-Segment-SHA256") ?? "";
+  decodeSha256(checksum);
+  const mimeType = (c.req.header("Content-Type") ?? "").slice(0, 100);
+  extensionForMime(mimeType);
+  if (
+    startOffsetMs + durationMs >
+    (await repository(c).settings()).maximumMinutes * 60_000
+  )
+    throw new MeetingRecorderError(
+      422,
+      "RECORDING_DURATION_LIMIT",
+      "The audio exceeds the configured duration limit.",
+    );
+  const existing = await repository(c).segment(recording.id, sequence);
+  if (recording.captureStatus === "complete" && !existing)
+    throw new MeetingRecorderError(
+      409,
+      "RECORDING_FINALIZED",
+      "This recording no longer accepts audio.",
+    );
+  if (
+    existing &&
+    !segmentMatches(existing, {
+      checksum,
+      sizeBytes,
+      durationMs,
+      startOffsetMs,
+      mimeType,
+    })
+  )
+    throw new MeetingRecorderError(
+      409,
+      "SEGMENT_CONFLICT",
+      "This sequence already contains different audio.",
+    );
+  if (!c.req.raw.body)
+    throw new MeetingRecorderError(
+      422,
+      "AUDIO_BODY_REQUIRED",
+      "The audio request body is required.",
+    );
+  const chunks: Uint8Array[] = [];
+  const reader = c.req.raw.body.getReader();
+  let receivedBytes = 0;
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    receivedBytes += value.byteLength;
+    if (receivedBytes > sizeBytes || receivedBytes > LIVE_SEGMENT_MAX_BYTES) {
+      await reader.cancel();
+      throw new MeetingRecorderError(
+        413,
+        "SEGMENT_TOO_LARGE",
+        "The streamed audio exceeds the allowed size.",
+      );
+    }
+    chunks.push(value);
+  }
+  const bytes = new Uint8Array(receivedBytes);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  if (receivedBytes !== sizeBytes)
+    throw new MeetingRecorderError(
+      422,
+      "SEGMENT_SIZE_MISMATCH",
+      "The audio size differs from X-Segment-Bytes.",
+    );
+  if ((await base64Sha256(bytes.buffer)) !== checksum)
+    throw new MeetingRecorderError(
+      422,
+      "CHECKSUM_MISMATCH",
+      "The audio checksum does not match.",
+    );
+  const reserved = await repository(c).reserveTransientSegment({
+    recordingId: recording.id,
+    sequence,
+    startOffsetMs,
+    durationMs,
+    mimeType,
+    sizeBytes,
+    checksum,
+    transientKey: `transient/live/${recording.id}/${sequence}`,
+  });
+  if (
+    !segmentMatches(reserved.segment, {
+      checksum,
+      sizeBytes,
+      durationMs,
+      startOffsetMs,
+      mimeType,
+    })
+  )
+    throw new MeetingRecorderError(
+      409,
+      "SEGMENT_CONFLICT",
+      "This sequence already contains different audio.",
+    );
+  if (reserved.segment.transcriptionStatus !== "ready")
+    await transcribeTransientSegment({
+      env: c.env,
+      db: c.get("db"),
+      recording,
+      segment: reserved.segment,
+      bytes: bytes.buffer,
+      actorUserId: context.userId,
+      requestId: context.requestId,
+    });
+  return c.json({
+    segment: await repository(c).segment(recording.id, sequence),
+    replay: !reserved.created,
+  });
+});
+
 app.on("HEAD", "/recordings/:recordingId/segments/:sequence", async (c) => {
   const recording = await recordingFor(
     c,
@@ -877,6 +1068,21 @@ app.post("/recordings/:recordingId/finalize", async (c) => {
         .default([]),
     })
     .parse(await c.req.json());
+  if (recording.audioStorageMode === "transient") {
+    const segments = await repository(c).segments(recording.id);
+    if (
+      segments.length !== input.expectedLastSequence + 1 ||
+      segments.some(
+        (segment, index) =>
+          segment.sequence !== index || segment.transcriptionStatus !== "ready",
+      )
+    )
+      throw new MeetingRecorderError(
+        409,
+        "TRANSCRIPTION_INCOMPLETE",
+        "Recover all audio segments before finalizing this recording.",
+      );
+  }
   const updated = await repository(c).finalize(
     recording.id,
     input.expectedLastSequence,
@@ -1756,6 +1962,7 @@ app.post("/public/telegram/webhook", async (c) => {
       // When R2 is disabled, transcription is mandatory because the source
       // bytes are intentionally discarded after this webhook request.
       autoTranscribe: c.env.STORAGE ? settings.autoTranscribe : true,
+      audioStorageMode: c.env.STORAGE ? "r2" : "transient",
       consentVersion: CONSENT_VERSION,
       captureStatus: "finalizing",
       startedAt: message.date * 1_000,

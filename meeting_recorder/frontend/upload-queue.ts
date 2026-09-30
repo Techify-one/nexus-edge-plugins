@@ -21,6 +21,7 @@ export class SegmentUploadQueue {
     private readonly onChange: (snapshot: UploadQueueSnapshot) => void,
     private readonly concurrency = 2,
     private readonly onUploaded?: (segment: LocalSegment) => void,
+    private readonly storageEnabled = true,
   ) {}
 
   enqueue(segment: LocalSegment): void {
@@ -66,7 +67,7 @@ export class SegmentUploadQueue {
     while (current.attempts < 6) {
       try {
         if (!navigator.onLine) await delay(1_000);
-        await uploadSegment(current);
+        await uploadSegment(current, this.storageEnabled);
         await localRecorderStore.removeSegment(
           current.recordingId,
           current.sequence,

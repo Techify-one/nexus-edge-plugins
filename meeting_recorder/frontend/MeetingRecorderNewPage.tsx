@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { HardDrive, Mic, Upload } from "lucide-react";
+import { Mic, Upload } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -18,7 +18,6 @@ import {
   translate,
   useI18n,
 } from "../../.marketplace/frontend/src/i18n/index.js";
-import { can } from "../../.marketplace/frontend/src/lib/ability.js";
 import { recorderApi, sha256Base64, uploadSegment } from "./api-client.js";
 import { MeetingRecorderRouteGate } from "./MeetingRecorderRouteGate.js";
 import { useMeetingRecorderSession } from "./MeetingRecorderSessionProvider.js";
@@ -96,7 +95,9 @@ function NewContent() {
   useEffect(() => {
     if (!defaults.data) return;
     setLanguage(defaults.data.defaultLanguage);
-    setAutoTranscribe(defaults.data.autoTranscribe);
+    setAutoTranscribe(
+      defaults.data.storageEnabled ? defaults.data.autoTranscribe : true,
+    );
   }, [defaults.data]);
 
   const begin = useMutation({
@@ -156,37 +157,6 @@ function NewContent() {
   });
 
   if (defaults.isPending) return <Skeleton className="h-80" />;
-  if (defaults.data && !defaults.data.storageEnabled)
-    return (
-      <>
-        <PageHeader
-          title={t("meetingRecorder.new")}
-          description={t("meetingRecorder.newDescription")}
-        />
-        <Card className="max-w-2xl">
-          <div className="flex items-start gap-3">
-            <HardDrive className="mt-0.5 h-6 w-6 text-amber-600" />
-            <div className="space-y-3">
-              <h2 className="font-bold">
-                {t("meetingRecorder.r2RequiredTitle")}
-              </h2>
-              <p className="text-sm text-slate-600">
-                {t("meetingRecorder.r2RequiredDescription")}
-              </p>
-              {can("meeting_recorder.settings.read") && (
-                <Button
-                  onClick={() => navigate("/app/p/meeting_recorder/settings")}
-                >
-                  <HardDrive className="h-4 w-4" />
-                  {t("meetingRecorder.openSettings")}
-                </Button>
-              )}
-            </div>
-          </div>
-        </Card>
-      </>
-    );
-
   return (
     <>
       <PageHeader
@@ -254,11 +224,19 @@ function NewContent() {
             <label className="flex items-center justify-between gap-4 rounded-xl border p-3 text-sm">
               <span>{t("meetingRecorder.autoTranscribe")}</span>
               <ToggleSwitch
-                checked={autoTranscribe}
+                checked={
+                  defaults.data?.storageEnabled === false || autoTranscribe
+                }
                 onClick={() => setAutoTranscribe((value) => !value)}
+                disabled={defaults.data?.storageEnabled === false}
                 aria-label={t("meetingRecorder.autoTranscribe")}
               />
             </label>
+            {defaults.data?.storageEnabled === false && (
+              <p className="text-sm text-slate-600">
+                {t("meetingRecorder.transcriptOnlyNotice")}
+              </p>
+            )}
             <p className="text-xs text-slate-500">
               {t("meetingRecorder.consent")}
             </p>
@@ -273,42 +251,46 @@ function NewContent() {
             </Button>
           </div>
         </Card>
-        <Card>
-          <div className="mb-5 flex items-center gap-3">
-            <Upload className="h-6 w-6 text-indigo-600" />
-            <div>
-              <h2 className="font-bold">{t("meetingRecorder.uploadTitle")}</h2>
-              <p className="text-sm text-slate-500">
-                {t("meetingRecorder.uploadDescription")}
+        {defaults.data?.storageEnabled && (
+          <Card>
+            <div className="mb-5 flex items-center gap-3">
+              <Upload className="h-6 w-6 text-indigo-600" />
+              <div>
+                <h2 className="font-bold">
+                  {t("meetingRecorder.uploadTitle")}
+                </h2>
+                <p className="text-sm text-slate-500">
+                  {t("meetingRecorder.uploadDescription")}
+                </p>
+              </div>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="audio-file">
+                  {t("meetingRecorder.audioFile")}
+                </Label>
+                <Input
+                  id="audio-file"
+                  type="file"
+                  accept="audio/webm,audio/ogg,audio/opus,audio/mpeg,audio/mp4,audio/wav,.m4a,.mp3,.ogg,.opus,.wav,.webm"
+                  onChange={(event) => setFile(event.target.files?.[0] ?? null)}
+                />
+              </div>
+              <p className="text-xs text-slate-500">
+                {t("meetingRecorder.uploadLimit")}
               </p>
+              <Button
+                className="w-full"
+                busy={upload.isPending}
+                disabled={!file}
+                onClick={() => upload.mutate()}
+              >
+                <Upload className="h-4 w-4" />
+                {t("meetingRecorder.uploadAndTranscribe")}
+              </Button>
             </div>
-          </div>
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="audio-file">
-                {t("meetingRecorder.audioFile")}
-              </Label>
-              <Input
-                id="audio-file"
-                type="file"
-                accept="audio/webm,audio/ogg,audio/opus,audio/mpeg,audio/mp4,audio/wav,.m4a,.mp3,.ogg,.opus,.wav,.webm"
-                onChange={(event) => setFile(event.target.files?.[0] ?? null)}
-              />
-            </div>
-            <p className="text-xs text-slate-500">
-              {t("meetingRecorder.uploadLimit")}
-            </p>
-            <Button
-              className="w-full"
-              busy={upload.isPending}
-              disabled={!file}
-              onClick={() => upload.mutate()}
-            >
-              <Upload className="h-4 w-4" />
-              {t("meetingRecorder.uploadAndTranscribe")}
-            </Button>
-          </div>
-        </Card>
+          </Card>
+        )}
       </div>
     </>
   );

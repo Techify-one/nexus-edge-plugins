@@ -33,12 +33,13 @@ export class IndependentMediaSegmenter {
     private readonly stream: MediaStream,
     private readonly segmentDurationMs: number,
     initialSequence: number,
+    initialOffsetMs: number,
     private readonly onSegment: (
       segment: CompletedMediaSegment,
     ) => Promise<void>,
   ) {
     this.sequence = initialSequence;
-    this.epoch = performance.now();
+    this.epoch = performance.now() - initialOffsetMs;
   }
 
   start(): void {

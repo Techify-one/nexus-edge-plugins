@@ -15,6 +15,8 @@ import {
   Skeleton,
 } from "../../.marketplace/frontend/src/components/ui/index.js";
 import {
+  hasTranslation,
+  translate,
   useI18n,
   type TranslationKey,
 } from "../../.marketplace/frontend/src/i18n/index.js";
@@ -107,6 +109,32 @@ function HomeContent() {
     queryFn: recorderApi.defaults,
     enabled: can("meeting_recorder.recording.create"),
   });
+  const [startingCapture, setStartingCapture] = useState(false);
+  const startCapture = async () => {
+    if (!defaults.data || startingCapture || session.state !== "idle") return;
+    setStartingCapture(true);
+    try {
+      await session.start({
+        title: `${t("meetingRecorder.quickTitle")} ${formatDateTime(Date.now())}`,
+        sourceMode: "microphone",
+        language: defaults.data.defaultLanguage,
+        autoTranscribe: defaults.data.storageEnabled
+          ? defaults.data.autoTranscribe
+          : true,
+      });
+    } catch (error) {
+      toast.error(
+        error instanceof Error &&
+          hasTranslation(`meetingRecorder.error.${error.message}`)
+          ? translate(`meetingRecorder.error.${error.message}`)
+          : error instanceof Error
+            ? error.message
+            : t("meetingRecorder.loadFailed"),
+      );
+    } finally {
+      setStartingCapture(false);
+    }
+  };
   const changeSorting = useCallback((next: SortingState) => {
     setCursor(null);
     setSorting(next.length ? next : [{ id: "started_at", desc: true }]);
@@ -220,20 +248,24 @@ function HomeContent() {
               </Button>
             )}
             {can("meeting_recorder.recording.create") && (
-              <Button
-                disabled={
-                  defaults.isPending || defaults.data?.storageEnabled === false
-                }
-                title={
-                  defaults.data?.storageEnabled === false
-                    ? t("meetingRecorder.r2RequiredTitle")
-                    : undefined
-                }
-                onClick={() => navigate("/app/p/meeting_recorder/new")}
-              >
-                <Plus className="h-4 w-4" />
-                {t("meetingRecorder.new")}
-              </Button>
+              <>
+                <Button
+                  busy={startingCapture}
+                  disabled={!defaults.data || session.state !== "idle"}
+                  onClick={() => void startCapture()}
+                >
+                  <Mic className="h-4 w-4" />
+                  {t("meetingRecorder.start")}
+                </Button>
+                <Button
+                  variant="secondary"
+                  disabled={defaults.isPending}
+                  onClick={() => navigate("/app/p/meeting_recorder/new")}
+                >
+                  <Plus className="h-4 w-4" />
+                  {t("meetingRecorder.new")}
+                </Button>
+              </>
             )}
           </div>
         }
@@ -273,8 +305,30 @@ function HomeContent() {
           <span className="flex-1">
             {t("meetingRecorder.recoveryFound", { name: item.title })}
           </span>
+          {item.state !== "finalizing" && session.state === "idle" && (
+            <Button
+              variant="secondary"
+              onClick={() =>
+                void session
+                  .continueCapture(item)
+                  .catch((error: unknown) =>
+                    toast.error(
+                      error instanceof Error &&
+                        hasTranslation(`meetingRecorder.error.${error.message}`)
+                        ? translate(`meetingRecorder.error.${error.message}`)
+                        : error instanceof Error
+                          ? error.message
+                          : t("meetingRecorder.loadFailed"),
+                    ),
+                  )
+              }
+            >
+              {t("meetingRecorder.continueCapture")}
+            </Button>
+          )}
           <Button
             variant="secondary"
+            disabled={session.state !== "idle"}
             onClick={() =>
               void session
                 .recover(item)
@@ -294,6 +348,7 @@ function HomeContent() {
           </Button>
           <Button
             variant="ghost"
+            disabled={session.state !== "idle"}
             onClick={() =>
               confirm(t("meetingRecorder.discardConfirm")) &&
               void session.dismissRecovery(item.recordingId)

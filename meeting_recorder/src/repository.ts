@@ -37,6 +37,7 @@ export type Recording = {
   bitrateBps: number | null;
   segmentDurationMs: number;
   autoTranscribe: boolean;
+  audioStorageMode: "r2" | "transient";
   expectedLastSequence: number | null;
   hasGaps: boolean;
   missingSegmentCount: number;
@@ -90,6 +91,7 @@ const recordingSelect = `SELECT
   r.capture_status AS "captureStatus", r.transcription_status AS "transcriptionStatus",
   r.language, r.mime_type AS "mimeType", r.bitrate_bps AS "bitrateBps",
   r.segment_duration_ms AS "segmentDurationMs", r.auto_transcribe AS "autoTranscribe",
+  r.audio_storage_mode AS "audioStorageMode",
   r.expected_last_sequence AS "expectedLastSequence", r.has_gaps AS "hasGaps",
   r.missing_segment_count AS "missingSegmentCount",
   r.stored_segment_count AS "storedSegmentCount",
@@ -352,6 +354,7 @@ export class MeetingRecorderRepository {
     bitrateBps?: number;
     segmentDurationMs: number;
     autoTranscribe: boolean;
+    audioStorageMode?: "r2" | "transient";
     consentVersion: string;
     captureStatus?: CaptureStatus;
     startedAt?: number;
@@ -365,9 +368,9 @@ export class MeetingRecorderRepository {
           id, client_session_id, owner_user_id, title, ingest_source,
           external_source_id, original_file_name, meeting_platform, source_type,
           capture_status, transcription_status, language, mime_type, bitrate_bps,
-          segment_duration_ms, auto_transcribe, consent_version,
+          segment_duration_ms, auto_transcribe, audio_storage_mode, consent_version,
           consent_acknowledged_at, started_at, last_heartbeat_at, created_at, updated_at
-        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
         [
           id,
           input.clientSessionId,
@@ -386,6 +389,7 @@ export class MeetingRecorderRepository {
           input.bitrateBps ?? null,
           input.segmentDurationMs,
           input.autoTranscribe,
+          input.audioStorageMode ?? "r2",
           input.consentVersion,
           now,
           now,
@@ -606,13 +610,19 @@ export class MeetingRecorderRepository {
       `UPDATE meeting_recorder_recordings SET capture_status = 'complete',
          expected_last_sequence = ?, has_gaps = ?, missing_segment_count = ?,
          stopped_at = ?, transcription_status = CASE
-           WHEN auto_transcribe = ? THEN 'pending' ELSE 'off' END,
+           WHEN auto_transcribe = ? AND EXISTS (
+             SELECT 1 FROM meeting_recorder_segments
+              WHERE recording_id = ? AND transcription_status <> 'ready'
+           ) THEN 'pending'
+           WHEN auto_transcribe = ? THEN 'ready' ELSE 'off' END,
          updated_at = ? WHERE id = ? AND capture_status IN ('recording','paused','interrupted','finalizing')`,
       [
         expectedLastSequence,
         missingSequences.length > 0,
         missingSequences.length,
         stoppedAt,
+        this.db.provider === "d1" ? 1 : true,
+        recordingId,
         this.db.provider === "d1" ? 1 : true,
         stoppedAt,
         recordingId,
@@ -699,8 +709,7 @@ export class MeetingRecorderRepository {
                 ),
                 transcription_status = CASE WHEN NOT EXISTS (
                   SELECT 1 FROM meeting_recorder_segments
-                   WHERE recording_id = ? AND storage_status = 'stored'
-                     AND transcription_status <> 'ready'
+                   WHERE recording_id = ? AND transcription_status <> 'ready'
                 ) THEN 'ready' ELSE 'processing' END,
                 updated_at = ? WHERE id = ?`,
         params: [

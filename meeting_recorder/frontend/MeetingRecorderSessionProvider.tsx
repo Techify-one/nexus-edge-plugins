@@ -32,6 +32,7 @@ import type {
 
 const CONSENT_VERSION = "2026-08-28";
 const SEGMENT_DURATION_MS = 10_000;
+const TRANSIENT_SEGMENT_DURATION_MS = 20_000;
 
 export type StartCaptureInput = {
   title: string;
@@ -52,6 +53,7 @@ type RecorderSessionContextValue = {
   resume: () => Promise<void>;
   stop: () => Promise<void>;
   recover: (session: LocalSession) => Promise<void>;
+  continueCapture: (session: LocalSession) => Promise<void>;
   dismissRecovery: (recordingId: string) => Promise<void>;
   stopAndReload: () => Promise<void>;
 };
@@ -79,6 +81,9 @@ export function MeetingRecorderSessionProvider({
   const activeSession = useRef<LocalSession | null>(null);
   const uploaded = useRef<LocalSegment[]>([]);
   const autoTranscribe = useRef(true);
+  const storageEnabled = useRef(true);
+  const recoveryInProgress = useRef(false);
+  const autoResumeAttempted = useRef<string | null>(null);
 
   useEffect(() => {
     void localRecorderStore
@@ -116,6 +121,7 @@ export function MeetingRecorderSessionProvider({
     const beforeUnload = (event: BeforeUnloadEvent) => {
       if (state === "idle") return;
       event.preventDefault();
+      event.returnValue = "";
     };
     window.addEventListener("app:update-pending", update);
     window.addEventListener("beforeunload", beforeUnload);
@@ -149,7 +155,11 @@ export function MeetingRecorderSessionProvider({
         nextRetryAt: Date.now(),
       };
       await localRecorderStore.saveSegment(local);
-      const updatedSession = { ...session, nextSequence: input.sequence + 1 };
+      const updatedSession = {
+        ...session,
+        nextSequence: input.sequence + 1,
+        accumulatedMs: input.startOffsetMs + input.durationMs,
+      };
       activeSession.current = updatedSession;
       await localRecorderStore.saveSession(updatedSession);
       queue.current?.enqueue(local);
@@ -170,6 +180,13 @@ export function MeetingRecorderSessionProvider({
           throw new Error("LOCAL_STORAGE_LOW");
         const mimeType = preferredRecorderMimeType();
         if (!mimeType) throw new Error("MEDIA_RECORDER_UNSUPPORTED");
+        const defaults = await recorderApi.defaults();
+        const retainAudio = defaults.storageEnabled;
+        const segmentDurationMs = retainAudio
+          ? SEGMENT_DURATION_MS
+          : TRANSIENT_SEGMENT_DURATION_MS;
+        if (!retainAudio && !input.autoTranscribe)
+          throw new Error("TRANSCRIPTION_REQUIRED");
         const media = await acquireCaptureMedia(input.sourceMode);
         closeMedia.current = media.close;
         const clientSessionId = crypto.randomUUID();
@@ -180,7 +197,7 @@ export function MeetingRecorderSessionProvider({
           language: input.language,
           mimeType,
           bitrateBps: 64_000,
-          segmentDurationMs: SEGMENT_DURATION_MS,
+          segmentDurationMs,
           autoTranscribe: input.autoTranscribe,
           consentVersion: CONSENT_VERSION,
           consentAcknowledged: true,
@@ -194,21 +211,27 @@ export function MeetingRecorderSessionProvider({
           startedAt: Date.now(),
           accumulatedMs: 0,
           state: "recording",
+          storageEnabled: created.recording.audioStorageMode === "r2",
+          language: input.language,
+          autoTranscribe: input.autoTranscribe,
         };
         await localRecorderStore.saveSession(session);
         activeSession.current = session;
         autoTranscribe.current = input.autoTranscribe;
+        storageEnabled.current = session.storageEnabled === true;
         uploaded.current = [];
         queue.current = new SegmentUploadQueue(
           setQueueSnapshot,
-          2,
+          storageEnabled.current ? 2 : 1,
           (segment) => {
             uploaded.current.push(segment);
           },
+          storageEnabled.current,
         );
         segmenter.current = new IndependentMediaSegmenter(
           media.stream,
-          SEGMENT_DURATION_MS,
+          segmentDurationMs,
+          0,
           0,
           persistSegment,
         );
@@ -279,13 +302,36 @@ export function MeetingRecorderSessionProvider({
       toast.error(translate("meetingRecorder.recoveryPendingError"));
       return;
     }
+    const localSession = activeSession.current;
+    if (localSession) {
+      activeSession.current = { ...localSession, state: "finalizing" };
+      await localRecorderStore.saveSession(activeSession.current);
+    }
     await recorderApi.captureState(recording.id, "finalizing");
     const lastSequence = Math.max(
       0,
       (activeSession.current?.nextSequence ?? 1) - 1,
     );
-    await recorderApi.finalize(recording.id, lastSequence);
-    if (autoTranscribe.current) {
+    try {
+      await recorderApi.finalize(recording.id, lastSequence);
+    } catch (error) {
+      const pending = activeSession.current;
+      if (pending) {
+        await localRecorderStore.saveSession(pending);
+        setRecoverable((items) => [
+          pending,
+          ...items.filter((item) => item.recordingId !== pending.recordingId),
+        ]);
+      }
+      activeSession.current = null;
+      segmenter.current = null;
+      queue.current = null;
+      setRecording(null);
+      setState("idle");
+      toast.error(translate("meetingRecorder.recoveryPendingError"));
+      return;
+    }
+    if (autoTranscribe.current && storageEnabled.current) {
       for (const segment of uploaded.current.toSorted(
         (a, b) => a.sequence - b.sequence,
       )) {
@@ -317,23 +363,189 @@ export function MeetingRecorderSessionProvider({
     setState("idle");
   }, [recording, state]);
 
-  const recover = useCallback(async (session: LocalSession) => {
-    const segments = await localRecorderStore.segments(session.recordingId);
-    const recoveryQueue = new SegmentUploadQueue(setQueueSnapshot);
-    segments.forEach((segment) => recoveryQueue.enqueue(segment));
-    await recoveryQueue.drain();
-    if (recoveryQueue.hasFailures())
-      throw new Error(translate("meetingRecorder.recoveryPendingError"));
-    await recorderApi.finalize(
-      session.recordingId,
-      Math.max(0, session.nextSequence - 1),
-    );
-    await localRecorderStore.removeSession(session.recordingId);
-    setRecoverable((items) =>
-      items.filter((item) => item.recordingId !== session.recordingId),
-    );
-    setQueueSnapshot(emptyQueue);
-  }, []);
+  const recover = useCallback(
+    async (session: LocalSession) => {
+      if (state !== "idle") throw new Error("CAPTURE_ALREADY_ACTIVE");
+      if (recoveryInProgress.current) return;
+      recoveryInProgress.current = true;
+      try {
+        const segments = await localRecorderStore.segments(session.recordingId);
+        const recording = (await recorderApi.recording(session.recordingId))
+          .recording;
+        const retainAudio = recording.audioStorageMode === "r2";
+        const remote = await recorderApi.segments(session.recordingId);
+        const pending: LocalSegment[] = [];
+        for (const segment of segments) {
+          const stored = remote.items.find(
+            (item) => item.sequence === segment.sequence,
+          );
+          if (
+            stored?.checksumSha256 === segment.checksumSha256 &&
+            (retainAudio
+              ? stored.storageStatus === "stored"
+              : stored.transcriptionStatus === "ready")
+          )
+            await localRecorderStore.removeSegment(
+              session.recordingId,
+              segment.sequence,
+            );
+          else pending.push(segment);
+        }
+        const recoveryQueue = new SegmentUploadQueue(
+          setQueueSnapshot,
+          retainAudio ? 2 : 1,
+          undefined,
+          retainAudio,
+        );
+        pending.forEach((segment) => recoveryQueue.enqueue(segment));
+        await recoveryQueue.drain();
+        if (recoveryQueue.hasFailures())
+          throw new Error(translate("meetingRecorder.recoveryPendingError"));
+        if (retainAudio && recording.autoTranscribe) {
+          const stored = await recorderApi.segments(session.recordingId);
+          for (const segment of stored.items) {
+            if (
+              segment.storageStatus === "stored" &&
+              segment.transcriptionStatus !== "ready"
+            )
+              await recorderApi.transcribe(
+                session.recordingId,
+                segment.sequence,
+                segment.checksumSha256,
+              );
+          }
+        }
+        await recorderApi.finalize(
+          session.recordingId,
+          Math.max(0, session.nextSequence - 1),
+        );
+        await localRecorderStore.removeSession(session.recordingId);
+        setRecoverable((items) =>
+          items.filter((item) => item.recordingId !== session.recordingId),
+        );
+        setQueueSnapshot(emptyQueue);
+      } finally {
+        recoveryInProgress.current = false;
+      }
+    },
+    [state],
+  );
+
+  const continueCapture = useCallback(
+    async (session: LocalSession) => {
+      if (state !== "idle") throw new Error("CAPTURE_ALREADY_ACTIVE");
+      if (recoveryInProgress.current) return;
+      const recording = (await recorderApi.recording(session.recordingId))
+        .recording;
+      if (
+        recording.captureStatus === "complete" ||
+        recording.captureStatus === "deleting"
+      )
+        throw new Error("RECORDING_FINALIZED");
+      setState("starting");
+      try {
+        const remote = await recorderApi.segments(session.recordingId);
+        const local = await localRecorderStore.segments(session.recordingId);
+        for (const segment of local) {
+          const stored = remote.items.find(
+            (item) => item.sequence === segment.sequence,
+          );
+          if (
+            stored?.checksumSha256 === segment.checksumSha256 &&
+            (recording.audioStorageMode === "r2"
+              ? stored.storageStatus === "stored"
+              : stored.transcriptionStatus === "ready")
+          )
+            await localRecorderStore.removeSegment(
+              session.recordingId,
+              segment.sequence,
+            );
+        }
+        const pending = await localRecorderStore.segments(session.recordingId);
+        const lastSequence = Math.max(
+          session.nextSequence - 1,
+          ...remote.items.map((item) => item.sequence),
+          ...pending.map((item) => item.sequence),
+        );
+        const offsetMs = Math.max(
+          session.accumulatedMs,
+          recording.timelineDurationMs,
+          ...pending.map((item) => item.startOffsetMs + item.durationMs),
+        );
+        if (
+          recording.audioStorageMode === "r2" &&
+          !(await recorderApi.defaults()).storageEnabled
+        )
+          throw new Error("R2_NOT_ENABLED");
+        if (recording.captureStatus === "finalizing")
+          throw new Error("RECORDING_FINALIZING");
+        const media = await acquireCaptureMedia(session.sourceMode);
+        closeMedia.current = media.close;
+        const updated: LocalSession = {
+          ...session,
+          storageEnabled: recording.audioStorageMode === "r2",
+          nextSequence: lastSequence + 1,
+          accumulatedMs: offsetMs,
+          state: "recording",
+        };
+        if (recording.captureStatus !== "recording")
+          await recorderApi.captureState(recording.id, "recording");
+        await localRecorderStore.saveSession(updated);
+        activeSession.current = updated;
+        autoTranscribe.current = recording.autoTranscribe;
+        storageEnabled.current = recording.audioStorageMode === "r2";
+        uploaded.current = [];
+        queue.current = new SegmentUploadQueue(
+          setQueueSnapshot,
+          storageEnabled.current ? 2 : 1,
+          (segment) => uploaded.current.push(segment),
+          storageEnabled.current,
+        );
+        segmenter.current = new IndependentMediaSegmenter(
+          media.stream,
+          storageEnabled.current
+            ? SEGMENT_DURATION_MS
+            : TRANSIENT_SEGMENT_DURATION_MS,
+          updated.nextSequence,
+          offsetMs,
+          persistSegment,
+        );
+        setRecording(recording);
+        setElapsedMs(offsetMs);
+        setRecoverable((items) =>
+          items.filter((item) => item.recordingId !== recording.id),
+        );
+        setState("recording");
+        segmenter.current.start();
+        pending.forEach((segment) => queue.current?.enqueue(segment));
+      } catch (error) {
+        closeMedia.current?.();
+        closeMedia.current = null;
+        setState("idle");
+        throw error;
+      }
+    },
+    [persistSegment, state],
+  );
+
+  useEffect(() => {
+    if (
+      state !== "idle" ||
+      recoverable.length !== 1 ||
+      !window.location.pathname.startsWith("/app/p/meeting_recorder")
+    )
+      return;
+    const session = recoverable[0]!;
+    if (
+      session.sourceMode !== "microphone" ||
+      session.state !== "recording" ||
+      document.visibilityState !== "visible" ||
+      autoResumeAttempted.current === session.recordingId
+    )
+      return;
+    autoResumeAttempted.current = session.recordingId;
+    void continueCapture(session).catch(() => undefined);
+  }, [continueCapture, recoverable, state]);
 
   const dismissRecovery = useCallback(async (recordingId: string) => {
     const segments = await localRecorderStore.segments(recordingId);
@@ -373,11 +585,13 @@ export function MeetingRecorderSessionProvider({
       resume,
       stop,
       recover,
+      continueCapture,
       dismissRecovery,
       stopAndReload,
     }),
     [
       dismissRecovery,
+      continueCapture,
       elapsedMs,
       pause,
       queueSnapshot,

@@ -227,6 +227,12 @@ describe("Meeting Recorder Telegram ingest", () => {
         "utf8",
       ),
     );
+    sqlite.exec(
+      readFileSync(
+        resolve("meeting_recorder/migrations/d1/0005_audio_storage_mode.sql"),
+        "utf8",
+      ),
+    );
     sqlite.exec(`
       INSERT INTO "user"(id,name,active) VALUES ('usr_telegram','Telegram User',1);
       INSERT INTO user_profiles(user_id,telegram_id,status)
@@ -1577,6 +1583,154 @@ describe("Meeting Recorder Telegram ingest", () => {
         )
         .get(),
     ).toMatchObject({ status: "failed", errorCode: "AI_TIMEOUT" });
+  });
+
+  it("transcribes browser segments without R2 and replays them safely", async () => {
+    const transientEnv = { ...env };
+    delete transientEnv.STORAGE;
+    const permissions = [
+      "meeting_recorder.recording.create",
+      "meeting_recorder.recording.update",
+      "meeting_recorder.recording.read",
+      "meeting_recorder.transcription.create",
+    ];
+    const context = encodeContext({
+      userId: "usr_telegram",
+      requestId: "req_browser_transcription",
+      origin: "https://nexus.example",
+      permissions,
+    });
+    const sessionId = crypto.randomUUID();
+    const created = await app.request(
+      "/recordings",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Idempotency-Key": `create-${sessionId}`,
+          "X-Plugin-Context": context,
+        },
+        body: JSON.stringify({
+          clientSessionId: sessionId,
+          title: "Browser transcript",
+          sourceType: "microphone",
+          language: "pt-BR",
+          mimeType: "audio/webm",
+          segmentDurationMs: 20_000,
+          autoTranscribe: true,
+          consentVersion: "2026-08-28",
+          consentAcknowledged: true,
+        }),
+      },
+      transientEnv,
+    );
+    expect(created.status).toBe(201);
+    const { recording } = (await created.json()) as {
+      recording: { id: string; audioStorageMode: string };
+    };
+    expect(recording.audioStorageMode).toBe("transient");
+    const audio = new Uint8Array([79, 103, 103, 83, 6, 7, 8]);
+    const checksum = Buffer.from(
+      await crypto.subtle.digest("SHA-256", audio),
+    ).toString("base64");
+    const put = (
+      sequence: number,
+      bytes = audio,
+      declaredChecksum = checksum,
+    ) =>
+      app.request(
+        `/recordings/${recording.id}/segments/${sequence}/transient`,
+        {
+          method: "PUT",
+          headers: {
+            "X-Plugin-Context": context,
+            "Content-Type": "audio/webm",
+            "X-Client-Session-Id": sessionId,
+            "X-Segment-Bytes": String(bytes.length),
+            "X-Segment-Duration-Ms": "20000",
+            "X-Segment-Start-Ms": String(sequence * 20_000),
+            "X-Segment-SHA256": declaredChecksum,
+          },
+          body: bytes,
+        },
+        transientEnv,
+      );
+    const aiRun = (transientEnv.AI as { run: ReturnType<typeof vi.fn> }).run;
+    const callsBefore = aiRun.mock.calls.length;
+    const first = await put(0);
+    expect(first.status).toBe(200);
+    expect(
+      (await first.json()) as { segment: { transcriptionStatus: string } },
+    ).toMatchObject({
+      segment: { transcriptionStatus: "ready" },
+    });
+    const second = await put(1);
+    expect(second.status).toBe(200);
+    const replay = await put(0);
+    expect(replay.status).toBe(200);
+    await expect(replay.json()).resolves.toMatchObject({ replay: true });
+    // Two distinct segments are transcribed once each; the replay of
+    // segment 0 must not call the model again.
+    expect(aiRun.mock.calls.length - callsBefore).toBe(2);
+    expect(
+      [...storage.objects.keys()].some((key) =>
+        key.startsWith(`recordings/${recording.id}/`),
+      ),
+    ).toBe(false);
+    const conflict = await put(0, new Uint8Array([1, 2, 3]));
+    expect(conflict.status).toBe(409);
+    const invalid = await put(2, audio, Buffer.alloc(32, 1).toString("base64"));
+    expect(invalid.status).toBe(422);
+    const premature = await app.request(
+      `/recordings/${recording.id}/finalize`,
+      {
+        method: "POST",
+        headers: {
+          "X-Plugin-Context": context,
+          "Idempotency-Key": `premature-${sessionId}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ expectedLastSequence: 2, missingSequences: [] }),
+      },
+      transientEnv,
+    );
+    expect(premature.status).toBe(409);
+    const finalized = await app.request(
+      `/recordings/${recording.id}/finalize`,
+      {
+        method: "POST",
+        headers: {
+          "X-Plugin-Context": context,
+          "Idempotency-Key": `finalize-${sessionId}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ expectedLastSequence: 1, missingSequences: [] }),
+      },
+      transientEnv,
+    );
+    expect(finalized.status).toBe(200);
+    await expect(finalized.json()).resolves.toMatchObject({
+      recording: {
+        transcriptionStatus: "ready",
+        audioStorageMode: "transient",
+      },
+    });
+    const transcript = await app.request(
+      `/recordings/${recording.id}/transcript`,
+      { headers: { "X-Plugin-Context": context } },
+      transientEnv,
+    );
+    await expect(transcript.json()).resolves.toMatchObject({
+      segments: [{ status: "ready" }, { status: "ready" }],
+    });
+    const audioResponse = await app.request(
+      `/recordings/${recording.id}/segments/0/audio`,
+      { headers: { "X-Plugin-Context": context } },
+      transientEnv,
+    );
+    expect(audioResponse.status).toBe(409);
+    const late = await put(2);
+    expect(late.status).toBe(409);
   });
 
   it("reports a Telegram media download failure without exposing the token", async () => {

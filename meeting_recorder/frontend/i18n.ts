@@ -7,7 +7,7 @@ export const meetingRecorderFrontendMessages = {
     "meetingRecorder.newDescription":
       "Grave o microfone ou envie um arquivo de áudio existente.",
     "meetingRecorder.starting": "Preparando gravação…",
-    "meetingRecorder.queue": "{{count}} segmento(s) aguardando envio",
+    "meetingRecorder.queue": "{{count}} segmento(s) aguardando processamento",
     "meetingRecorder.pause": "Pausar",
     "meetingRecorder.resume": "Continuar",
     "meetingRecorder.stop": "Parar",
@@ -45,7 +45,10 @@ export const meetingRecorderFrontendMessages = {
     "meetingRecorder.metric.transcribed": "Transcrições prontas",
     "meetingRecorder.metric.interrupted": "Interrompidas",
     "meetingRecorder.recoveryFound":
-      "Há segmentos locais de “{{name}}” para recuperar.",
+      "A gravação “{{name}}” foi interrompida. Você pode continuar a captura ou concluir as partes salvas.",
+    "meetingRecorder.continueCapture": "Continuar gravando",
+    "meetingRecorder.transcriptOnlyNotice":
+      "Sem R2, o áudio fica neste navegador até a transcrição ser confirmada. Depois ele é descartado; a transcrição permanece. Fechar a aba interrompe a captura.",
     "meetingRecorder.recover": "Recuperar",
     "meetingRecorder.recoveryComplete": "Segmentos recuperados com sucesso.",
     "meetingRecorder.recoveryPendingError":
@@ -64,6 +67,7 @@ export const meetingRecorderFrontendMessages = {
     "meetingRecorder.consent":
       "Ao iniciar, você confirma que tem autorização das pessoas participantes para gravar e transcrever.",
     "meetingRecorder.start": "Iniciar gravação",
+    "meetingRecorder.quickTitle": "Gravação",
     "meetingRecorder.uploadTitle": "Enviar áudio",
     "meetingRecorder.uploadDescription":
       "Importe um áudio pronto e receba a transcrição.",
@@ -79,7 +83,7 @@ export const meetingRecorderFrontendMessages = {
     "meetingRecorder.noTranscript": "A transcrição ainda não está disponível.",
     "meetingRecorder.noAudio": "Nenhum segmento de áudio disponível.",
     "meetingRecorder.audioNotRetained":
-      "Este áudio veio do Telegram no modo sem R2 e não foi armazenado. A transcrição permanece disponível.",
+      "Este áudio foi transcrito sem R2 e não foi armazenado. A transcrição permanece disponível.",
     "meetingRecorder.segmentProgress": "Segmento {{current}} de {{total}}",
     "meetingRecorder.playSegment": "Reproduzir segmento {{number}}",
     "meetingRecorder.details": "Detalhes",
@@ -107,9 +111,9 @@ export const meetingRecorderFrontendMessages = {
     "meetingRecorder.r2Description":
       "O R2 é opcional e pode ser ativado a qualquer momento, sem reinstalar o plugin.",
     "meetingRecorder.r2Enabled":
-      "R2 ativo: gravação, upload, armazenamento e reprodução de áudio estão liberados.",
+      "R2 ativo: o áudio de novas gravações e uploads é armazenado e pode ser reproduzido. Gravações antigas sem áudio continuam apenas como transcrição.",
     "meetingRecorder.r2Disabled":
-      "R2 desativado: o bot do Telegram transcreve em memória e descarta o áudio; gravação, upload e reprodução ficam indisponíveis.",
+      "R2 desativado: grave no navegador ou envie áudio pelo Telegram. O áudio é descartado após a transcrição; não há reprodução nem upload de arquivos.",
     "meetingRecorder.r2CreateToken": "Criar token R2 pré-configurado",
     "meetingRecorder.r2TokenInstructions":
       "Revise o token com somente Account → Workers R2 Storage → Edit, crie-o, cole abaixo e revogue-o após a ativação.",
@@ -123,9 +127,9 @@ export const meetingRecorderFrontendMessages = {
       "O R2 foi vinculado, mas o novo Worker ainda está propagando. Atualize a página em instantes.",
     "meetingRecorder.r2AdminRequired":
       "Um administrador com permissão para atualizar plugins pode ativar o R2.",
-    "meetingRecorder.r2RequiredTitle": "Ative o R2 para gravar ou enviar áudio",
+    "meetingRecorder.r2RequiredTitle": "Ative o R2 para guardar áudio",
     "meetingRecorder.r2RequiredDescription":
-      "Sem R2, somente áudios recebidos pelo Telegram podem ser transcritos, sem retenção do arquivo original.",
+      "Sem R2, a gravação pelo navegador e o bot do Telegram transcrevem sem reter áudio.",
     "meetingRecorder.openSettings": "Abrir configurações",
     "meetingRecorder.telegram": "Bot do Telegram",
     "meetingRecorder.telegramDescription":
@@ -235,6 +239,12 @@ export const meetingRecorderFrontendMessages = {
       "Este navegador não oferece um formato de gravação compatível.",
     "meetingRecorder.error.CAPTURE_ALREADY_ACTIVE":
       "Já existe uma gravação em andamento.",
+    "meetingRecorder.error.TRANSCRIPTION_REQUIRED":
+      "Sem R2, a transcrição automática é obrigatória.",
+    "meetingRecorder.error.RECORDING_FINALIZING":
+      "Esta gravação já está sendo concluída. Recupere as partes pendentes.",
+    "meetingRecorder.error.RECORDING_FINALIZED":
+      "Esta gravação já foi concluída.",
     "meetingRecorder.error.UNSUPPORTED_AUDIO_TYPE":
       "Este formato de áudio não é compatível.",
     "errors.PLUGIN_NOT_INSTALLED":
@@ -316,7 +326,7 @@ export const meetingRecorderFrontendMessages = {
     "meetingRecorder.newDescription":
       "Record your microphone or upload an existing audio file.",
     "meetingRecorder.starting": "Preparing recording…",
-    "meetingRecorder.queue": "{{count}} segment(s) waiting for upload",
+    "meetingRecorder.queue": "{{count}} segment(s) awaiting processing",
     "meetingRecorder.pause": "Pause",
     "meetingRecorder.resume": "Resume",
     "meetingRecorder.stop": "Stop",
@@ -354,7 +364,10 @@ export const meetingRecorderFrontendMessages = {
     "meetingRecorder.metric.transcribed": "Transcripts ready",
     "meetingRecorder.metric.interrupted": "Interrupted",
     "meetingRecorder.recoveryFound":
-      "Local segments from “{{name}}” can be recovered.",
+      "Recording “{{name}}” was interrupted. Continue capturing or finalize the saved segments.",
+    "meetingRecorder.continueCapture": "Continue recording",
+    "meetingRecorder.transcriptOnlyNotice":
+      "Without R2, audio stays in this browser until transcription succeeds. It is then discarded; the transcript remains. Closing the tab stops capture.",
     "meetingRecorder.recover": "Recover",
     "meetingRecorder.recoveryComplete": "Segments recovered successfully.",
     "meetingRecorder.recoveryPendingError":
@@ -373,6 +386,7 @@ export const meetingRecorderFrontendMessages = {
     "meetingRecorder.consent":
       "By starting, you confirm that you are authorized by the participants to record and transcribe.",
     "meetingRecorder.start": "Start recording",
+    "meetingRecorder.quickTitle": "Recording",
     "meetingRecorder.uploadTitle": "Upload audio",
     "meetingRecorder.uploadDescription":
       "Import existing audio and receive its transcript.",
@@ -387,7 +401,7 @@ export const meetingRecorderFrontendMessages = {
     "meetingRecorder.noTranscript": "The transcript is not available yet.",
     "meetingRecorder.noAudio": "No audio segment is available.",
     "meetingRecorder.audioNotRetained":
-      "This audio came from Telegram while R2 was disabled and was not retained. Its transcript remains available.",
+      "This audio was transcribed without R2 and was not retained. Its transcript remains available.",
     "meetingRecorder.segmentProgress": "Segment {{current}} of {{total}}",
     "meetingRecorder.playSegment": "Play segment {{number}}",
     "meetingRecorder.details": "Details",
@@ -415,9 +429,9 @@ export const meetingRecorderFrontendMessages = {
     "meetingRecorder.r2Description":
       "R2 is optional and can be enabled at any time without reinstalling the plugin.",
     "meetingRecorder.r2Enabled":
-      "R2 enabled: recording, upload, audio storage, and playback are available.",
+      "R2 enabled: audio from new recordings and uploads is stored and can be played back. Older transcript-only recordings remain without audio.",
     "meetingRecorder.r2Disabled":
-      "R2 disabled: the Telegram bot transcribes in memory and discards audio; recording, upload, and playback are unavailable.",
+      "R2 disabled: record in your browser or send Telegram audio. Audio is discarded after transcription; playback and file uploads are unavailable.",
     "meetingRecorder.r2CreateToken": "Create preconfigured R2 token",
     "meetingRecorder.r2TokenInstructions":
       "Review the token with only Account → Workers R2 Storage → Edit, create it, paste it below, and revoke it after activation.",
@@ -431,9 +445,9 @@ export const meetingRecorderFrontendMessages = {
       "R2 was attached, but the new Worker is still propagating. Refresh the page shortly.",
     "meetingRecorder.r2AdminRequired":
       "An administrator with plugin update permission can enable R2.",
-    "meetingRecorder.r2RequiredTitle": "Enable R2 to record or upload audio",
+    "meetingRecorder.r2RequiredTitle": "Enable R2 to retain audio",
     "meetingRecorder.r2RequiredDescription":
-      "Without R2, only Telegram audio can be transcribed, and the original file is not retained.",
+      "Without R2, browser recordings and Telegram audio are transcribed without retaining audio.",
     "meetingRecorder.openSettings": "Open settings",
     "meetingRecorder.telegram": "Telegram bot",
     "meetingRecorder.telegramDescription":
@@ -540,6 +554,12 @@ export const meetingRecorderFrontendMessages = {
       "This browser does not provide a compatible recording format.",
     "meetingRecorder.error.CAPTURE_ALREADY_ACTIVE":
       "A recording is already in progress.",
+    "meetingRecorder.error.TRANSCRIPTION_REQUIRED":
+      "Automatic transcription is required without R2.",
+    "meetingRecorder.error.RECORDING_FINALIZING":
+      "This recording is being finalized. Recover any pending segments.",
+    "meetingRecorder.error.RECORDING_FINALIZED":
+      "This recording has already been finalized.",
     "meetingRecorder.error.UNSUPPORTED_AUDIO_TYPE":
       "This audio format is not supported.",
     "errors.PLUGIN_NOT_INSTALLED":

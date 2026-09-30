@@ -220,7 +220,9 @@ function DetailContent() {
             ) : (
               <p className="mt-3 text-sm text-slate-500">
                 {t(
-                  item.ingestSource === "telegram"
+                  segments.data?.items.some(
+                    (segment) => segment.storageStatus === "missing",
+                  )
                     ? "meetingRecorder.audioNotRetained"
                     : "meetingRecorder.noAudio",
                 )}
