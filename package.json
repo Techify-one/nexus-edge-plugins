@@ -9,7 +9,8 @@
   },
   "scripts": {
     "typecheck": "pnpm --filter @nexus/plugin-sdk build && pnpm --filter './*' --workspace-concurrency=1 typecheck && tsc -p tsconfig.frontend.json --pretty false",
-    "test": "vitest run",
+    "test": "vitest run && pnpm test:financeiro:integration",
+    "test:financeiro:integration": "node --import tsx --test financeiro/tests/integration*.node.ts",
     "build": "pnpm --filter @nexus/plugin-sdk build && pnpm --filter './*' --workspace-concurrency=1 build",
     "package": "pnpm --filter './*' --workspace-concurrency=1 package",
     "marketplace": "pnpm --filter @nexus/plugin-sdk build && node .marketplace/packages/plugin-sdk/dist/marketplace-cli.js",

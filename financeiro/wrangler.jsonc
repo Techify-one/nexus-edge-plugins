@@ -1,0 +1,24 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "app-plugin-financeiro",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-15",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "preview_urls": false,
+  "vars": { "DATABASE_PROVIDER": "d1" },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "financeiro-local",
+      "database_id": "replace-with-d1-database-id",
+      "migrations_dir": "migrations/d1",
+    },
+  ],
+  "r2_buckets": [
+    { "binding": "DOCUMENTS", "bucket_name": "financeiro-local-documents" },
+  ],
+  "triggers": {
+    "crons": ["3,24,45 * * * *", "10,31,52 * * * *", "17,38,59 * * * *"],
+  },
+}

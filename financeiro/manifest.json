@@ -1,0 +1,236 @@
+{
+  "manifestVersion": 2,
+  "packageFormat": 2,
+  "id": "financeiro",
+  "name": "Financeiro",
+  "description": "Company finances, receivables, payables, recurring entries and monthly closing.",
+  "publisher": { "id": "techify", "name": "Techify" },
+  "version": "1.0.0",
+  "apiVersion": 1,
+  "coreMinVersion": "1.1.0-beta.15",
+  "compatibilityDate": "2026-09-15",
+  "compatibilityFlags": ["nodejs_compat"],
+  "databaseDialects": ["d1", "postgres"],
+  "tablePrefix": "financeiro_",
+  "engines": { "hostApi": 1, "coreApi": 1 },
+  "frontend": {
+    "entry": "frontend/entry.js",
+    "styles": ["frontend/styles.css"],
+    "isolation": "light",
+    "routes": [
+      { "routeKey": "financeiro.resumo", "path": "/app/p/financeiro" },
+      {
+        "routeKey": "financeiro.lancamentos",
+        "path": "/app/p/financeiro/lancamentos"
+      },
+      {
+        "routeKey": "financeiro.recorrencias",
+        "path": "/app/p/financeiro/recorrencias"
+      },
+      {
+        "routeKey": "financeiro.cadastros",
+        "path": "/app/p/financeiro/cadastros"
+      },
+      {
+        "routeKey": "financeiro.transferencias",
+        "path": "/app/p/financeiro/transferencias"
+      },
+      {
+        "routeKey": "financeiro.fechamento",
+        "path": "/app/p/financeiro/fechamento"
+      },
+      {
+        "routeKey": "financeiro.auditoria",
+        "path": "/app/p/financeiro/auditoria"
+      },
+      {
+        "routeKey": "financeiro.configuracoes",
+        "path": "/app/p/financeiro/configuracoes"
+      }
+    ]
+  },
+  "resources": [
+    {
+      "name": "documents",
+      "type": "r2",
+      "binding": "DOCUMENTS",
+      "capabilityVersion": 1,
+      "required": true,
+      "retention": "preserve",
+      "configuration": {}
+    },
+    {
+      "name": "hourly",
+      "type": "cron",
+      "binding": "HOURLY",
+      "capabilityVersion": 1,
+      "required": true,
+      "retention": "preserve",
+      "configuration": {
+        "schedules": ["3,24,45 * * * *", "10,31,52 * * * *", "17,38,59 * * * *"]
+      }
+    }
+  ],
+  "secrets": [
+    {
+      "name": "TELEGRAM_BOT_TOKEN",
+      "label": "Telegram bot token",
+      "required": false,
+      "permission": "financeiro.avisos.manage"
+    },
+    {
+      "name": "FINANCEIRO_WEBHOOK_SECRET",
+      "label": "Financial webhook signing secret (at least 32 bytes)",
+      "required": false,
+      "permission": "financeiro.avisos.manage"
+    },
+    {
+      "name": "FINANCEIRO_WEBHOOK_URL",
+      "label": "Trusted financial webhook HTTPS destination",
+      "required": false,
+      "permission": "financeiro.avisos.manage"
+    },
+    {
+      "name": "FINANCEIRO_WEBHOOK_ALLOWED_HOSTS",
+      "label": "Exact trusted public webhook hostnames",
+      "required": false,
+      "permission": "financeiro.avisos.manage"
+    }
+  ],
+  "permissions": [
+    "financeiro.empresas.read",
+    "financeiro.empresas.create",
+    "financeiro.empresas.update",
+    "financeiro.contas.read",
+    "financeiro.contas.create",
+    "financeiro.contas.update",
+    "financeiro.categorias.read",
+    "financeiro.categorias.create",
+    "financeiro.categorias.update",
+    "financeiro.lancamentos.read",
+    "financeiro.lancamentos.create",
+    "financeiro.lancamentos.update",
+    "financeiro.lancamentos.cancel",
+    "financeiro.movimentos.read",
+    "financeiro.movimentos.create",
+    "financeiro.movimentos.reverse",
+    "financeiro.transferencias.read",
+    "financeiro.transferencias.create",
+    "financeiro.transferencias.reverse",
+    "financeiro.recorrencias.read",
+    "financeiro.recorrencias.create",
+    "financeiro.recorrencias.update",
+    "financeiro.recorrencias.generate",
+    "financeiro.fechamentos.read",
+    "financeiro.fechamentos.close",
+    "financeiro.fechamentos.reopen",
+    "financeiro.resumo.read",
+    "financeiro.relatorios.read",
+    "financeiro.visoes.read",
+    "financeiro.visoes.create",
+    "financeiro.visoes.delete",
+    "financeiro.auditoria.read",
+    "financeiro.anexos.read",
+    "financeiro.anexos.create",
+    "financeiro.anexos.delete",
+    "financeiro.avisos.read",
+    "financeiro.avisos.manage"
+  ],
+  "localizedMetadata": {
+    "pt-BR": {
+      "name": "Financeiro",
+      "description": "Receitas, despesas, contas, recorrências e fechamento mensal por empresa.",
+      "menuTitles": { "financeiro.resumo": "Financeiro" },
+      "permissionLabels": {
+        "financeiro.empresas.read": "Ver empresas financeiras",
+        "financeiro.empresas.create": "Cadastrar empresas financeiras",
+        "financeiro.empresas.update": "Editar e inativar empresas financeiras",
+        "financeiro.contas.read": "Ver contas financeiras",
+        "financeiro.contas.create": "Cadastrar contas financeiras",
+        "financeiro.contas.update": "Editar e inativar contas financeiras",
+        "financeiro.categorias.read": "Ver categorias financeiras",
+        "financeiro.categorias.create": "Cadastrar categorias financeiras",
+        "financeiro.categorias.update": "Editar e inativar categorias financeiras",
+        "financeiro.lancamentos.read": "Ver receitas e despesas",
+        "financeiro.lancamentos.create": "Cadastrar receitas e despesas",
+        "financeiro.lancamentos.update": "Editar receitas e despesas",
+        "financeiro.lancamentos.cancel": "Cancelar receitas e despesas",
+        "financeiro.movimentos.read": "Ver pagamentos e recebimentos",
+        "financeiro.movimentos.create": "Registrar pagamentos e recebimentos",
+        "financeiro.movimentos.reverse": "Estornar pagamentos e recebimentos",
+        "financeiro.transferencias.read": "Ver transferências entre contas",
+        "financeiro.transferencias.create": "Registrar transferências entre contas",
+        "financeiro.transferencias.reverse": "Estornar transferências entre contas",
+        "financeiro.recorrencias.read": "Ver recorrências financeiras",
+        "financeiro.recorrencias.create": "Cadastrar recorrências financeiras",
+        "financeiro.recorrencias.update": "Editar e pausar recorrências financeiras",
+        "financeiro.recorrencias.generate": "Gerar lançamentos recorrentes",
+        "financeiro.fechamentos.read": "Ver fechamentos mensais",
+        "financeiro.fechamentos.close": "Fechar meses financeiros",
+        "financeiro.fechamentos.reopen": "Reabrir meses financeiros",
+        "financeiro.resumo.read": "Ver resumo financeiro",
+        "financeiro.relatorios.read": "Exportar relatórios financeiros",
+        "financeiro.visoes.read": "Ver visões financeiras pessoais",
+        "financeiro.visoes.create": "Salvar visões financeiras pessoais",
+        "financeiro.visoes.delete": "Excluir visões financeiras pessoais",
+        "financeiro.auditoria.read": "Ver auditoria financeira",
+        "financeiro.anexos.read": "Ver comprovantes financeiros",
+        "financeiro.anexos.create": "Anexar comprovantes financeiros",
+        "financeiro.anexos.delete": "Desvincular comprovantes financeiros",
+        "financeiro.avisos.read": "Ver configuração de avisos financeiros",
+        "financeiro.avisos.manage": "Configurar avisos e bot financeiro"
+      }
+    },
+    "en": {
+      "name": "Finance",
+      "description": "Company receivables, payables, accounts, recurring entries and monthly closing.",
+      "menuTitles": { "financeiro.resumo": "Finance" },
+      "permissionLabels": {
+        "financeiro.empresas.read": "View financial companies",
+        "financeiro.empresas.create": "Create financial companies",
+        "financeiro.empresas.update": "Edit and deactivate financial companies",
+        "financeiro.contas.read": "View financial accounts",
+        "financeiro.contas.create": "Create financial accounts",
+        "financeiro.contas.update": "Edit and deactivate financial accounts",
+        "financeiro.categorias.read": "View financial categories",
+        "financeiro.categorias.create": "Create financial categories",
+        "financeiro.categorias.update": "Edit and deactivate financial categories",
+        "financeiro.lancamentos.read": "View income and expenses",
+        "financeiro.lancamentos.create": "Create income and expenses",
+        "financeiro.lancamentos.update": "Edit income and expenses",
+        "financeiro.lancamentos.cancel": "Cancel income and expenses",
+        "financeiro.movimentos.read": "View payments and receipts",
+        "financeiro.movimentos.create": "Record payments and receipts",
+        "financeiro.movimentos.reverse": "Reverse payments and receipts",
+        "financeiro.transferencias.read": "View account transfers",
+        "financeiro.transferencias.create": "Record account transfers",
+        "financeiro.transferencias.reverse": "Reverse account transfers",
+        "financeiro.recorrencias.read": "View recurring entries",
+        "financeiro.recorrencias.create": "Create recurring entries",
+        "financeiro.recorrencias.update": "Edit and pause recurring entries",
+        "financeiro.recorrencias.generate": "Generate recurring entries",
+        "financeiro.fechamentos.read": "View monthly closings",
+        "financeiro.fechamentos.close": "Close financial months",
+        "financeiro.fechamentos.reopen": "Reopen financial months",
+        "financeiro.resumo.read": "View financial summary",
+        "financeiro.relatorios.read": "Export financial reports",
+        "financeiro.visoes.read": "View personal financial views",
+        "financeiro.visoes.create": "Save personal financial views",
+        "financeiro.visoes.delete": "Delete personal financial views",
+        "financeiro.auditoria.read": "View financial audit trail",
+        "financeiro.anexos.read": "View financial receipts",
+        "financeiro.anexos.create": "Attach financial receipts",
+        "financeiro.anexos.delete": "Unlink financial receipts",
+        "financeiro.avisos.read": "View financial reminder settings",
+        "financeiro.avisos.manage": "Configure reminders and financial bot"
+      }
+    }
+  },
+  "menu": [
+    {
+      "title": "Finance",
+      "routeKey": "financeiro.resumo",
+      "path": "/app/p/financeiro"
+    }
+  ]
+}

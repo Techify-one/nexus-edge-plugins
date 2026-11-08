@@ -1,0 +1,39 @@
+/* Host tokens own all colors and surfaces, including portals. */
+.financeiro {
+  min-width: 0;
+}
+.financeiro .metric-label {
+  text-transform: none;
+  letter-spacing: normal;
+}
+.financeiro .metric-value {
+  overflow-wrap: anywhere;
+}
+.financeiro-tabs a:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+.financeiro dl dt {
+  font-size: 0.875rem;
+  opacity: 0.75;
+  margin-bottom: 0.25rem;
+}
+.financeiro dl dd {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 640px) {
+  .financeiro .app-card:has(> .flex.flex-nowrap) {
+    overflow-x: auto;
+  }
+  .financeiro .app-card > .flex.flex-nowrap > * {
+    min-width: 10rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .financeiro *,
+  .financeiro *::before,
+  .financeiro *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}

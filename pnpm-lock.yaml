@@ -148,6 +148,18 @@ importers:
         specifier: 4.4.3
         version: 4.4.3
 
+  financeiro:
+    dependencies:
+      "@nexus/plugin-sdk":
+        specifier: workspace:*
+        version: link:../.marketplace/packages/plugin-sdk
+      hono:
+        specifier: 4.13.3
+        version: 4.13.3
+      zod:
+        specifier: 4.4.3
+        version: 4.4.3
+
   meeting_recorder:
     dependencies:
       "@nexus/plugin-sdk":

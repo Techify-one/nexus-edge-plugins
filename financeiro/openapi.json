@@ -1,0 +1,3233 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Nexus Edge Financeiro API",
+    "version": "1.0.0",
+    "description": "Authenticated financial records. Monetary values are integer cents encoded as strings. All operations require the current Nexus session or a permitted API key."
+  },
+  "paths": {
+    "/api/v1/p/financeiro/empresas": {
+      "get": {
+        "operationId": "financeiro_get_empresas",
+        "summary": "List empresas",
+        "x-required-permissions": ["financeiro.empresas.read"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "financeiro_post_empresas",
+        "summary": "Create empresas",
+        "x-required-permissions": ["financeiro.empresas.create"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompanyInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/p/financeiro/contas": {
+      "get": {
+        "operationId": "financeiro_get_contas",
+        "summary": "List contas",
+        "x-required-permissions": ["financeiro.contas.read"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "financeiro_post_contas",
+        "summary": "Create contas",
+        "x-required-permissions": ["financeiro.contas.create"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/p/financeiro/categorias": {
+      "get": {
+        "operationId": "financeiro_get_categorias",
+        "summary": "List categorias",
+        "x-required-permissions": ["financeiro.categorias.read"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "financeiro_post_categorias",
+        "summary": "Create categorias",
+        "x-required-permissions": ["financeiro.categorias.create"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoryInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/p/financeiro/lancamentos": {
+      "get": {
+        "operationId": "financeiro_get_lancamentos",
+        "summary": "List lancamentos",
+        "x-required-permissions": ["financeiro.lancamentos.read"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "financeiro_post_lancamentos",
+        "summary": "Create lancamentos",
+        "x-required-permissions": ["financeiro.lancamentos.create"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EntryInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/p/financeiro/transferencias": {
+      "get": {
+        "operationId": "financeiro_get_transferencias",
+        "summary": "List transferencias",
+        "x-required-permissions": ["financeiro.transferencias.read"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "financeiro_post_transferencias",
+        "summary": "Create transferencias",
+        "x-required-permissions": ["financeiro.transferencias.create"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransferInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/p/financeiro/recorrencias": {
+      "get": {
+        "operationId": "financeiro_get_recorrencias",
+        "summary": "List recorrencias",
+        "x-required-permissions": ["financeiro.recorrencias.read"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "financeiro_post_recorrencias",
+        "summary": "Create recorrencias",
+        "x-required-permissions": ["financeiro.recorrencias.create"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecurrenceInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/p/financeiro/fechamentos": {
+      "get": {
+        "operationId": "financeiro_get_fechamentos",
+        "summary": "List fechamentos",
+        "x-required-permissions": ["financeiro.fechamentos.read"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "financeiro_post_fechamentos",
+        "summary": "Create fechamentos",
+        "x-required-permissions": ["financeiro.fechamentos.close"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CloseInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/p/financeiro/visoes": {
+      "get": {
+        "operationId": "financeiro_get_visoes",
+        "summary": "List visoes",
+        "x-required-permissions": ["financeiro.visoes.read"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "financeiro_post_visoes",
+        "summary": "Create visoes",
+        "x-required-permissions": ["financeiro.visoes.create"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ViewInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/p/financeiro/empresas/{id}": {
+      "patch": {
+        "operationId": "financeiro_patch_empresas_id",
+        "summary": "Update empresas",
+        "x-required-permissions": ["financeiro.empresas.update"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompanyInputPatch"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/p/financeiro/contas/{id}": {
+      "patch": {
+        "operationId": "financeiro_patch_contas_id",
+        "summary": "Update contas",
+        "x-required-permissions": ["financeiro.contas.update"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountInputPatch"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/p/financeiro/categorias/{id}": {
+      "patch": {
+        "operationId": "financeiro_patch_categorias_id",
+        "summary": "Update categorias",
+        "x-required-permissions": ["financeiro.categorias.update"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoryInputPatch"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/p/financeiro/lancamentos/{id}": {
+      "patch": {
+        "operationId": "financeiro_patch_lancamentos_id",
+        "summary": "Update lancamentos",
+        "x-required-permissions": ["financeiro.lancamentos.update"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EntryInputPatch"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "financeiro_get_lancamentos_id",
+        "summary": "Entry details with movements and receipts",
+        "x-required-permissions": ["financeiro.lancamentos.read"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/p/financeiro/lancamentos/{id}/cancelar": {
+      "post": {
+        "operationId": "financeiro_post_lancamentos_id_cancelar",
+        "summary": "Cancel unpaid entry",
+        "x-required-permissions": ["financeiro.lancamentos.cancel"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReasonInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/p/financeiro/lancamentos/{id}/baixas": {
+      "post": {
+        "operationId": "financeiro_post_lancamentos_id_baixas",
+        "summary": "Record a partial or full settlement",
+        "x-required-permissions": ["financeiro.movimentos.create"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SettlementInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/p/financeiro/movimentos": {
+      "get": {
+        "operationId": "financeiro_get_movimentos",
+        "summary": "List financial movements",
+        "x-required-permissions": ["financeiro.movimentos.read"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/p/financeiro/movimentos/{id}/estornar": {
+      "post": {
+        "operationId": "financeiro_post_movimentos_id_estornar",
+        "summary": "Reverse a settlement",
+        "x-required-permissions": ["financeiro.movimentos.reverse"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReversalInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/p/financeiro/transferencias/{id}/estornar": {
+      "post": {
+        "operationId": "financeiro_post_transferencias_id_estornar",
+        "summary": "Reverse both transfer movements atomically",
+        "x-required-permissions": ["financeiro.transferencias.reverse"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReversalInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/p/financeiro/recorrencias/{id}": {
+      "patch": {
+        "operationId": "financeiro_patch_recorrencias_id",
+        "summary": "Edit future recurring occurrences",
+        "x-required-permissions": ["financeiro.recorrencias.update"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecurrenceUpdate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/p/financeiro/recorrencias/previa": {
+      "post": {
+        "operationId": "financeiro_post_recorrencias_previa",
+        "summary": "Preview up to 90 days of occurrences",
+        "x-required-permissions": ["financeiro.recorrencias.read"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PreviewInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/p/financeiro/recorrencias/gerar": {
+      "post": {
+        "operationId": "financeiro_post_recorrencias_gerar",
+        "summary": "Generate occurrences idempotently",
+        "x-required-permissions": ["financeiro.recorrencias.generate"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/p/financeiro/fechamentos/{id}/reabrir": {
+      "post": {
+        "operationId": "financeiro_post_fechamentos_id_reabrir",
+        "summary": "Reopen closed month with reason",
+        "x-required-permissions": ["financeiro.fechamentos.reopen"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReasonInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/p/financeiro/resumo": {
+      "get": {
+        "operationId": "financeiro_get_resumo",
+        "summary": "Financial summary by cash and competence",
+        "x-required-permissions": ["financeiro.resumo.read"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "mes",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/p/financeiro/visoes/{id}": {
+      "delete": {
+        "operationId": "financeiro_delete_visoes_id",
+        "summary": "Delete own saved view",
+        "x-required-permissions": ["financeiro.visoes.delete"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/p/financeiro/auditoria": {
+      "get": {
+        "operationId": "financeiro_get_auditoria",
+        "summary": "Financial audit trail",
+        "x-required-permissions": ["financeiro.auditoria.read"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/p/financeiro/relatorios/csv": {
+      "get": {
+        "operationId": "financeiro_get_relatorios_csv",
+        "summary": "Export financial CSV",
+        "x-required-permissions": ["financeiro.relatorios.read"],
+        "responses": {
+          "200": {
+            "description": "CSV file",
+            "content": {
+              "text/csv": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "mes",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "regime",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": ["competencia", "caixa"]
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/p/financeiro/anexos": {
+      "get": {
+        "operationId": "financeiro_get_anexos",
+        "summary": "List private financial receipts",
+        "x-required-permissions": ["financeiro.anexos.read"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          }
+        ]
+      },
+      "post": {
+        "operationId": "financeiro_post_anexos",
+        "summary": "Upload a private receipt",
+        "x-required-permissions": ["financeiro.anexos.create"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "lancamentoId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "X-File-Name",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "URI-encoded file name"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/pdf": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/png": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            },
+            "image/jpeg": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/p/financeiro/anexos/{id}": {
+      "get": {
+        "operationId": "financeiro_get_anexos_id",
+        "summary": "Download a private receipt",
+        "x-required-permissions": ["financeiro.anexos.read"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "financeiro_delete_anexos_id",
+        "summary": "Remove a receipt link",
+        "x-required-permissions": ["financeiro.anexos.delete"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/p/financeiro/avisos/configuracao": {
+      "get": {
+        "operationId": "financeiro_get_avisos_configuracao",
+        "summary": "Read reminder configuration",
+        "x-required-permissions": ["financeiro.avisos.read"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          }
+        ]
+      },
+      "put": {
+        "operationId": "financeiro_put_avisos_configuracao",
+        "summary": "Configure reminders",
+        "x-required-permissions": ["financeiro.avisos.manage"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NoticeInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/p/financeiro/avisos/enviar": {
+      "post": {
+        "operationId": "financeiro_post_avisos_enviar",
+        "summary": "Send due reminder if configured",
+        "x-required-permissions": ["financeiro.avisos.manage"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        },
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/p/financeiro/health": {
+      "get": {
+        "operationId": "financeiro_get_health",
+        "summary": "Plugin health",
+        "x-required-permissions": ["financeiro.empresas.read"],
+        "responses": {
+          "200": {
+            "description": "Successful response. Lists use data, total, offset and limit; objects use data."
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Concurrent write, idempotency or closed-period conflict"
+          }
+        }
+      }
+    },
+    "/api/v1/p/financeiro/webhooks/status": {
+      "get": {
+        "operationId": "financeiro_get_webhooks_status",
+        "summary": "Read non-secret outgoing webhook configuration status",
+        "x-required-permissions": ["financeiro.avisos.read"],
+        "responses": {
+          "200": {
+            "description": "Configuration status only; never URL or signing key"
+          },
+          "401": {
+            "description": "Authentication required"
+          },
+          "403": {
+            "description": "Permission denied"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "session": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "better-auth.session_token"
+      },
+      "apiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
+      }
+    },
+    "schemas": {
+      "Cents": {
+        "type": "string",
+        "pattern": "^-?[0-9]{1,15}$",
+        "description": "Exact integer cents; never a floating point amount."
+      },
+      "Date": {
+        "type": "string",
+        "format": "date"
+      },
+      "Error": {
+        "type": "object",
+        "required": ["error"],
+        "properties": {
+          "error": {
+            "type": "object",
+            "required": ["code", "message"],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "PositiveCents": {
+        "type": "string",
+        "pattern": "^[1-9][0-9]{0,14}$"
+      },
+      "CompanyInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "nome": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "ativo": {
+            "type": "boolean"
+          }
+        },
+        "required": ["nome"]
+      },
+      "AccountInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "nome": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "tipo": {
+            "enum": ["BANCO", "CAIXA"]
+          },
+          "saldoInicialCentavos": {
+            "$ref": "#/components/schemas/Cents"
+          },
+          "dataSaldoInicial": {
+            "$ref": "#/components/schemas/Date"
+          },
+          "ativo": {
+            "type": "boolean"
+          }
+        },
+        "required": ["nome", "tipo", "dataSaldoInicial"]
+      },
+      "CategoryInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "nome": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "tipo": {
+            "enum": ["RECEITA", "DESPESA"]
+          },
+          "ativo": {
+            "type": "boolean"
+          }
+        },
+        "required": ["nome", "tipo"]
+      },
+      "SettlementInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contaId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]+$",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "dataEfetiva": {
+            "$ref": "#/components/schemas/Date"
+          },
+          "valorCentavos": {
+            "$ref": "#/components/schemas/PositiveCents"
+          },
+          "chaveIdempotencia": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 150
+          }
+        },
+        "required": [
+          "contaId",
+          "dataEfetiva",
+          "valorCentavos",
+          "chaveIdempotencia"
+        ]
+      },
+      "EntryInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "tipo": {
+            "enum": ["RECEITA", "DESPESA"]
+          },
+          "descricao": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "valorCentavos": {
+            "$ref": "#/components/schemas/PositiveCents"
+          },
+          "competencia": {
+            "$ref": "#/components/schemas/Date"
+          },
+          "vencimento": {
+            "$ref": "#/components/schemas/Date"
+          },
+          "categoriaId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]+$",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "contaPrevistaId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "observacao": {
+            "type": "string",
+            "maxLength": 5000
+          },
+          "confirmado": {
+            "type": "boolean",
+            "default": true
+          },
+          "liquidacao": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "contaId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "dataEfetiva": {
+                "$ref": "#/components/schemas/Date"
+              },
+              "valorCentavos": {
+                "$ref": "#/components/schemas/PositiveCents"
+              }
+            },
+            "required": ["contaId", "dataEfetiva", "valorCentavos"]
+          },
+          "chaveIdempotencia": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 150,
+            "description": "Required when liquidacao is present; reuse unchanged on retries."
+          },
+          "contraparte": {
+            "type": "string",
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "tipo",
+          "descricao",
+          "valorCentavos",
+          "competencia",
+          "vencimento",
+          "categoriaId"
+        ]
+      },
+      "ReasonInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "motivo": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 1000
+          }
+        },
+        "required": ["motivo"]
+      },
+      "ReversalInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "motivo": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 1000
+          },
+          "dataEfetiva": {
+            "$ref": "#/components/schemas/Date"
+          },
+          "chaveIdempotencia": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 150
+          }
+        },
+        "required": ["motivo", "dataEfetiva", "chaveIdempotencia"]
+      },
+      "TransferInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "contaOrigemId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]+$",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "contaDestinoId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]+$",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "valorCentavos": {
+            "$ref": "#/components/schemas/PositiveCents"
+          },
+          "dataEfetiva": {
+            "$ref": "#/components/schemas/Date"
+          },
+          "descricao": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "chaveIdempotencia": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 150
+          }
+        },
+        "required": [
+          "contaOrigemId",
+          "contaDestinoId",
+          "valorCentavos",
+          "dataEfetiva",
+          "chaveIdempotencia"
+        ]
+      },
+      "Rule": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "frequencia": {
+            "enum": ["DIA", "SEMANA", "MES"]
+          },
+          "intervalo": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 366
+          },
+          "dia_mes": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 31
+          },
+          "semana_do_mes": {
+            "enum": [-1, 1, 2, 3, 4, 5]
+          },
+          "dia_semana": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 6
+          },
+          "ajuste_fds": {
+            "enum": ["MANTER", "ANTECIPAR", "ADIAR"]
+          }
+        },
+        "required": ["frequencia", "intervalo", "ajuste_fds"]
+      },
+      "RecurrenceInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "tipo": {
+            "enum": ["RECEITA", "DESPESA"]
+          },
+          "descricao": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "valorCentavos": {
+            "$ref": "#/components/schemas/PositiveCents"
+          },
+          "categoriaId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]+$",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "contaPrevistaId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "observacao": {
+            "type": "string",
+            "maxLength": 5000
+          },
+          "confirmado": {
+            "type": "boolean",
+            "default": true
+          },
+          "ancora": {
+            "$ref": "#/components/schemas/Date"
+          },
+          "inicio": {
+            "$ref": "#/components/schemas/Date"
+          },
+          "fim": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Date"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "regra": {
+            "$ref": "#/components/schemas/Rule"
+          },
+          "excecoes": {
+            "type": "array",
+            "maxItems": 500,
+            "items": {
+              "$ref": "#/components/schemas/Date"
+            }
+          },
+          "contraparte": {
+            "type": "string",
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "tipo",
+          "descricao",
+          "valorCentavos",
+          "categoriaId",
+          "ancora",
+          "inicio",
+          "regra"
+        ]
+      },
+      "RecurrenceUpdate": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "tipo": {
+            "enum": ["RECEITA", "DESPESA"]
+          },
+          "descricao": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "valorCentavos": {
+            "$ref": "#/components/schemas/PositiveCents"
+          },
+          "categoriaId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]+$",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "contaPrevistaId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "observacao": {
+            "type": "string",
+            "maxLength": 5000
+          },
+          "confirmado": {
+            "type": "boolean",
+            "default": true
+          },
+          "ancora": {
+            "$ref": "#/components/schemas/Date"
+          },
+          "inicio": {
+            "$ref": "#/components/schemas/Date"
+          },
+          "fim": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Date"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "regra": {
+            "$ref": "#/components/schemas/Rule"
+          },
+          "excecoes": {
+            "type": "array",
+            "maxItems": 500,
+            "items": {
+              "$ref": "#/components/schemas/Date"
+            }
+          },
+          "status": {
+            "enum": ["ATIVA", "PAUSADA", "ENCERRADA"]
+          },
+          "escopo": {
+            "const": "FUTURAS"
+          },
+          "contraparte": {
+            "type": "string",
+            "maxLength": 200
+          }
+        },
+        "required": []
+      },
+      "GenerateInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "de": {
+            "$ref": "#/components/schemas/Date"
+          },
+          "ate": {
+            "$ref": "#/components/schemas/Date"
+          }
+        },
+        "required": []
+      },
+      "CloseInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "mes": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+          }
+        },
+        "required": ["mes"]
+      },
+      "NoticeInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "ativo": {
+            "type": "boolean"
+          },
+          "chatId": {
+            "type": "string",
+            "pattern": "^-?[0-9]{1,20}$"
+          },
+          "diasAntecedencia": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 30
+          }
+        },
+        "required": ["ativo", "chatId", "diasAntecedencia"]
+      },
+      "ViewInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "nome": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "filtros": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "tipo": {
+                "enum": ["RECEITA", "DESPESA"]
+              },
+              "mes": {
+                "type": "string",
+                "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+              },
+              "situacao": {
+                "enum": ["ABERTO", "PARCIAL", "LIQUIDADO", "CANCELADO"]
+              },
+              "categoriaId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "contaPrevistaId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "busca": {
+                "type": "string",
+                "maxLength": 200
+              }
+            },
+            "required": []
+          }
+        },
+        "required": ["nome", "filtros"]
+      },
+      "CompanyInputPatch": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "nome": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "ativo": {
+            "type": "boolean"
+          }
+        },
+        "required": []
+      },
+      "AccountInputPatch": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "nome": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "tipo": {
+            "enum": ["BANCO", "CAIXA"]
+          },
+          "saldoInicialCentavos": {
+            "$ref": "#/components/schemas/Cents"
+          },
+          "dataSaldoInicial": {
+            "$ref": "#/components/schemas/Date"
+          },
+          "ativo": {
+            "type": "boolean"
+          }
+        },
+        "required": []
+      },
+      "CategoryInputPatch": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "nome": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "tipo": {
+            "enum": ["RECEITA", "DESPESA"]
+          },
+          "ativo": {
+            "type": "boolean"
+          }
+        },
+        "required": []
+      },
+      "EntryInputPatch": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "tipo": {
+            "enum": ["RECEITA", "DESPESA"]
+          },
+          "descricao": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "valorCentavos": {
+            "$ref": "#/components/schemas/PositiveCents"
+          },
+          "competencia": {
+            "$ref": "#/components/schemas/Date"
+          },
+          "vencimento": {
+            "$ref": "#/components/schemas/Date"
+          },
+          "categoriaId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]+$",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "contaPrevistaId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "observacao": {
+            "type": "string",
+            "maxLength": 5000
+          },
+          "confirmado": {
+            "type": "boolean",
+            "default": true
+          },
+          "contraparte": {
+            "type": "string",
+            "maxLength": 200
+          }
+        },
+        "required": []
+      },
+      "PreviewInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "tipo": {
+            "enum": ["RECEITA", "DESPESA"]
+          },
+          "descricao": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "valorCentavos": {
+            "$ref": "#/components/schemas/PositiveCents"
+          },
+          "categoriaId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9_-]+$",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "contaPrevistaId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_-]+$",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "observacao": {
+            "type": "string",
+            "maxLength": 5000
+          },
+          "confirmado": {
+            "type": "boolean",
+            "default": true
+          },
+          "ancora": {
+            "$ref": "#/components/schemas/Date"
+          },
+          "inicio": {
+            "$ref": "#/components/schemas/Date"
+          },
+          "fim": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Date"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "regra": {
+            "$ref": "#/components/schemas/Rule"
+          },
+          "excecoes": {
+            "type": "array",
+            "maxItems": 500,
+            "items": {
+              "$ref": "#/components/schemas/Date"
+            }
+          },
+          "de": {
+            "$ref": "#/components/schemas/Date"
+          },
+          "ate": {
+            "$ref": "#/components/schemas/Date"
+          }
+        },
+        "required": [
+          "tipo",
+          "descricao",
+          "valorCentavos",
+          "categoriaId",
+          "ancora",
+          "inicio",
+          "regra"
+        ]
+      }
+    }
+  },
+  "security": [
+    {
+      "session": []
+    },
+    {
+      "apiKey": []
+    }
+  ]
+}
