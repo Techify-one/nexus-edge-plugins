@@ -6,6 +6,7 @@ import type {
 } from "@nexus/plugin-sdk/backend";
 export type Bindings = PluginDatabaseBindings & {
   DOCUMENTS?: R2Bucket;
+  SCHEDULER?: DurableObjectNamespace;
   TELEGRAM_BOT_TOKEN?: string;
   FINANCEIRO_WEBHOOK_SECRET?: string;
   FINANCEIRO_WEBHOOK_URL?: string;

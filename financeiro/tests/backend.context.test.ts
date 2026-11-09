@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { app } from "../src/index.js";
+import { app, scheduledJob } from "../src/index.js";
 const header = (value: unknown) =>
   btoa(JSON.stringify(value))
     .replaceAll("+", "-")
@@ -93,5 +93,26 @@ describe("financeiro gateway context", () => {
     expect(
       ((await response.json()) as { error: { code: string } }).error.code,
     ).toBe("FORBIDDEN");
+  });
+});
+
+describe("single-trigger scheduling", () => {
+  it("rotates isolated jobs without consuming three account cron slots", () => {
+    const jobs = [0, 7, 14, 21, 28, 35, 42, 49, 56].map((minute) =>
+      scheduledJob(Date.UTC(2026, 10, 9, 12, minute)),
+    );
+    expect(jobs).toEqual([
+      "generate",
+      "notices",
+      "webhooks",
+      "generate",
+      "notices",
+      "webhooks",
+      "generate",
+      "notices",
+      "webhooks",
+    ]);
+    expect(() => scheduledJob(Number.NaN)).toThrow();
+    expect(() => scheduledJob(-1)).toThrow();
   });
 });

@@ -4,21 +4,30 @@
   "id": "financeiro",
   "name": "Financeiro",
   "description": "Company finances, receivables, payables, recurring entries and monthly closing.",
-  "publisher": { "id": "techify", "name": "Techify" },
-  "version": "1.0.0",
+  "publisher": {
+    "id": "techify",
+    "name": "Techify"
+  },
+  "version": "1.0.1",
   "apiVersion": 1,
   "coreMinVersion": "1.1.0-beta.15",
   "compatibilityDate": "2026-09-15",
   "compatibilityFlags": ["nodejs_compat"],
   "databaseDialects": ["d1", "postgres"],
   "tablePrefix": "financeiro_",
-  "engines": { "hostApi": 1, "coreApi": 1 },
+  "engines": {
+    "hostApi": 1,
+    "coreApi": 1
+  },
   "frontend": {
     "entry": "frontend/entry.js",
     "styles": ["frontend/styles.css"],
     "isolation": "light",
     "routes": [
-      { "routeKey": "financeiro.resumo", "path": "/app/p/financeiro" },
+      {
+        "routeKey": "financeiro.resumo",
+        "path": "/app/p/financeiro"
+      },
       {
         "routeKey": "financeiro.lancamentos",
         "path": "/app/p/financeiro/lancamentos"
@@ -60,14 +69,15 @@
       "configuration": {}
     },
     {
-      "name": "hourly",
-      "type": "cron",
-      "binding": "HOURLY",
+      "name": "scheduler",
+      "type": "durable_object",
+      "binding": "SCHEDULER",
       "capabilityVersion": 1,
       "required": true,
       "retention": "preserve",
       "configuration": {
-        "schedules": ["3,24,45 * * * *", "10,31,52 * * * *", "17,38,59 * * * *"]
+        "className": "FinanceiroScheduler",
+        "storage": "sqlite"
       }
     }
   ],
@@ -140,7 +150,9 @@
     "pt-BR": {
       "name": "Financeiro",
       "description": "Receitas, despesas, contas, recorrências e fechamento mensal por empresa.",
-      "menuTitles": { "financeiro.resumo": "Financeiro" },
+      "menuTitles": {
+        "financeiro.resumo": "Financeiro"
+      },
       "permissionLabels": {
         "financeiro.empresas.read": "Ver empresas financeiras",
         "financeiro.empresas.create": "Cadastrar empresas financeiras",
@@ -184,7 +196,9 @@
     "en": {
       "name": "Finance",
       "description": "Company receivables, payables, accounts, recurring entries and monthly closing.",
-      "menuTitles": { "financeiro.resumo": "Finance" },
+      "menuTitles": {
+        "financeiro.resumo": "Finance"
+      },
       "permissionLabels": {
         "financeiro.empresas.read": "View financial companies",
         "financeiro.empresas.create": "Create financial companies",

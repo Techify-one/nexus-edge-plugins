@@ -1,5 +1,5 @@
 {
   "category": "Gestão financeira",
   "description": "Controle receitas, despesas, contas, recorrências e fechamento mensal no Nexus Edge, com comprovantes privados e histórico auditável.",
-  "changelog": "Primeira versão nativa para Nexus Edge. Instalação independente, autenticação do host e armazenamento por empresa."
+  "changelog": "Corrige instalação em contas com a cota de Cron Triggers esgotada: agendamento por alarmes de Durable Object SQLite privado, sem consumir cron da conta nem alterar agendamentos existentes. Mantém geração, avisos e webhooks em lotes isolados."
 }

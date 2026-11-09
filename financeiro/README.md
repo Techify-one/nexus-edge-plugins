@@ -34,7 +34,7 @@ Configure segredos opcionais pelo painel de plugins do Nexus, sem gravá-los no 
 
 O receptor deve validar `X-Financeiro-Signature: v1=<hex>` como HMAC SHA256 de `X-Financeiro-Timestamp + '.' + corpo bruto`, validar a janela temporal e deduplicar `X-Financeiro-Event-Id`. Não há redirects, IPs ou destinos arbitrários enviados por usuário. A allowlist é uma fronteira de confiança do operador, não DNS pinning. Eventos carregam identificadores, não cópias de contatos ou documentos. Mudança de destino bloqueia entregas já vinculadas ao endereço anterior.
 
-O cron separa geração, avisos e webhooks em invocações distintas. Um cursor persistente percorre uma empresa por invocação; geração limita 20 ocorrências e webhooks três eventos por lote. Novas invocações continuam idempotentemente, sem executar um pagamento. Para muitas empresas ou importações extensas, use a geração manual em lotes e dimensione as cotas do plano Workers. O horizonte é de 90 dias; recuperação histórica usa janela explícita. Não há garantia de geração instantânea de todos os lotes.
+Um Durable Object SQLite privado alterna geração, avisos e webhooks por alarmes a cada sete minutos, sem consumir nenhum Cron Trigger da conta. O Installer arma o agendamento; desinstalação interrompe os alarmes e preserva o armazenamento. Um cursor persistente percorre uma empresa por invocação; geração limita 20 ocorrências e webhooks três eventos por lote. Novas invocações continuam idempotentemente, sem executar um pagamento. Para muitas empresas ou importações extensas, use a geração manual em lotes e dimensione as cotas do plano Workers. O horizonte é de 90 dias; recuperação histórica usa janela explícita. Não há garantia de geração instantânea de todos os lotes.
 
 ## Desenvolvimento e testes
 

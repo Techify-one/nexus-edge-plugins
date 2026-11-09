@@ -132,7 +132,7 @@ app.onError((error, c) => {
 });
 app.get("/health", (c) => {
   permission(c, "empresas.read");
-  return c.json({ ok: true, plugin: "financeiro", version: "1.0.0" });
+  return c.json({ ok: true, plugin: "financeiro", version: "1.0.1" });
 });
 app.post("/__installer/smoke", async (c) => {
   assert(
@@ -155,6 +155,13 @@ app.post("/__installer/smoke", async (c) => {
     },
     { sql: "DELETE FROM financeiro_empresas WHERE id = ?", params: [id] },
   ]);
+  if (c.env.SCHEDULER) {
+    const armed = await c.env.SCHEDULER.getByName("singleton").fetch(
+      "https://scheduler.internal/arm",
+      { method: "POST" },
+    );
+    assert(armed.ok, "SCHEDULER_UNAVAILABLE", "Agendamento indisponível.", 503);
+  }
   return c.json({ ok: true, plugin: "financeiro", database: db.provider });
 });
 app.get("/empresas", async (c) => {
@@ -734,21 +741,58 @@ export async function runScheduled(
     await db.close();
   }
 }
+export function scheduledJob(
+  scheduledTime: number,
+): "generate" | "notices" | "webhooks" {
+  if (!Number.isSafeInteger(scheduledTime) || scheduledTime < 0)
+    throw new RangeError("Invalid scheduled time");
+  const minute = new Date(scheduledTime).getUTCMinutes();
+  return (["generate", "notices", "webhooks"] as const)[
+    Math.floor(minute / 7) % 3
+  ]!;
+}
+export class FinanceiroScheduler {
+  constructor(
+    private readonly state: DurableObjectState,
+    private readonly env: Bindings,
+  ) {}
+  async fetch(request: Request): Promise<Response> {
+    if (new URL(request.url).pathname !== "/arm" || request.method !== "POST")
+      return new Response("Not found", { status: 404 });
+    if ((await this.state.storage.getAlarm()) === null)
+      await this.state.storage.setAlarm(Date.now() + 60_000);
+    return Response.json({ armed: true });
+  }
+  async alarm(): Promise<void> {
+    // Rearm first so a failed external service cannot permanently stop the scheduler.
+    await this.state.storage.setAlarm(Date.now() + 7 * 60_000);
+    const db = await createPluginDatabase(this.env);
+    let installed = false;
+    try {
+      const plugin = await db.first<{ status: string }>(
+        "SELECT status FROM plugins WHERE id = ?",
+        ["financeiro"],
+      );
+      installed = plugin?.status === "installed";
+      if (plugin?.status === "uninstalled") {
+        await this.state.storage.deleteAlarm();
+        return;
+      }
+    } finally {
+      await db.close();
+    }
+    if (!installed) return;
+    const step = (await this.state.storage.get<number>("step")) ?? 0;
+    const job = (["generate", "notices", "webhooks"] as const)[step % 3]!;
+    await runScheduled(this.env, job);
+    await this.state.storage.put("step", (step + 1) % 3);
+  }
+}
 export default {
   fetch: app.fetch,
   scheduled: (
     event: ScheduledController,
     env: Bindings,
     ctx: ExecutionContext,
-  ) =>
-    ctx.waitUntil(
-      runScheduled(
-        env,
-        event.cron === "10,31,52 * * * *"
-          ? "notices"
-          : event.cron === "17,38,59 * * * *"
-            ? "webhooks"
-            : "generate",
-      ),
-    ),
+  ) => ctx.waitUntil(runScheduled(env, scheduledJob(event.scheduledTime))),
 };
