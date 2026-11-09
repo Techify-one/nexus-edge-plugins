@@ -1,7 +1,7 @@
 {
   "catalogVersion": 1,
   "name": "Techify",
-  "revision": "iwBoQmaImlaE_aUxm5zx_XXE4yqi0Z_Z",
+  "revision": "rahyQO_xgD0rHDbaIX-di_WHJRYkBj2z",
   "publisher": {
     "id": "techify",
     "name": "Techify",
@@ -287,7 +287,7 @@
       ],
       "releases": [
         {
-          "version": "1.0.0",
+          "version": "1.0.1",
           "channel": "stable",
           "manifest": {
             "manifestVersion": 2,
@@ -299,7 +299,7 @@
               "id": "techify",
               "name": "Techify"
             },
-            "version": "1.0.0",
+            "version": "1.0.1",
             "apiVersion": 1,
             "coreMinVersion": "1.1.0-beta.15",
             "compatibilityDate": "2026-09-15",
@@ -367,18 +367,15 @@
                 "configuration": {}
               },
               {
-                "name": "hourly",
-                "type": "cron",
-                "binding": "HOURLY",
+                "name": "scheduler",
+                "type": "durable_object",
+                "binding": "SCHEDULER",
                 "capabilityVersion": 1,
                 "required": true,
                 "retention": "preserve",
                 "configuration": {
-                  "schedules": [
-                    "3,24,45 * * * *",
-                    "10,31,52 * * * *",
-                    "17,38,59 * * * *"
-                  ]
+                  "className": "FinanceiroScheduler",
+                  "storage": "sqlite"
                 }
               }
             ],
@@ -550,10 +547,10 @@
             ]
           },
           "artifact": {
-            "url": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/financeiro-v1.0.0/financeiro.plugin.zip",
-            "sha256": "36KlYGeC9BZkxzNMC6UiIOybDg-1iU1UOLA1QCkvJFM",
-            "signature": "i3w-3uAwl-yZIIAxnLRi0Yi9S37M0g8aR5GuOa73NsJtiTMZK7HhDytZhESnImSWfh5mX2m3_GbspXEAHwhAAQ",
-            "bytes": 414476
+            "url": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/financeiro-v1.0.1/financeiro.plugin.zip",
+            "sha256": "zMJdb5NXNtAj0s-piKCaWHPQ2YaWEefVnYK7IguzPMU",
+            "signature": "NIUmYZf_TakLTgiGnzJ-f8fqBDRxNNLgWHId5JfdFPdO3XSzuNUwRjoyvjzZWfKg7I2G5p9mTCOvINJkub9uCw",
+            "bytes": 414962
           }
         }
       ]
@@ -1106,6 +1103,6 @@
   "signature": {
     "algorithm": "Ed25519",
     "keyId": "publisher-v1",
-    "value": "ZrHIgdKsmLLQuV75_s464purW6m2wDEw9VvhAQqwumeCA7BG5PVbsqaugdVKyP8DLwsyTu_q3FrizgRBrMkFCQ"
+    "value": "5GneAEKgBH8hr93Q4mF2XtxHdEsyZqVTyRml1RAify5rh1dt7rmMU-Icd37FVVneHIZ0fIwVogNd2q80pROWBw"
   }
 }
