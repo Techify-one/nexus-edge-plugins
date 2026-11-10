@@ -1,7 +1,7 @@
 {
   "catalogVersion": 1,
   "name": "Techify",
-  "revision": "eKsPzZInvhtASKBLklbtyQY_zaM-x0SN",
+  "revision": "EWb9wXpMk7P1iMyPypYnB5saUAADwm2C",
   "publisher": {
     "id": "techify",
     "name": "Techify",
@@ -18,7 +18,7 @@
       ],
       "releases": [
         {
-          "version": "1.2.0",
+          "version": "1.2.1",
           "channel": "stable",
           "manifest": {
             "manifestVersion": 2,
@@ -30,9 +30,9 @@
               "id": "techify",
               "name": "Techify"
             },
-            "version": "1.2.0",
+            "version": "1.2.1",
             "apiVersion": 1,
-            "coreMinVersion": "1.1.0-beta.12",
+            "coreMinVersion": "1.1.0-beta.16",
             "compatibilityDate": "2026-09-15",
             "compatibilityFlags": [
               "nodejs_compat"
@@ -158,10 +158,10 @@
             ]
           },
           "artifact": {
-            "url": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/asaas-v1.2.0/asaas.plugin.zip",
-            "sha256": "PDCMIap-txrRnZJMbVeXltR3uBDt6rcA3C3hgndzPek",
-            "signature": "2Rgo9-YzZ4uI2ZqVV4TtKOnps6SENpYrOIiFp5xo_zAxMuM3k309ChCzpONV22nWM6ejN7rhgOxO0uBzdivUBg",
-            "bytes": 388925
+            "url": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/asaas-v1.2.1/asaas.plugin.zip",
+            "sha256": "YhwAdCUtxmJK8-8Sud3xN95oar3iqRaIOREKFXLBcYw",
+            "signature": "oeRKHt5eDt6AbMnz0uj491mXcJuU1AHoqt5L5RtiCq0k-d-uKva1g2_tmSrzG9OdG7OvsIPAwoNwjzMwTdv5AA",
+            "bytes": 389274
           }
         }
       ]
@@ -175,7 +175,7 @@
       ],
       "releases": [
         {
-          "version": "2.0.4",
+          "version": "2.0.5",
           "channel": "stable",
           "manifest": {
             "manifestVersion": 2,
@@ -187,9 +187,9 @@
               "id": "techify",
               "name": "Techify"
             },
-            "version": "2.0.4",
+            "version": "2.0.5",
             "apiVersion": 1,
-            "coreMinVersion": "1.1.0-beta.8",
+            "coreMinVersion": "1.1.0-beta.16",
             "compatibilityDate": "2026-09-09",
             "compatibilityFlags": [
               "nodejs_compat"
@@ -270,10 +270,10 @@
             ]
           },
           "artifact": {
-            "url": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/crm-v2.0.4/crm.plugin.zip",
-            "sha256": "gKP2BRJzU-4d8fQkogn0NKSq2x6QS3R6-nJLcOsZMaY",
-            "signature": "zXhPn9H4cTXEhrPUSfl_sKFfc8FevwChGbq_inkCsOigIyT_95CUivjqqeINjqgWm2MVBU4eVbQSuo1LFl2tBQ",
-            "bytes": 381679
+            "url": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/crm-v2.0.5/crm.plugin.zip",
+            "sha256": "ZHQcNmNWm7_zlYI-i-b1i11zACiY3nhsbTcrLr_waj8",
+            "signature": "8F0UfU1UXKW0Ku7745JNsBoFCRzmhFRkXoZmz40Q6p-BDQUBzhi5T7sVqQpfYbe4I689jeSJ5jk3ZtoNCCmcDw",
+            "bytes": 369160
           }
         }
       ]
@@ -287,7 +287,7 @@
       ],
       "releases": [
         {
-          "version": "1.1.3",
+          "version": "1.1.4",
           "channel": "stable",
           "manifest": {
             "manifestVersion": 2,
@@ -299,9 +299,9 @@
               "id": "techify",
               "name": "Techify"
             },
-            "version": "1.1.3",
+            "version": "1.1.4",
             "apiVersion": 1,
-            "coreMinVersion": "1.1.0-beta.15",
+            "coreMinVersion": "1.1.0-beta.16",
             "compatibilityDate": "2026-09-15",
             "compatibilityFlags": [
               "nodejs_compat"
@@ -547,10 +547,10 @@
             ]
           },
           "artifact": {
-            "url": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/financeiro-v1.1.3/financeiro.plugin.zip",
-            "sha256": "hB-OLc8sNis50auYhb1DVrBAjE-A1a8x8hl6SzIxUMk",
-            "signature": "G2FFCSPt4kMZqdUNVjwK7ELI9YuReMLqhJCu1ijQl8f8aUC7ibXqfrVjsTG_ecFDcIqCBj74_HQqSXK7uL5xDg",
-            "bytes": 419888
+            "url": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/financeiro-v1.1.4/financeiro.plugin.zip",
+            "sha256": "v3ozhZ9pX5M3eC4alNYWWdc_SudxfVsuwzyqh7nhBls",
+            "signature": "ww0z1k12URrGGxc7cxVZj6zfcOHmb_1R26Xj8_1Ub7hFEBE0OgHcmbMilWnYF_D4xRbKywZV99G_P4cGA-WTDg",
+            "bytes": 421056
           }
         }
       ]
@@ -564,7 +564,7 @@
       ],
       "releases": [
         {
-          "version": "2.1.2",
+          "version": "2.1.3",
           "channel": "stable",
           "manifest": {
             "manifestVersion": 2,
@@ -576,9 +576,9 @@
               "id": "techify",
               "name": "Techify"
             },
-            "version": "2.1.2",
+            "version": "2.1.3",
             "apiVersion": 1,
-            "coreMinVersion": "1.1.0-beta.8",
+            "coreMinVersion": "1.1.0-beta.16",
             "compatibilityDate": "2026-09-09",
             "compatibilityFlags": [
               "nodejs_compat"
@@ -697,10 +697,10 @@
             ]
           },
           "artifact": {
-            "url": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/meeting_recorder-v2.1.2/meeting_recorder.plugin.zip",
-            "sha256": "cVjACoYCksYOdYaqGPzNq4M-CxVcwplbg3WRCxNjQBg",
-            "signature": "o1kucuuHff47qju2iqWfsjwAWtQKVb6MI_0ljV9RRzGagipo7LgPlu2GKTOqhXGIxGkn7r31bWnVRhzJdq6QBA",
-            "bytes": 425387
+            "url": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/meeting_recorder-v2.1.3/meeting_recorder.plugin.zip",
+            "sha256": "i4EQg-ARlmg89r1xcwQXt613swxDAfcQE99BnapOLnY",
+            "signature": "-zl1GzmStPp4zSgJpXPTNvQhciX5tABuYxLQAfJvm3Joi09p7m8zFHX8BbZs5shUsdR9TP4uOrqdMrPkhr95BA",
+            "bytes": 426523
           }
         }
       ]
@@ -714,7 +714,7 @@
       ],
       "releases": [
         {
-          "version": "2.0.3",
+          "version": "2.0.4",
           "channel": "stable",
           "manifest": {
             "manifestVersion": 2,
@@ -726,9 +726,9 @@
               "id": "techify",
               "name": "Techify"
             },
-            "version": "2.0.3",
+            "version": "2.0.4",
             "apiVersion": 1,
-            "coreMinVersion": "1.1.0-beta.8",
+            "coreMinVersion": "1.1.0-beta.16",
             "compatibilityDate": "2026-09-09",
             "compatibilityFlags": [
               "nodejs_compat"
@@ -812,10 +812,10 @@
             ]
           },
           "artifact": {
-            "url": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/meta_ads-v2.0.3/meta_ads.plugin.zip",
-            "sha256": "0tlgJdTbeNXClXKGEdmsoMYTj_sxNRiY0i0mKUQmq6Y",
-            "signature": "sDHiOeDjQ32IaEgEgVD-e7bkbh5f4WuEsK0EcJm7dP8y36uIR2pnS4X8eWhO0OB0vsJr75ekNFtw_ZWD_-NbCA",
-            "bytes": 395679
+            "url": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/meta_ads-v2.0.4/meta_ads.plugin.zip",
+            "sha256": "hEyr-p05MWjtjvb4hMU35nnQNIwrlxDwWSOt_LWBAGM",
+            "signature": "Q0yH9ElOc-CjlRLYkmrVLiTrWRxrK-64XQIvvAUQTUv3_1A80BiKlEQEw0-SZVaM8vLPPRegg_oX4Pl7xiUcBQ",
+            "bytes": 385412
           }
         }
       ]
@@ -829,7 +829,7 @@
       ],
       "releases": [
         {
-          "version": "1.0.2",
+          "version": "1.0.3",
           "channel": "stable",
           "manifest": {
             "manifestVersion": 2,
@@ -841,9 +841,9 @@
               "id": "techify",
               "name": "Techify"
             },
-            "version": "1.0.2",
+            "version": "1.0.3",
             "apiVersion": 1,
-            "coreMinVersion": "1.1.0-beta.8",
+            "coreMinVersion": "1.1.0-beta.16",
             "compatibilityDate": "2026-09-09",
             "compatibilityFlags": [
               "nodejs_compat"
@@ -976,10 +976,10 @@
             ]
           },
           "artifact": {
-            "url": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/platform_probe-v1.0.2/platform_probe.plugin.zip",
-            "sha256": "uBx5as6JTw_EVyJw4WndSS88xfFDF6RIE5ilwqbHfRc",
-            "signature": "EO09YTD9nKZ4sKI5dgTlVfJ3ZgJfM82CGeuNC8m-cOjbCgpaxiLDx_wTRdzr3JpOVSD8cJY_rz3YinY-qe_zAg",
-            "bytes": 63068
+            "url": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/platform_probe-v1.0.3/platform_probe.plugin.zip",
+            "sha256": "W3ioYalboJJMREO888VR2z2gYv6vwzPXXGWAGjSOKNs",
+            "signature": "Os8QSFI9V_2sQDzlOmRKR7PJK0EI3vR5QuXAWURs6g3ExIfYZ-hCR5lhPSp2qroA3iMkWYjeDRpau_6HWw8tBA",
+            "bytes": 63187
           }
         }
       ]
@@ -993,7 +993,7 @@
       ],
       "releases": [
         {
-          "version": "2.0.3",
+          "version": "2.0.4",
           "channel": "stable",
           "manifest": {
             "manifestVersion": 2,
@@ -1005,9 +1005,9 @@
               "id": "techify",
               "name": "Techify"
             },
-            "version": "2.0.3",
+            "version": "2.0.4",
             "apiVersion": 1,
-            "coreMinVersion": "1.1.0-beta.8",
+            "coreMinVersion": "1.1.0-beta.16",
             "compatibilityDate": "2026-09-09",
             "compatibilityFlags": [
               "nodejs_compat"
@@ -1091,10 +1091,10 @@
             ]
           },
           "artifact": {
-            "url": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/soletrando-v2.0.3/soletrando.plugin.zip",
-            "sha256": "GT4rdj13hM8wPCz1Cxr4NeD7Onu1FICzr_ZUm8s9LIY",
-            "signature": "dr2WXNC7puymhWnnjeun7W_afzMHCrBkf4D3R_6xKczLRNO_4EjU25fQaSlwVjJcqyW2SIx7YzRV6HcQ-oMcBg",
-            "bytes": 405851
+            "url": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/soletrando-v2.0.4/soletrando.plugin.zip",
+            "sha256": "UnuRcUeCAz9WpggzWUSTyAoerr-qyu277DMZHpMOHOw",
+            "signature": "f8cdYiSv0eRX2NaG4a6FbUu9M9j2PjV6GeVQ-8FVZLxjz9ZasdyHg3EySJA_D-NtY0huV7H6G01OMp_TZTgIDQ",
+            "bytes": 397199
           }
         }
       ]
@@ -1103,6 +1103,6 @@
   "signature": {
     "algorithm": "Ed25519",
     "keyId": "publisher-v1",
-    "value": "v2U_vtDo56BqPQkpk4KAf-0kjUnItiUtF6hGBhY-a5oqgbZfFpKT9cvo4PWbWcTUoRZQZKbydOWQ7jlKzpgoDg"
+    "value": "i4F3b42D2UeCpDZEAli8use4iUgJXPE8m0eSfZAxjfzvVI58gBSF67wPh6G85kTuexIY2VdZ92l8EFWjQ_2BCw"
   }
 }
