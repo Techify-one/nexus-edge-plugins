@@ -68,15 +68,18 @@ const columns: Record<Resource, Record<string, string>> = {
 export async function loadCompany(
   db: PluginDatabase,
   companyId: string,
+  selected: readonly Resource[] = resources,
 ): Promise<Snapshot> {
   const company = await db.first<Company>(
     "SELECT * FROM financeiro_empresas WHERE id = ?",
     [companyId],
   );
   assert(company, "EMPRESA_NOT_FOUND", "Empresa não encontrada.", 404);
-  const records = {} as Snapshot["records"];
+  const records = Object.fromEntries(
+    resources.map((resource) => [resource, [] as Entity[]]),
+  ) as Snapshot["records"];
   // Revision is deliberately read before every business query. The final CAS detects any concurrent write.
-  for (const resource of resources) {
+  for (const resource of new Set(selected)) {
     const rows = await db.query<{ payload: string }>(
       `SELECT payload FROM financeiro_${resource} WHERE empresa_id = ? ORDER BY id`,
       [companyId],
@@ -89,9 +92,10 @@ export async function consistentRead<T>(
   db: PluginDatabase,
   companyId: string,
   read: (snapshot: Snapshot) => T | Promise<T>,
+  selected: readonly Resource[] = resources,
 ): Promise<T> {
   for (let attempt = 0; attempt < 5; attempt++) {
-    const snapshot = await loadCompany(db, companyId);
+    const snapshot = await loadCompany(db, companyId, selected);
     let result: T;
     try {
       result = await read(snapshot);

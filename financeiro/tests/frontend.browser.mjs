@@ -122,6 +122,8 @@ const state = {
   anexos: [],
 };
 const mutations = [];
+const reads = [];
+let searchDelay = 0;
 let generation = 0;
 const summary = {
   mes: "2026-11",
@@ -170,6 +172,9 @@ async function configure(
     if (url.pathname.includes("/table-preferences/"))
       return reply({ tableId: path.split("/").at(-1), config: null });
     if (request.method() === "GET") {
+      reads.push(`${url.pathname}${url.search}`);
+      if (resource === "recorrencias" && !id && searchDelay)
+        await new Promise((resolve) => setTimeout(resolve, searchDelay));
       if (resource === "resumo") return reply({ data: summary });
       if (resource === "recorrencias" && id === "resumo")
         return reply({
@@ -336,6 +341,38 @@ try {
   assert.equal(await page.locator(".financeiro > nav").count(), 0);
   await page.getByText("Média mensal de entradas", { exact: true }).waitFor();
   await page.getByText("Média mensal de saídas", { exact: true }).waitFor();
+  await page.waitForTimeout(400);
+  const search = page.getByRole("searchbox");
+  const inputHandle = await search.elementHandle();
+  const startReads = reads.length;
+  searchDelay = 700;
+  await search.click();
+  await search.pressSequentially("aluguel", { delay: 40 });
+  assert.equal(await search.inputValue(), "aluguel");
+  assert.ok(
+    await inputHandle.evaluate((input) => input === document.activeElement),
+  );
+  await page.waitForURL(/buscaRecorrencias=aluguel/);
+  await page.waitForTimeout(900);
+  assert.ok(
+    await inputHandle.evaluate((input) => input === document.activeElement),
+  );
+  const searchReads = reads.slice(startReads);
+  assert.equal(searchReads.length, 1, JSON.stringify(searchReads));
+  assert.ok(searchReads[0].includes("busca=aluguel"));
+  await search.fill("a");
+  await page.waitForURL(/buscaRecorrencias=a(?:&|$)/);
+  await search.fill("aluguel");
+  await page.waitForURL(/buscaRecorrencias=aluguel/);
+  await page.waitForTimeout(900);
+  assert.equal(await search.inputValue(), "aluguel");
+  assert.ok(
+    await inputHandle.evaluate((input) => input === document.activeElement),
+  );
+  await search.fill("");
+  await page.waitForURL((url) => !url.searchParams.has("buscaRecorrencias"));
+  await page.waitForTimeout(900);
+  searchDelay = 0;
   await page.screenshot({
     path: "/tmp/financeiro-header-averages.png",
     fullPage: true,

@@ -1,4 +1,4 @@
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { Info, RefreshCw, Search } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import {
@@ -857,6 +857,25 @@ export function RecurrencesPage() {
     useFinance();
   const [searchParams, setSearchParams] = useSearchParams();
   const busca = searchParams.get("buscaRecorrencias") ?? "";
+  const query = searchParams.toString();
+  const [searchDraft, setSearchDraft] = useState({ value: busca, query });
+  const searchText = searchDraft.query === query ? searchDraft.value : busca;
+  useEffect(() => {
+    setSearchDraft((current) =>
+      current.query === query ? current : { value: busca, query },
+    );
+  }, [query, busca]);
+  useEffect(() => {
+    if (searchText === busca) return;
+    const timer = setTimeout(() => {
+      const next = new URLSearchParams(query);
+      if (searchText) next.set("buscaRecorrencias", searchText);
+      else next.delete("buscaRecorrencias");
+      next.delete("pagina_recorrencias");
+      setSearchParams(next, { replace: true });
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchText, busca, query, setSearchParams]);
   const changeFilter = (key: string, value: string) => {
     const next = new URLSearchParams(searchParams);
     if (value) next.set(key, value);
@@ -937,10 +956,8 @@ export function RecurrencesPage() {
               type="search"
               aria-label={t("financeiro.buscarRecorrencias")}
               placeholder={t("financeiro.buscarRecorrencias")}
-              value={busca}
-              onChange={(e) =>
-                changeFilter("buscaRecorrencias", e.target.value)
-              }
+              value={searchText}
+              onChange={(e) => setSearchDraft({ value: e.target.value, query })}
             />
           </div>
           <div className="financeiro-recurrence-actions">

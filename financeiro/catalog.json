@@ -1,5 +1,5 @@
 {
   "category": "Gestão financeira",
   "description": "Controle receitas, despesas, contas, recorrências e fechamento mensal no Nexus Edge, com comprovantes privados e histórico auditável.",
-  "changelog": "Adiciona ações MCP com permissões explícitas, validação dos campos e títulos em português e inglês. A ativação e as ações permitidas são controladas nos detalhes do plugin e persistem nas atualizações. Requer Core 1.1.0-beta.16."
+  "changelog": "Corrige perda de foco na busca em hosts com atualização de rota sem remontagem. Agrupa digitação com debounce e reduz leituras desnecessárias no banco, preservando consistência, permissões e regras financeiras."
 }

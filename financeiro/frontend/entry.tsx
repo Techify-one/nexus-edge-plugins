@@ -211,6 +211,8 @@ export function FinanceApp({ host }: { host: PluginHostV1 }) {
 }
 export default definePlugin({
   mountPage({ container, host }) {
-    return mountReactPlugin(container, host, <FinanceApp host={host} />);
+    const mount = mountReactPlugin(container, host, <FinanceApp host={host} />);
+    // The Core synchronizes History with this plugin's independent BrowserRouter.
+    return { ...mount, updateRoute() {} };
   },
 });

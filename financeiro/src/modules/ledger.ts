@@ -373,26 +373,37 @@ export class LedgerService {
     );
   }
   list(companyId: string, resource: Resource) {
-    return consistentRead(this.db, companyId, (s) =>
-      s.records[resource]
-        .filter(
-          (r) => resource !== "visoes" || r.userId === this.context.userId,
-        )
-        .map((r) =>
-          resource === "lancamentos"
-            ? entryView(s, r)
-            : resource === "contas"
-              ? { ...r, saldoCentavos: amount(balance(s, r)) }
-              : r,
-        ),
+    return consistentRead(
+      this.db,
+      companyId,
+      (s) =>
+        s.records[resource]
+          .filter(
+            (r) => resource !== "visoes" || r.userId === this.context.userId,
+          )
+          .map((r) =>
+            resource === "lancamentos"
+              ? entryView(s, r)
+              : resource === "contas"
+                ? { ...r, saldoCentavos: amount(balance(s, r)) }
+                : r,
+          ),
+      resource === "lancamentos" || resource === "contas"
+        ? [resource, "movimentos"]
+        : [resource],
     );
   }
   getEntry(companyId: string, id: string) {
-    return consistentRead(this.db, companyId, (s) => ({
-      ...entryView(s, find(s, "lancamentos", id)),
-      movimentos: s.records.movimentos.filter((m) => m.lancamentoId === id),
-      anexos: s.records.anexos.filter((a) => a.lancamentoId === id),
-    }));
+    return consistentRead(
+      this.db,
+      companyId,
+      (s) => ({
+        ...entryView(s, find(s, "lancamentos", id)),
+        movimentos: s.records.movimentos.filter((m) => m.lancamentoId === id),
+        anexos: s.records.anexos.filter((a) => a.lancamentoId === id),
+      }),
+      ["lancamentos", "movimentos", "anexos"],
+    );
   }
   createAccount(companyId: string, input: unknown) {
     const parsed = schemas.accountSchema.parse(input);
@@ -848,69 +859,74 @@ export class LedgerService {
   }
   recurrenceSummary(companyId: string, mes: string) {
     month(mes);
-    return consistentRead(this.db, companyId, (s) => {
-      let receitas = 0n,
-        despesas = 0n,
-        receitasCadastradas = 0n,
-        despesasCadastradas = 0n,
-        receitasOcorrencias = 0,
-        despesasOcorrencias = 0;
-      for (const r of s.records.recorrencias.filter(
-        (r) => r.status === "ATIVA",
-      )) {
-        if (r.tipo === "RECEITA") receitasCadastradas += value(r);
-        else despesasCadastradas += value(r);
-        const projected = new Map(
-          recurrenceOccurrences(r, `${mes}-01`, monthEnd(mes)).map((o) => [
-            o.chave,
-            value(r),
-          ]),
-        );
-        for (const entry of s.records.lancamentos.filter(
-          (e) =>
-            e.recorrenciaId === r.id && String(e.competencia).startsWith(mes),
+    return consistentRead(
+      this.db,
+      companyId,
+      (s) => {
+        let receitas = 0n,
+          despesas = 0n,
+          receitasCadastradas = 0n,
+          despesasCadastradas = 0n,
+          receitasOcorrencias = 0,
+          despesasOcorrencias = 0;
+        for (const r of s.records.recorrencias.filter(
+          (r) => r.status === "ATIVA",
         )) {
-          if (entry.cancelado) projected.delete(String(entry.ocorrencia));
-          else projected.set(String(entry.ocorrencia), value(entry));
-        }
-        for (const cents of projected.values()) {
-          if (r.tipo === "RECEITA") {
-            receitas += cents;
-            receitasOcorrencias++;
-          } else {
-            despesas += cents;
-            despesasOcorrencias++;
+          if (r.tipo === "RECEITA") receitasCadastradas += value(r);
+          else despesasCadastradas += value(r);
+          const projected = new Map(
+            recurrenceOccurrences(r, `${mes}-01`, monthEnd(mes)).map((o) => [
+              o.chave,
+              value(r),
+            ]),
+          );
+          for (const entry of s.records.lancamentos.filter(
+            (e) =>
+              e.recorrenciaId === r.id && String(e.competencia).startsWith(mes),
+          )) {
+            if (entry.cancelado) projected.delete(String(entry.ocorrencia));
+            else projected.set(String(entry.ocorrencia), value(entry));
+          }
+          for (const cents of projected.values()) {
+            if (r.tipo === "RECEITA") {
+              receitas += cents;
+              receitasOcorrencias++;
+            } else {
+              despesas += cents;
+              despesasOcorrencias++;
+            }
           }
         }
-      }
-      return {
-        mes,
-        receitasCentavos: amount(receitas),
-        despesasCentavos: amount(despesas),
-        mediaMensalReceitasCentavos: monthlyAverage(
-          s.records.recorrencias
-            .filter((r) => r.status === "ATIVA" && r.tipo === "RECEITA")
-            .map((r) => ({
-              cents: value(r),
-              frequency: (r.regra as Regra).frequencia,
-              interval: (r.regra as Regra).intervalo,
-            })),
-        ),
-        mediaMensalDespesasCentavos: monthlyAverage(
-          s.records.recorrencias
-            .filter((r) => r.status === "ATIVA" && r.tipo === "DESPESA")
-            .map((r) => ({
-              cents: value(r),
-              frequency: (r.regra as Regra).frequencia,
-              interval: (r.regra as Regra).intervalo,
-            })),
-        ),
-        receitasCadastradasCentavos: amount(receitasCadastradas),
-        despesasCadastradasCentavos: amount(despesasCadastradas),
-        receitasOcorrencias,
-        despesasOcorrencias,
-      };
-    });
+        return {
+          mes,
+          receitasCentavos: amount(receitas),
+          despesasCentavos: amount(despesas),
+          mediaMensalReceitasCentavos: monthlyAverage(
+            s.records.recorrencias
+              .filter((r) => r.status === "ATIVA" && r.tipo === "RECEITA")
+              .map((r) => ({
+                cents: value(r),
+                frequency: (r.regra as Regra).frequencia,
+                interval: (r.regra as Regra).intervalo,
+              })),
+          ),
+          mediaMensalDespesasCentavos: monthlyAverage(
+            s.records.recorrencias
+              .filter((r) => r.status === "ATIVA" && r.tipo === "DESPESA")
+              .map((r) => ({
+                cents: value(r),
+                frequency: (r.regra as Regra).frequencia,
+                interval: (r.regra as Regra).intervalo,
+              })),
+          ),
+          receitasCadastradasCentavos: amount(receitasCadastradas),
+          despesasCadastradasCentavos: amount(despesasCadastradas),
+          receitasOcorrencias,
+          despesasOcorrencias,
+        };
+      },
+      ["recorrencias", "lancamentos"],
+    );
   }
   generateAutomatic(companyId: string, date = today()) {
     civil(date);
