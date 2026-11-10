@@ -46,7 +46,7 @@ const category = await ledger.createCategory(company.id, {
   nome: "Serviços E2E",
   tipo: "DESPESA",
 });
-const html = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><main id="root"></main><script type="module">import RefreshRuntime from '/@react-refresh';RefreshRuntime.injectIntoGlobalHook(window);window.$RefreshReg$=()=>{};window.$RefreshSig$=()=>type=>type;window.__vite_plugin_react_preamble_installed__=true;</script><script type="module">import React from 'react';import {FinanceApp} from '/financeiro/frontend/entry.tsx';import {mountReactPlugin} from '/.marketplace/frontend/src/plugin-host.tsx';const host={apiVersion:1,pluginId:'financeiro',locale:'pt-BR',theme:'light',permissions:${JSON.stringify(manifest.permissions)},api:(path,init)=>fetch('/api/v1/p/financeiro'+path,init),coreApi:(path,init)=>fetch(path,init),navigate:path=>history.pushState({},'',path),notify:()=>{},tablePreferences:{get:async()=>null,set:async()=>{}}};mountReactPlugin(document.getElementById('root'),host,React.createElement(FinanceApp,{host}));</script></body></html>`;
+const html = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><header style="height:64px;display:flex;align-items:center;gap:12px;padding:0 16px"><button id="host-back">Voltar</button><div data-nexus-plugin-header-nav="financeiro" style="min-width:0;flex:1;overflow-x:auto"></div></header><main id="root"></main><script type="module">import RefreshRuntime from '/@react-refresh';RefreshRuntime.injectIntoGlobalHook(window);window.$RefreshReg$=()=>{};window.$RefreshSig$=()=>type=>type;window.__vite_plugin_react_preamble_installed__=true;</script><script type="module">import React from 'react';import {FinanceApp} from '/financeiro/frontend/entry.tsx';import {mountReactPlugin} from '/.marketplace/frontend/src/plugin-host.tsx';const host={apiVersion:1,pluginId:'financeiro',locale:'pt-BR',theme:'light',permissions:${JSON.stringify(manifest.permissions)},api:(path,init)=>fetch('/api/v1/p/financeiro'+path,init),coreApi:(path,init)=>fetch(path,init),navigate:path=>history.pushState({},'',path),notify:()=>{},tablePreferences:{get:async()=>null,set:async()=>{}}};mountReactPlugin(document.getElementById('root'),host,React.createElement(FinanceApp,{host}));</script></body></html>`;
 const server = await createServer({
   root,
   configFile: false,
@@ -121,11 +121,17 @@ try {
   const page = await browser.newPage({
     viewport: { width: 1366, height: 900 },
   });
+  page.setDefaultTimeout(15000);
   const errors = [];
+  page.on("console", (message) => {
+    if (message.type() === "error") console.log("UI_ERROR", message.text());
+  });
   page.on("pageerror", (e) => errors.push(e.message));
+  console.log("TEST goto");
   await page.goto(
     `${origin}/app/p/financeiro/lancamentos?empresaId=${company.id}&mes=${mes}`,
   );
+  console.log("TEST add");
   await page.getByRole("button", { name: "Adicionar", exact: true }).click();
   await page
     .getByLabel("Descrição", { exact: true })
@@ -225,6 +231,24 @@ try {
     (await ledger.recurrenceSummary(company.id, mes)).despesasCentavos,
     "2501",
   );
+  const headerNav = page.locator(
+    '[data-nexus-plugin-header-nav="financeiro"] nav',
+  );
+  await headerNav.waitFor();
+  assert.equal(await page.locator(".financeiro > nav").count(), 0);
+  const headerY = await headerNav.evaluate((e) => e.getBoundingClientRect().y);
+  const backY = await page
+    .locator("#host-back")
+    .evaluate((e) => e.getBoundingClientRect().y);
+  assert.ok(Math.abs(headerY - backY) < 32, "Navigation must share Back row");
+  assert.equal(
+    await page
+      .getByRole("button", { name: "Gerar 90 dias", exact: true })
+      .count(),
+    0,
+  );
+  await page.getByText("Média mensal de entradas", { exact: true }).waitFor();
+  await page.getByText("Média mensal de saídas", { exact: true }).waitFor();
   const tableTop = await page
     .locator("table")
     .first()

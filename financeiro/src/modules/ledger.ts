@@ -4,7 +4,7 @@ import {
   type PluginContextV1,
 } from "@nexus/plugin-sdk/backend";
 import { assert } from "../errors.js";
-import { money, amount } from "../domain/money.js";
+import { money, amount, monthlyAverage } from "../domain/money.js";
 import { today, addDays, civil, month, monthEnd } from "../domain/dates.js";
 import {
   proximas,
@@ -887,6 +887,24 @@ export class LedgerService {
         mes,
         receitasCentavos: amount(receitas),
         despesasCentavos: amount(despesas),
+        mediaMensalReceitasCentavos: monthlyAverage(
+          s.records.recorrencias
+            .filter((r) => r.status === "ATIVA" && r.tipo === "RECEITA")
+            .map((r) => ({
+              cents: value(r),
+              frequency: (r.regra as Regra).frequencia,
+              interval: (r.regra as Regra).intervalo,
+            })),
+        ),
+        mediaMensalDespesasCentavos: monthlyAverage(
+          s.records.recorrencias
+            .filter((r) => r.status === "ATIVA" && r.tipo === "DESPESA")
+            .map((r) => ({
+              cents: value(r),
+              frequency: (r.regra as Regra).frequencia,
+              interval: (r.regra as Regra).intervalo,
+            })),
+        ),
         receitasCadastradasCentavos: amount(receitasCadastradas),
         despesasCadastradasCentavos: amount(despesasCadastradas),
         receitasOcorrencias,

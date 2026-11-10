@@ -208,3 +208,79 @@ for (const engine of engines) {
     }
   });
 }
+
+for (const engine of engines) {
+  test(`${engine}: monthly averages normalize active weekly monthly yearly and legacy intervals independently from selected month`, async () => {
+    const db = await openDatabase(engine);
+    try {
+      const { LedgerService } = await loadBackend();
+      const service = new LedgerService(db, {
+        userId: "average-test",
+        requestId: "average-test",
+        permissions: [],
+      });
+      const company = await service.createCompany({
+        nome: "Monthly average isolated",
+      });
+      const income = await service.createCategory(company.id, {
+        nome: "Income",
+        tipo: "RECEITA",
+      });
+      const expense = await service.createCategory(company.id, {
+        nome: "Expense",
+        tipo: "DESPESA",
+      });
+      const input = {
+        descricao: "Average rule",
+        ancora: "2028-02-15",
+        inicio: "2028-02-15",
+      };
+      await service.createRecurrence(company.id, {
+        ...input,
+        tipo: "RECEITA",
+        categoriaId: income.id,
+        valorCentavos: "10000",
+        regra: { frequencia: "SEMANA", intervalo: 1, ajuste_fds: "MANTER" },
+      });
+      await service.createRecurrence(company.id, {
+        ...input,
+        tipo: "RECEITA",
+        categoriaId: income.id,
+        valorCentavos: "240000",
+        regra: { frequencia: "ANO", intervalo: 2, ajuste_fds: "MANTER" },
+      });
+      await service.createRecurrence(company.id, {
+        ...input,
+        tipo: "DESPESA",
+        categoriaId: expense.id,
+        valorCentavos: "30000",
+        regra: { frequencia: "MES", intervalo: 1, ajuste_fds: "MANTER" },
+      });
+      const paused = await service.createRecurrence(company.id, {
+        ...input,
+        tipo: "DESPESA",
+        categoriaId: expense.id,
+        valorCentavos: "999999",
+        regra: { frequencia: "MES", intervalo: 1, ajuste_fds: "MANTER" },
+      });
+      await service.updateRecurrence(company.id, paused.id, {
+        status: "PAUSADA",
+      });
+      await service.createRecurrence(company.id, {
+        ...input,
+        tipo: "DESPESA",
+        categoriaId: expense.id,
+        valorCentavos: "120000",
+        regra: { frequencia: "MES", intervalo: 12, ajuste_fds: "MANTER" },
+      });
+      for (const month of ["2028-02", "2028-03"]) {
+        const result = await service.recurrenceSummary(company.id, month);
+        assert.equal(result.mediaMensalReceitasCentavos, "50000");
+        assert.equal(result.mediaMensalDespesasCentavos, "40000");
+      }
+      assert.equal((await service.list(company.id, "movimentos")).length, 0);
+    } finally {
+      await db.close();
+    }
+  });
+}

@@ -873,6 +873,8 @@ export function RecurrencesPage() {
       despesasCentavos: string;
       receitasCadastradasCentavos: string;
       despesasCadastradasCentavos: string;
+      mediaMensalReceitasCentavos: string;
+      mediaMensalDespesasCentavos: string;
     }>
   >(
     api,
@@ -950,21 +952,6 @@ export function RecurrencesPage() {
             >
               <RefreshCw size={16} aria-hidden="true" />
             </Button>
-            {can("recorrencias", "generate") && (
-              <Button
-                variant="secondary"
-                onClick={() =>
-                  setAction({
-                    title: t("financeiro.gerar"),
-                    description: t("financeiro.confirmacaoGeracao"),
-                    path: scoped("/recorrencias/gerar", empresaId),
-                    body: { de: today(), ate: addDays(today(), 89) },
-                  })
-                }
-              >
-                {t("financeiro.gerarCompacto")}
-              </Button>
-            )}
             {can("recorrencias", "create") && (
               <Button onClick={() => setEditing({})}>
                 {t("financeiro.novo")}
@@ -981,15 +968,15 @@ export function RecurrencesPage() {
           {(
             [
               [
-                "receitasCadastradasCentavos",
-                "financeiro.receitasCompacto",
-                "financeiro.receitasCadastradas",
+                "mediaMensalReceitasCentavos",
+                "financeiro.mediaMensalReceitas",
+                "financeiro.mediaMensalReceitas",
                 "success",
               ],
               [
-                "despesasCadastradasCentavos",
-                "financeiro.despesasCompacto",
-                "financeiro.despesasCadastradas",
+                "mediaMensalDespesasCentavos",
+                "financeiro.mediaMensalDespesas",
+                "financeiro.mediaMensalDespesas",
                 "warning",
               ],
               [
@@ -1035,6 +1022,7 @@ export function RecurrencesPage() {
             onOpenChange={setHelpOpen}
           >
             <div className="space-y-3 text-sm">
+              <p>{t("financeiro.mediaMensalNota")}</p>
               <p>{t("financeiro.totaisRecorrentesNota")}</p>
               <p>{t("financeiro.automacaoRecorrencias")}</p>
             </div>

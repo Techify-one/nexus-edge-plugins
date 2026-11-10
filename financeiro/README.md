@@ -77,3 +77,7 @@ Ao salvar uma recorrência, a próxima ocorrência elegível é registrada atomi
 O agendador privado lança as ocorrências da semana atual (segunda a domingo), mês atual ou ano atual, conforme a regra. A execução ocorre em lotes nas verificações periódicas, sem depender de uma aba aberta. Um cursor por regra recupera lacunas após interrupções. Períodos fechados, ocorrências canceladas e lançamentos já existentes não são recriados. A geração manual de 90 dias continua disponível.
 
 Os totais da tela Recorrências são a previsão das regras ativas para o mês selecionado, contando cada ocorrência semanal, mensal e anual aplicável. Consideram todas as páginas e não representam valores já pagos.
+
+## Média mensal
+
+As médias consideram regras ativas: semanal ×4, mensal mantida e anual ÷12, dividindo também pelo intervalo. Regras antigas diárias usam30 dias. A soma racional é arredondada uma única vez para centavos. A previsão do mês selecionado continua separada. O menu usa o slot nativo do cabeçalho, com fallback local em hosts antigos. A geração automática continua ativa sem botão manual na tela.

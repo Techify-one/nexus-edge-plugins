@@ -24,3 +24,40 @@ export function sum(values: Iterable<bigint>): bigint {
   for (const value of values) total += value;
   return total;
 }
+
+/** Sum rational monthly equivalents, rounding only the final total to a cent. */
+export function monthlyAverage(
+  values: Iterable<{ cents: bigint; frequency: string; interval: number }>,
+): string {
+  let numerator = 0n,
+    denominator = 1n;
+  const gcd = (a: bigint, b: bigint): bigint => {
+    while (b) [a, b] = [b, a % b];
+    return a;
+  };
+  for (const value of values) {
+    if (
+      !Number.isSafeInteger(value.interval) ||
+      value.interval < 1 ||
+      value.cents < 0n
+    )
+      throw new RangeError("Invalid monthly average input");
+    const factor =
+      value.frequency === "SEMANA" ? 4n : value.frequency === "DIA" ? 30n : 1n;
+    const divisor =
+      BigInt(value.interval) * (value.frequency === "ANO" ? 12n : 1n);
+    if (!["DIA", "SEMANA", "MES", "ANO"].includes(value.frequency))
+      throw new RangeError("Invalid recurrence frequency");
+    const common = (denominator / gcd(denominator, divisor)) * divisor;
+    numerator =
+      numerator * (common / denominator) +
+      value.cents * factor * (common / divisor);
+    denominator = common;
+    const reduce = gcd(numerator, denominator);
+    if (reduce) {
+      numerator /= reduce;
+      denominator /= reduce;
+    }
+  }
+  return amount((numerator * 2n + denominator) / (denominator * 2n));
+}

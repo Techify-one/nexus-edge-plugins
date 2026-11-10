@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { useI18n } from "../../.marketplace/frontend/src/i18n/index.js";
 import {
   NavLink,
@@ -47,6 +48,25 @@ const routes = [
   ["auditoria", "auditoria", AuditPage],
   ["configuracoes", "avisos", SettingsPage],
 ] as const;
+function HeaderNavigation({ children }: { children: ReactNode }) {
+  const [target, setTarget] = useState<HTMLElement | null>(null);
+  useEffect(() => {
+    setTarget(
+      document.querySelector<HTMLElement>(
+        '[data-nexus-plugin-header-nav="financeiro"]',
+      ),
+    );
+  }, []);
+  const navigation = (
+    <nav
+      aria-label="Financeiro"
+      className={`financeiro-tabs flex gap-1 overflow-x-auto ${target ? "financeiro-header-tabs" : "border-b pb-2"}`}
+    >
+      {children}
+    </nav>
+  );
+  return target ? createPortal(navigation, target) : navigation;
+}
 export function FinanceApp({ host }: { host: PluginHostV1 }) {
   const api = useMemo(() => new FinanceApi(host), [host]);
   const compactRecurrences = useLocation().pathname.startsWith(
@@ -116,11 +136,8 @@ export function FinanceApp({ host }: { host: PluginHostV1 }) {
         can,
       }}
     >
-      <div className="financeiro space-y-3" data-theme={host.theme}>
-        <nav
-          aria-label={t("financeiro.cadastros")}
-          className="financeiro-tabs flex gap-1 overflow-x-auto border-b pb-2"
-        >
+      <div className="financeiro" data-theme={host.theme}>
+        <HeaderNavigation>
           {routes
             .filter(([, resource]) => can(resource))
             .map(([path]) => (
@@ -138,7 +155,7 @@ export function FinanceApp({ host }: { host: PluginHostV1 }) {
                 {t(`financeiro.${path}`)}
               </NavLink>
             ))}
-        </nav>
+        </HeaderNavigation>
         {(!compactRecurrences || !empresaId) && (
           <SingleLineFilterBar>
             <Field label={t("financeiro.empresa")}>

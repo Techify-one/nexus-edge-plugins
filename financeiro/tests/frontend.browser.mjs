@@ -13,7 +13,7 @@ const { chromium } = await import(
   process.env.PLAYWRIGHT_MODULE || require.resolve("playwright")
 );
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
-const html = `<!doctype html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><main id="root"></main><script type="module">import RefreshRuntime from '/@react-refresh'; RefreshRuntime.injectIntoGlobalHook(window); window.$RefreshReg$=()=>{}; window.$RefreshSig$=()=>type=>type; window.__vite_plugin_react_preamble_installed__=true;</script><script type="module">
+const html = `<!doctype html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><header style="height:64px;display:flex;align-items:center;gap:12px;padding:0 16px"><button id="host-back">Voltar</button><div data-nexus-plugin-header-nav="financeiro" style="min-width:0;flex:1;overflow-x:auto"></div></header><main id="root"></main><script type="module">import RefreshRuntime from '/@react-refresh'; RefreshRuntime.injectIntoGlobalHook(window); window.$RefreshReg$=()=>{}; window.$RefreshSig$=()=>type=>type; window.__vite_plugin_react_preamble_installed__=true;</script><script type="module">
 import { FinanceApp } from '/financeiro/frontend/entry.tsx';
 import { mountReactPlugin } from '/.marketplace/frontend/src/plugin-host.tsx';
 import React from 'react';
@@ -324,19 +324,22 @@ try {
   await page.getByRole("button", { name: "Confirmar", exact: true }).click();
   await page.getByText("Reaberto", { exact: true }).waitFor();
   await page.getByRole("link", { name: "Recorrências", exact: true }).click();
+  assert.equal(
+    await page
+      .getByRole("button", { name: "Gerar 90 dias", exact: true })
+      .count(),
+    0,
+  );
   await page
-    .getByRole("button", { name: "Gerar 90 dias", exact: true })
-    .click();
-  await page.getByRole("button", { name: "Confirmar", exact: true }).click();
-  await page
-    .getByRole("button", { name: "Continuar geração", exact: true })
+    .locator('[data-nexus-plugin-header-nav="financeiro"] nav')
     .waitFor();
-  assert.equal(generation, 1);
-  await page
-    .getByRole("button", { name: "Continuar geração", exact: true })
-    .click();
-  await page.getByRole("dialog").waitFor({ state: "hidden" });
-  assert.equal(generation, 2);
+  assert.equal(await page.locator(".financeiro > nav").count(), 0);
+  await page.getByText("Média mensal de entradas", { exact: true }).waitFor();
+  await page.getByText("Média mensal de saídas", { exact: true }).waitFor();
+  await page.screenshot({
+    path: "/tmp/financeiro-header-averages.png",
+    fullPage: true,
+  });
   await page.getByRole("link", { name: "Resumo", exact: true }).click();
   await page
     .locator(".metric-label")
@@ -378,7 +381,7 @@ try {
   });
   await readonly.close();
   console.log(
-    "PASS native browser UI: account, entry, partial settlement, reversal, transfer, close/reopen, batched generation, pt-BR/en, dark/mobile and read-only permissions.",
+    "PASS native browser UI: account, entry, partial settlement, reversal, transfer, close/reopen, automatic generation without manual button, pt-BR/en, dark/mobile and read-only permissions.",
   );
 } finally {
   await browser.close();

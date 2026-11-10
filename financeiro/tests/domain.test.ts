@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { money, amount, sum } from "../src/domain/money";
+import { money, amount, sum, monthlyAverage } from "../src/domain/money";
 import { civil, month, today, addDays, monthEnd } from "../src/domain/dates";
 import { status } from "../src/domain/status";
 import {
@@ -484,5 +484,46 @@ describe("explicit yearly recurrence", () => {
       "2026-02-28",
     ]);
     expect(descreverRegra(yearly)).toBe("todo ano");
+  });
+});
+
+describe("monthly recurring average", () => {
+  it("normalizes monthly, weekly and yearly values and intervals", () => {
+    expect(
+      monthlyAverage([
+        { cents: 10000n, frequency: "SEMANA", interval: 1 },
+        { cents: 20000n, frequency: "MES", interval: 1 },
+        { cents: 120000n, frequency: "ANO", interval: 1 },
+      ]),
+    ).toBe("70000");
+    expect(
+      monthlyAverage([{ cents: 10000n, frequency: "SEMANA", interval: 2 }]),
+    ).toBe("20000");
+    expect(
+      monthlyAverage([{ cents: 120000n, frequency: "MES", interval: 12 }]),
+    ).toBe("10000");
+    expect(
+      monthlyAverage([{ cents: 120000n, frequency: "ANO", interval: 2 }]),
+    ).toBe("5000");
+  });
+  it("rounds only once after summing exact fractional cents", () => {
+    expect(
+      monthlyAverage(
+        Array.from({ length: 12 }, () => ({
+          cents: 1n,
+          frequency: "ANO",
+          interval: 1,
+        })),
+      ),
+    ).toBe("1");
+    expect(monthlyAverage([{ cents: 6n, frequency: "ANO", interval: 1 }])).toBe(
+      "1",
+    );
+    expect(
+      monthlyAverage([
+        { cents: 999999999999999n, frequency: "ANO", interval: 1 },
+      ]),
+    ).toBe("83333333333333");
+    expect(monthlyAverage([])).toBe("0");
   });
 });

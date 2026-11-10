@@ -1,5 +1,9 @@
 export const financeiroFrontendMessages = {
   "pt-BR": {
+    "financeiro.mediaMensalReceitas": "Média mensal de entradas",
+    "financeiro.mediaMensalDespesas": "Média mensal de saídas",
+    "financeiro.mediaMensalNota":
+      "Média das regras ativas: semanal × 4, mensal mantida e anual ÷ 12, respeitando o intervalo da regra. Regras diárias antigas usam 30 dias. A soma é arredondada uma única vez para centavos. É uma estimativa, não pagamento nem previsão exata do mês selecionado.",
     "financeiro.filtrosRecorrencias": "Filtros de recorrências",
     "financeiro.buscarRecorrencias": "Buscar recorrência",
     "financeiro.gerarCompacto": "Gerar 90 dias",
@@ -218,6 +222,10 @@ export const financeiroFrontendMessages = {
       "Confirme o valor estimado antes de registrar uma baixa.",
   },
   en: {
+    "financeiro.mediaMensalReceitas": "Average monthly income",
+    "financeiro.mediaMensalDespesas": "Average monthly expenses",
+    "financeiro.mediaMensalNota":
+      "Active-rule average: weekly × 4, monthly unchanged and yearly ÷ 12, respecting the rule interval. Legacy daily rules use 30 days. The sum is rounded once to cents. This is an estimate, not a payment or an exact forecast for the selected month.",
     "financeiro.filtrosRecorrencias": "Recurring entry filters",
     "financeiro.buscarRecorrencias": "Search recurring entries",
     "financeiro.gerarCompacto": "Generate 90 days",
