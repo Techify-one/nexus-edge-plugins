@@ -856,7 +856,12 @@ export function RecurrencesPage() {
   const cols = useColumns();
   const state = useList<Recurrence>("recorrencias");
   const totals = useResource<
-    Single<{ receitasCentavos: string; despesasCentavos: string }>
+    Single<{
+      receitasCentavos: string;
+      despesasCentavos: string;
+      receitasCadastradasCentavos: string;
+      despesasCadastradasCentavos: string;
+    }>
   >(
     api,
     empresaId && can("recorrencias")
@@ -913,6 +918,22 @@ export function RecurrencesPage() {
         <ErrorBox error={totals.error} />
         {totals.data && (
           <div className="grid gap-3 sm:grid-cols-2">
+            <MetricCard
+              label={t("financeiro.receitasCadastradas")}
+              tone="success"
+              value={formatMoney(
+                totals.data.data.receitasCadastradasCentavos ?? "0",
+                host.locale,
+              )}
+            />
+            <MetricCard
+              label={t("financeiro.despesasCadastradas")}
+              tone="warning"
+              value={formatMoney(
+                totals.data.data.despesasCadastradasCentavos ?? "0",
+                host.locale,
+              )}
+            />
             <MetricCard
               label={t("financeiro.receitasRecorrentes")}
               tone="success"

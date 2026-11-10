@@ -851,11 +851,15 @@ export class LedgerService {
     return consistentRead(this.db, companyId, (s) => {
       let receitas = 0n,
         despesas = 0n,
+        receitasCadastradas = 0n,
+        despesasCadastradas = 0n,
         receitasOcorrencias = 0,
         despesasOcorrencias = 0;
       for (const r of s.records.recorrencias.filter(
         (r) => r.status === "ATIVA",
       )) {
+        if (r.tipo === "RECEITA") receitasCadastradas += value(r);
+        else despesasCadastradas += value(r);
         const projected = new Map(
           recurrenceOccurrences(r, `${mes}-01`, monthEnd(mes)).map((o) => [
             o.chave,
@@ -883,6 +887,8 @@ export class LedgerService {
         mes,
         receitasCentavos: amount(receitas),
         despesasCentavos: amount(despesas),
+        receitasCadastradasCentavos: amount(receitasCadastradas),
+        despesasCadastradasCentavos: amount(despesasCadastradas),
         receitasOcorrencias,
         despesasOcorrencias,
       };

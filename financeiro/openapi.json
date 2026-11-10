@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Nexus Edge Financeiro API",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "description": "Authenticated financial records. Monetary values are integer cents encoded as strings. All operations require the current Nexus session or a permitted API key."
   },
   "paths": {
@@ -2475,7 +2475,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Exact cents and occurrence counts for active recurring income and expenses"
+            "description": "Exact registered per-occurrence totals across all active rules, plus the selected monthly forecast and occurrence counts."
           },
           "403": {
             "description": "Permission denied"

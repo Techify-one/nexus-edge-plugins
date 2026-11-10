@@ -109,6 +109,8 @@ for (const engine of engines) {
       });
       const totals = await service.recurrenceSummary(company.id, "2028-01");
       assert.equal(totals.receitasCentavos, "50005");
+      assert.equal(totals.receitasCadastradasCentavos, "10001");
+      assert.equal(totals.despesasCadastradasCentavos, "50000");
       assert.equal(totals.despesasCentavos, "50000");
       assert.equal(totals.receitasOcorrencias, 5);
       assert.equal(totals.despesasOcorrencias, 2);

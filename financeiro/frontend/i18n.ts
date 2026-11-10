@@ -67,10 +67,14 @@ export const financeiroFrontendMessages = {
     "financeiro.semana": "Semanal",
     "financeiro.semanal": "Semanal",
     "financeiro.anual": "Anual",
-    "financeiro.receitasRecorrentes": "Receitas recorrentes no mês",
+    "financeiro.receitasCadastradas":
+      "Total de receitas recorrentes cadastradas",
+    "financeiro.despesasCadastradas":
+      "Total de despesas recorrentes cadastradas",
+    "financeiro.receitasRecorrentes": "Receitas recorrentes previstas no mês",
     "financeiro.despesasRecorrentes": "Despesas recorrentes no mês",
     "financeiro.totaisRecorrentesNota":
-      "Previsão das ocorrências ativas no mês selecionado, sem registrar pagamentos. Totais incluem todas as páginas.",
+      "Cadastradas: soma do valor por ocorrência de todas as regras ativas, sem converter frequências. Previsão do mês: conta as ocorrências nas datas configuradas. Não são pagamentos; os totais incluem todas as páginas.",
     "financeiro.lancado": "Lançado",
     "financeiro.automacaoRecorrencias":
       "A próxima ocorrência é lançada ao salvar. As demais são lançadas automaticamente no início de cada período, em aberto para conferência e alteração.",
@@ -271,10 +275,12 @@ export const financeiroFrontendMessages = {
     "financeiro.semana": "Weekly",
     "financeiro.semanal": "Weekly",
     "financeiro.anual": "Yearly",
-    "financeiro.receitasRecorrentes": "Recurring income this month",
+    "financeiro.receitasCadastradas": "Total registered recurring income",
+    "financeiro.despesasCadastradas": "Total registered recurring expenses",
+    "financeiro.receitasRecorrentes": "Projected recurring income this month",
     "financeiro.despesasRecorrentes": "Recurring expenses this month",
     "financeiro.totaisRecorrentesNota":
-      "Projected active occurrences in the selected month, without recording payments. Totals include every page.",
+      "Registered: sum of the per-occurrence amounts of all active rules, without normalizing frequencies. Monthly forecast: counts occurrences on their configured dates. These are not payments; totals include every page.",
     "financeiro.lancado": "Posted",
     "financeiro.automacaoRecorrencias":
       "The next occurrence is posted when saved. Other occurrences are posted automatically at the start of each period, open for review and editing.",

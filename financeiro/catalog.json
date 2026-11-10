@@ -1,5 +1,5 @@
 {
   "category": "Gestão financeira",
   "description": "Controle receitas, despesas, contas, recorrências e fechamento mensal no Nexus Edge, com comprovantes privados e histórico auditável.",
-  "changelog": "Totais de receitas e despesas recorrentes no mês, frequência semanal/mensal/anual e lançamento automático da próxima ocorrência ao cadastrar. O agendador lança as ocorrências de cada novo período em aberto, com recuperação de lacunas e prevenção de duplicações."
+  "changelog": "Exibe os totais de receitas e despesas recorrentes cadastradas separados da previsão do mês, preservando as datas de início e vencimento das regras existentes. Mantém frequência semanal/mensal/anual e geração automática de lançamentos em aberto."
 }

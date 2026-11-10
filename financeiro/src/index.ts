@@ -132,7 +132,7 @@ app.onError((error, c) => {
 });
 app.get("/health", (c) => {
   permission(c, "empresas.read");
-  return c.json({ ok: true, plugin: "financeiro", version: "1.1.0" });
+  return c.json({ ok: true, plugin: "financeiro", version: "1.1.1" });
 });
 app.post("/__installer/smoke", async (c) => {
   assert(
