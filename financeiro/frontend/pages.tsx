@@ -1,4 +1,5 @@
 import { useState, type FormEvent, type ReactNode } from "react";
+import { Info, RefreshCw, Search } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import {
   Button,
@@ -852,9 +853,20 @@ function EntryDetails({
 }
 
 export function RecurrencesPage() {
-  const { api, empresaId, mes, host, t, can, refresh } = useFinance();
+  const { api, empresaId, mes, host, t, can, refresh, companies, reload } =
+    useFinance();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const busca = searchParams.get("buscaRecorrencias") ?? "";
+  const changeFilter = (key: string, value: string) => {
+    const next = new URLSearchParams(searchParams);
+    if (value) next.set(key, value);
+    else next.delete(key);
+    for (const name of [...next.keys()])
+      if (name.startsWith("pagina_")) next.delete(name);
+    setSearchParams(next, { replace: key === "buscaRecorrencias" });
+  };
   const cols = useColumns();
-  const state = useList<Recurrence>("recorrencias");
+  const state = useList<Recurrence>("recorrencias", { busca });
   const totals = useResource<
     Single<{
       receitasCentavos: string;
@@ -890,74 +902,144 @@ export function RecurrencesPage() {
       body: { status, escopo: "FUTURAS" },
       danger: status === "ENCERRADA",
     });
+  const [helpOpen, setHelpOpen] = useState(false);
   return (
     <Gate resource="recorrencias">
-      <div className="space-y-3">
-        <PageActions>
-          {can("recorrencias", "generate") && (
-            <Button
-              variant="secondary"
-              onClick={() =>
-                setAction({
-                  title: t("financeiro.gerar"),
-                  description: t("financeiro.confirmacaoGeracao"),
-                  path: scoped("/recorrencias/gerar", empresaId),
-                  body: { de: today(), ate: addDays(today(), 89) },
-                })
+      <div className="financeiro-recurrences space-y-2">
+        <SingleLineFilterBar
+          className="financeiro-recurrence-toolbar"
+          aria-label={t("financeiro.filtrosRecorrencias")}
+        >
+          <Select
+            aria-label={t("financeiro.empresa")}
+            value={empresaId}
+            onChange={(e) => changeFilter("empresaId", e.target.value)}
+          >
+            <option value="">{t("financeiro.selecione")}</option>
+            {companies.map((company) => (
+              <option key={company.id} value={company.id}>
+                {company.nome}
+                {company.ativo ? "" : ` (${t("financeiro.inativo")})`}
+              </option>
+            ))}
+          </Select>
+          <Input
+            aria-label={t("financeiro.mes")}
+            type="month"
+            value={mes}
+            onChange={(e) => changeFilter("mes", e.target.value)}
+          />
+          <div className="financeiro-recurrence-search">
+            <Search size={15} aria-hidden="true" />
+            <Input
+              type="search"
+              aria-label={t("financeiro.buscarRecorrencias")}
+              placeholder={t("financeiro.buscarRecorrencias")}
+              value={busca}
+              onChange={(e) =>
+                changeFilter("buscaRecorrencias", e.target.value)
               }
-            >
-              {t("financeiro.gerar")}
-            </Button>
-          )}
-          {can("recorrencias", "create") && (
-            <Button onClick={() => setEditing({})}>
-              {t("financeiro.novo")}
-            </Button>
-          )}
-        </PageActions>
-        <ErrorBox error={totals.error} />
-        {totals.data && (
-          <div className="grid gap-3 sm:grid-cols-2">
-            <MetricCard
-              label={t("financeiro.receitasCadastradas")}
-              tone="success"
-              value={formatMoney(
-                totals.data.data.receitasCadastradasCentavos ?? "0",
-                host.locale,
-              )}
-            />
-            <MetricCard
-              label={t("financeiro.despesasCadastradas")}
-              tone="warning"
-              value={formatMoney(
-                totals.data.data.despesasCadastradasCentavos ?? "0",
-                host.locale,
-              )}
-            />
-            <MetricCard
-              label={t("financeiro.receitasRecorrentes")}
-              tone="success"
-              value={formatMoney(
-                totals.data.data.receitasCentavos,
-                host.locale,
-              )}
-            />
-            <MetricCard
-              label={t("financeiro.despesasRecorrentes")}
-              tone="warning"
-              value={formatMoney(
-                totals.data.data.despesasCentavos,
-                host.locale,
-              )}
             />
           </div>
+          <div className="financeiro-recurrence-actions">
+            <Button
+              variant="ghost"
+              title={t("financeiro.atualizar")}
+              aria-label={t("financeiro.atualizar")}
+              onClick={reload}
+            >
+              <RefreshCw size={16} aria-hidden="true" />
+            </Button>
+            {can("recorrencias", "generate") && (
+              <Button
+                variant="secondary"
+                onClick={() =>
+                  setAction({
+                    title: t("financeiro.gerar"),
+                    description: t("financeiro.confirmacaoGeracao"),
+                    path: scoped("/recorrencias/gerar", empresaId),
+                    body: { de: today(), ate: addDays(today(), 89) },
+                  })
+                }
+              >
+                {t("financeiro.gerarCompacto")}
+              </Button>
+            )}
+            {can("recorrencias", "create") && (
+              <Button onClick={() => setEditing({})}>
+                {t("financeiro.novo")}
+              </Button>
+            )}
+          </div>
+        </SingleLineFilterBar>
+        <ErrorBox error={totals.error} />
+        <div
+          className="financeiro-recurrence-totals"
+          aria-label={t("financeiro.totaisRecorrencias")}
+          aria-busy={totals.loading}
+        >
+          {(
+            [
+              [
+                "receitasCadastradasCentavos",
+                "financeiro.receitasCompacto",
+                "financeiro.receitasCadastradas",
+                "success",
+              ],
+              [
+                "despesasCadastradasCentavos",
+                "financeiro.despesasCompacto",
+                "financeiro.despesasCadastradas",
+                "warning",
+              ],
+              [
+                "receitasCentavos",
+                "financeiro.receitasMesCompacto",
+                "financeiro.receitasRecorrentes",
+                "success",
+              ],
+              [
+                "despesasCentavos",
+                "financeiro.despesasMesCompacto",
+                "financeiro.despesasRecorrentes",
+                "warning",
+              ],
+            ] as const
+          ).map(([key, label, fullLabel, tone]) => (
+            <MetricCard
+              key={key}
+              className="financeiro-inline-metric"
+              tone={tone}
+              label={<span title={t(fullLabel)}>{t(label)}</span>}
+              value={
+                totals.data
+                  ? formatMoney(totals.data.data[key] ?? "0", host.locale)
+                  : "…"
+              }
+            />
+          ))}
+          <Button
+            variant="ghost"
+            className="financeiro-recurrence-help"
+            title={t("financeiro.sobreRecorrencias")}
+            aria-label={t("financeiro.sobreRecorrencias")}
+            onClick={() => setHelpOpen(true)}
+          >
+            <Info size={16} aria-hidden="true" />
+          </Button>
+        </div>
+        {helpOpen && (
+          <Modal
+            open
+            title={t("financeiro.sobreRecorrencias")}
+            onOpenChange={setHelpOpen}
+          >
+            <div className="space-y-3 text-sm">
+              <p>{t("financeiro.totaisRecorrentesNota")}</p>
+              <p>{t("financeiro.automacaoRecorrencias")}</p>
+            </div>
+          </Modal>
         )}
-        <p className="text-sm text-slate-500">
-          {t("financeiro.totaisRecorrentesNota")}
-        </p>
-        <p className="text-sm text-slate-500">
-          {t("financeiro.automacaoRecorrencias")}
-        </p>
         <Records<Recurrence>
           resource="recorrencias"
           state={state}

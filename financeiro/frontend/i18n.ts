@@ -1,5 +1,15 @@
 export const financeiroFrontendMessages = {
   "pt-BR": {
+    "financeiro.filtrosRecorrencias": "Filtros de recorrências",
+    "financeiro.buscarRecorrencias": "Buscar recorrência",
+    "financeiro.gerarCompacto": "Gerar 90 dias",
+    "financeiro.totaisRecorrencias": "Totais de recorrências",
+    "financeiro.receitasCompacto": "Receitas cadastradas",
+    "financeiro.despesasCompacto": "Despesas cadastradas",
+    "financeiro.receitasMesCompacto": "Receitas no mês",
+    "financeiro.despesasMesCompacto": "Despesas no mês",
+    "financeiro.sobreRecorrencias": "Sobre os totais e a geração automática",
+
     "financeiro.resumo": "Resumo",
     "financeiro.lancamentos": "Lançamentos",
     "financeiro.recorrencias": "Recorrências",
@@ -208,6 +218,16 @@ export const financeiroFrontendMessages = {
       "Confirme o valor estimado antes de registrar uma baixa.",
   },
   en: {
+    "financeiro.filtrosRecorrencias": "Recurring entry filters",
+    "financeiro.buscarRecorrencias": "Search recurring entries",
+    "financeiro.gerarCompacto": "Generate 90 days",
+    "financeiro.totaisRecorrencias": "Recurring entry totals",
+    "financeiro.receitasCompacto": "Registered income",
+    "financeiro.despesasCompacto": "Registered expenses",
+    "financeiro.receitasMesCompacto": "Income this month",
+    "financeiro.despesasMesCompacto": "Expenses this month",
+    "financeiro.sobreRecorrencias": "About totals and automatic posting",
+
     "financeiro.resumo": "Overview",
     "financeiro.lancamentos": "Entries",
     "financeiro.recorrencias": "Recurrences",

@@ -1,6 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useI18n } from "../../.marketplace/frontend/src/i18n/index.js";
-import { NavLink, Route, Routes, useSearchParams } from "react-router-dom";
+import {
+  NavLink,
+  Route,
+  Routes,
+  useSearchParams,
+  useLocation,
+} from "react-router-dom";
 import { definePlugin, type PluginHostV1 } from "@nexus/plugin-sdk";
 import { mountReactPlugin } from "../../.marketplace/frontend/src/plugin-host.js";
 import { registerPluginTranslations } from "../../.marketplace/frontend/src/i18n/index.js";
@@ -43,6 +49,9 @@ const routes = [
 ] as const;
 export function FinanceApp({ host }: { host: PluginHostV1 }) {
   const api = useMemo(() => new FinanceApi(host), [host]);
+  const compactRecurrences = useLocation().pathname.startsWith(
+    `${root}/recorrencias`,
+  );
   const { setLocale } = useI18n();
   useEffect(() => setLocale(host.locale), [host.locale, setLocale]);
   const t = labelFor(host.locale);
@@ -130,39 +139,41 @@ export function FinanceApp({ host }: { host: PluginHostV1 }) {
               </NavLink>
             ))}
         </nav>
-        <SingleLineFilterBar>
-          <Field label={t("financeiro.empresa")}>
-            <Select
-              value={empresaId}
-              aria-label={t("financeiro.empresa")}
-              onChange={(e) => change("empresaId", e.target.value)}
-            >
-              <option value="">{t("financeiro.selecione")}</option>
-              {companies.data?.data.map((company) => (
-                <option key={company.id} value={company.id}>
-                  {company.nome}
-                  {company.ativo ? "" : ` (${t("financeiro.inativo")})`}
-                </option>
-              ))}
-            </Select>
-          </Field>
-          <Field label={t("financeiro.mes")}>
-            <Input
-              type="month"
-              aria-label={t("financeiro.mes")}
-              value={mes}
-              onChange={(e) => change("mes", e.target.value)}
-            />
-          </Field>
-          <div className="flex items-end justify-end">
-            <Button
-              variant="secondary"
-              onClick={() => setRefresh((value) => value + 1)}
-            >
-              {t("financeiro.atualizar")}
-            </Button>
-          </div>
-        </SingleLineFilterBar>
+        {(!compactRecurrences || !empresaId) && (
+          <SingleLineFilterBar>
+            <Field label={t("financeiro.empresa")}>
+              <Select
+                value={empresaId}
+                aria-label={t("financeiro.empresa")}
+                onChange={(e) => change("empresaId", e.target.value)}
+              >
+                <option value="">{t("financeiro.selecione")}</option>
+                {companies.data?.data.map((company) => (
+                  <option key={company.id} value={company.id}>
+                    {company.nome}
+                    {company.ativo ? "" : ` (${t("financeiro.inativo")})`}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+            <Field label={t("financeiro.mes")}>
+              <Input
+                type="month"
+                aria-label={t("financeiro.mes")}
+                value={mes}
+                onChange={(e) => change("mes", e.target.value)}
+              />
+            </Field>
+            <div className="flex items-end justify-end">
+              <Button
+                variant="secondary"
+                onClick={() => setRefresh((value) => value + 1)}
+              >
+                {t("financeiro.atualizar")}
+              </Button>
+            </div>
+          </SingleLineFilterBar>
+        )}
         <ErrorBox
           error={companies.error || accounts.error || categories.error}
         />

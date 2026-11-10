@@ -325,7 +325,7 @@ try {
   await page.getByText("Reaberto", { exact: true }).waitFor();
   await page.getByRole("link", { name: "Recorrências", exact: true }).click();
   await page
-    .getByRole("button", { name: "Gerar próximos 90 dias", exact: true })
+    .getByRole("button", { name: "Gerar 90 dias", exact: true })
     .click();
   await page.getByRole("button", { name: "Confirmar", exact: true }).click();
   await page

@@ -212,7 +212,7 @@ try {
     .waitFor();
   await page
     .locator(".metric-label")
-    .filter({ hasText: "Despesas recorrentes no mês" })
+    .filter({ hasText: "Despesas no mês" })
     .waitFor();
   assert.equal((await ledger.list(company.id, "recorrencias")).length, 1);
   assert.equal(
@@ -225,6 +225,39 @@ try {
     (await ledger.recurrenceSummary(company.id, mes)).despesasCentavos,
     "2501",
   );
+  const tableTop = await page
+    .locator("table")
+    .first()
+    .evaluate((element) => element.getBoundingClientRect().top);
+  assert.ok(tableTop < 210, `Table begins too low: ${tableTop}px`);
+  const search = page.getByRole("searchbox", { name: "Buscar recorrência" });
+  await search.fill("não existe xyz");
+  await page.getByText("Nenhum registro encontrado", { exact: true }).waitFor();
+  await search.fill("mensal");
+  await page
+    .getByRole("cell", { name: "Recorrência mensal real E2E", exact: true })
+    .waitFor();
+  await page.reload({ waitUntil: "networkidle" });
+  assert.equal(await search.inputValue(), "mensal");
+  await search.fill("");
+  await page
+    .getByRole("cell", { name: "Recorrência mensal real E2E", exact: true })
+    .waitFor();
+  await page
+    .getByRole("button", {
+      name: "Sobre os totais e a geração automática",
+      exact: true,
+    })
+    .click();
+  await page.getByRole("dialog").waitFor();
+  await page.keyboard.press("Escape");
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByRole("searchbox", { name: "Buscar recorrência" }).waitFor();
+  await page.screenshot({
+    path: "/tmp/financeiro-compact-mobile.png",
+    fullPage: true,
+  });
+  await page.setViewportSize({ width: 1366, height: 900 });
   await page.screenshot({
     path: "/tmp/financeiro-real-recurrences.png",
     fullPage: true,

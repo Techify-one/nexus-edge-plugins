@@ -132,7 +132,7 @@ app.onError((error, c) => {
 });
 app.get("/health", (c) => {
   permission(c, "empresas.read");
-  return c.json({ ok: true, plugin: "financeiro", version: "1.1.1" });
+  return c.json({ ok: true, plugin: "financeiro", version: "1.1.2" });
 });
 app.post("/__installer/smoke", async (c) => {
   assert(
@@ -214,6 +214,21 @@ for (const resource of [
             `${String(r.descricao)} ${String(r.contraparte ?? "")}`
               .toLocaleLowerCase("pt-BR")
               .includes(busca)),
+      );
+    }
+    if (resource === "recorrencias" && c.req.query("busca")) {
+      const normalize = (value: string) =>
+        value
+          .normalize("NFD")
+          .replace(/\p{M}/gu, "")
+          .toLocaleLowerCase("pt-BR");
+      const query = normalize(
+        z.string().max(200).parse(c.req.query("busca")).trim(),
+      );
+      rows = rows.filter((row) =>
+        normalize(
+          `${String(row.descricao)} ${String(row.contraparte ?? "")}`,
+        ).includes(query),
       );
     }
     if (
