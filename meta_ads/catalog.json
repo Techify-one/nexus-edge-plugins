@@ -1,4 +1,5 @@
 {
   "category": "Marketing e mídia paga",
-  "description": "Conecte contas do Meta Ads ao Nexus Edge para acompanhar campanhas, conjuntos, anúncios e métricas de desempenho em um só lugar."
+  "description": "Conecte contas do Meta Ads ao Nexus Edge para acompanhar campanhas, conjuntos, anúncios e métricas de desempenho em um só lugar.",
+  "changelog": "Adiciona ações MCP com permissões explícitas, validação dos campos e títulos em português e inglês. A ativação e as ações permitidas são controladas nos detalhes do plugin e persistem nas atualizações. Requer Core 1.1.0-beta.16."
 }

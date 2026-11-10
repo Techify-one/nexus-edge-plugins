@@ -2,14 +2,28 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Nexus Asaas API",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "description": "Private Nexus gateway for a personal Asaas account."
   },
   "paths": {
     "/api/v1/p/asaas/balance": {
       "get": {
         "summary": "Read the available Asaas balance",
-        "responses": { "200": { "description": "Available balance" } }
+        "responses": {
+          "200": {
+            "description": "Available balance"
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "asaas_get_balance",
+          "permissions": ["asaas.balance.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "Read the available Asaas balance",
+            "pt-BR": "Consultar saldo disponível no Asaas"
+          }
+        }
       }
     },
     "/api/v1/p/asaas/statement": {
@@ -20,18 +34,28 @@
             "in": "query",
             "name": "startDate",
             "required": true,
-            "schema": { "type": "string", "format": "date" }
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
           },
           {
             "in": "query",
             "name": "finishDate",
             "required": true,
-            "schema": { "type": "string", "format": "date" }
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
           },
           {
             "in": "query",
             "name": "offset",
-            "schema": { "type": "integer", "minimum": 0, "default": 0 }
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
           },
           {
             "in": "query",
@@ -53,13 +77,41 @@
             }
           }
         ],
-        "responses": { "200": { "description": "Statement entries" } }
+        "responses": {
+          "200": {
+            "description": "Statement entries"
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "asaas_get_statement",
+          "permissions": ["asaas.statement.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "Read the paginated Asaas statement",
+            "pt-BR": "Consultar extrato do Asaas"
+          }
+        }
       }
     },
     "/api/v1/p/asaas/connection": {
       "get": {
         "summary": "Test the configured API key with a balance read",
-        "responses": { "200": { "description": "Connection accepted" } }
+        "responses": {
+          "200": {
+            "description": "Connection accepted"
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "asaas_get_connection",
+          "permissions": ["asaas.settings.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "Test the configured API key with a balance read",
+            "pt-BR": "Verificar conexão com o Asaas"
+          }
+        }
       }
     },
     "/api/v1/p/asaas/connection/validate": {
@@ -73,13 +125,20 @@
                 "type": "object",
                 "required": ["apiKey"],
                 "properties": {
-                  "apiKey": { "type": "string", "writeOnly": true }
+                  "apiKey": {
+                    "type": "string",
+                    "writeOnly": true
+                  }
                 }
               }
             }
           }
         },
-        "responses": { "200": { "description": "Key accepted by Asaas" } }
+        "responses": {
+          "200": {
+            "description": "Key accepted by Asaas"
+          }
+        }
       }
     },
     "/api/v1/p/asaas/pix/address-keys/inspect": {
@@ -93,7 +152,9 @@
                 "type": "object",
                 "required": ["pixAddressKey", "pixAddressKeyType"],
                 "properties": {
-                  "pixAddressKey": { "type": "string" },
+                  "pixAddressKey": {
+                    "type": "string"
+                  },
                   "pixAddressKeyType": {
                     "type": "string",
                     "enum": ["CPF", "CNPJ", "EMAIL", "PHONE", "EVP"]
@@ -104,14 +165,40 @@
           }
         },
         "responses": {
-          "200": { "description": "Masked recipient identity" }
+          "200": {
+            "description": "Masked recipient identity"
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "asaas_post_pix_address_keys_inspect",
+          "permissions": ["asaas.pix.create"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "Resolve the Pix recipient before transfer confirmation",
+            "pt-BR": "Consultar destinatário de Pix"
+          }
         }
       }
     },
     "/api/v1/p/asaas/pix/transfers": {
       "get": {
         "summary": "List Pix transfers initiated through Nexus",
-        "responses": { "200": { "description": "Local Pix transfer history" } }
+        "responses": {
+          "200": {
+            "description": "Local Pix transfer history"
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "asaas_get_pix_transfers",
+          "permissions": ["asaas.pix.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "List Pix transfers initiated through Nexus",
+            "pt-BR": "Listar transferências Pix"
+          }
+        }
       },
       "post": {
         "summary": "Submit a Pix transfer to an external key",
@@ -120,7 +207,11 @@
             "in": "header",
             "name": "Idempotency-Key",
             "required": true,
-            "schema": { "type": "string", "minLength": 16, "maxLength": 120 }
+            "schema": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 120
+            }
           }
         ],
         "requestBody": {
@@ -137,21 +228,50 @@
                 ],
                 "properties": {
                   "value": {
-                    "oneOf": [{ "type": "string" }, { "type": "number" }]
+                    "oneOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "number"
+                      }
+                    ]
                   },
-                  "pixAddressKey": { "type": "string" },
+                  "pixAddressKey": {
+                    "type": "string"
+                  },
                   "pixAddressKeyType": {
                     "type": "string",
                     "enum": ["CPF", "CNPJ", "EMAIL", "PHONE", "EVP"]
                   },
-                  "description": { "type": "string", "maxLength": 120 },
-                  "confirmed": { "type": "boolean", "const": true }
+                  "description": {
+                    "type": "string",
+                    "maxLength": 120
+                  },
+                  "confirmed": {
+                    "type": "boolean",
+                    "const": true
+                  }
                 }
               }
             }
           }
         },
-        "responses": { "201": { "description": "Pix submitted to Asaas" } }
+        "responses": {
+          "201": {
+            "description": "Pix submitted to Asaas"
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "asaas_post_pix_transfers",
+          "permissions": ["asaas.pix.create"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Submit a Pix transfer to an external key",
+            "pt-BR": "Enviar Pix para uma chave externa"
+          }
+        }
       }
     },
     "/api/v1/p/asaas/pix/transfers/{id}": {
@@ -162,10 +282,26 @@
             "in": "path",
             "name": "id",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           }
         ],
-        "responses": { "200": { "description": "Current transfer status" } }
+        "responses": {
+          "200": {
+            "description": "Current transfer status"
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "asaas_get_pix_transfers_id",
+          "permissions": ["asaas.pix.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "Refresh a Pix transfer status from Asaas",
+            "pt-BR": "Atualizar situação de um Pix"
+          }
+        }
       }
     },
     "/api/v1/public/p/asaas/withdrawal-authorization": {
@@ -176,7 +312,11 @@
             "in": "header",
             "name": "asaas-access-token",
             "required": true,
-            "schema": { "type": "string", "minLength": 32, "maxLength": 255 }
+            "schema": {
+              "type": "string",
+              "minLength": 32,
+              "maxLength": 255
+            }
           }
         ],
         "requestBody": {
@@ -187,16 +327,25 @@
                 "type": "object",
                 "required": ["type", "transfer"],
                 "properties": {
-                  "type": { "type": "string", "const": "TRANSFER" },
-                  "transfer": { "type": "object" }
+                  "type": {
+                    "type": "string",
+                    "const": "TRANSFER"
+                  },
+                  "transfer": {
+                    "type": "object"
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "APPROVED or REFUSED decision" },
-          "401": { "description": "Webhook token rejected" }
+          "200": {
+            "description": "APPROVED or REFUSED decision"
+          },
+          "401": {
+            "description": "Webhook token rejected"
+          }
         }
       }
     }

@@ -71,7 +71,26 @@ Declare nomes e a permissão administrativa em `secrets`. Valores nunca entram
 no manifesto, ZIP, catálogo, logs ou Git. Eles são configurados pela API privada
 do instalador e preservados em updates do Worker.
 
-## Compatibilidade
+## Ações MCP
+
+Declare `x-nexus-mcp` nas operações JSON do `openapi.json` para que o Core
+ofereça ativação independente por plugin e ação. O campo contém `name` estável
+com prefixo `<plugin-id>_`, `permissions` presentes no manifesto, `titles` em
+`pt-BR` e `en`, `readOnly` e `destructive`. Declare schemas completos de path,
+query e body. O Core valida argumentos, autentica a conexão e aplica a lista de
+ações permitidas antes de encaminhar a chamada ao Worker privado.
+
+As ferramentas recebem `{ path, query, body, idempotencyKey }`, usando apenas
+os grupos necessários. POSTs que alteram dados exigem `idempotencyKey` estável
+de 16 a 200 caracteres. Não exponha callbacks públicos, gravação de segredos
+ou captura e upload binários. Consentimento, confirmação de Pix, ownership e
+versionamento continuam sendo verificados pelo backend do plugin.
+
+Todas as ações começam bloqueadas. Ativar o MCP e selecionar ações nos
+detalhes do plugin salva a escolha no banco; atualizações preservam a escolha
+e não liberam automaticamente ferramentas novas. Requer Core 1.1.0-beta.16.
+
+## Compatibilidade de versões
 
 O plugin fixa `packageFormat`, `manifestVersion`, `engines.hostApi`,
 `engines.coreApi`, `coreMinVersion`, `compatibilityDate` e providers. Mudanças

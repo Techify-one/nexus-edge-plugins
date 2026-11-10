@@ -3,7 +3,12 @@ import { createHash, createPublicKey, verify } from "node:crypto";
 import { strFromU8, unzipSync } from "fflate";
 import { canonicalPluginJson } from "../packages/plugin-sdk/dist/package.js";
 
-const catalog = JSON.parse(readFileSync("nexus-marketplace.json", "utf8"));
+const catalog = JSON.parse(
+  readFileSync(
+    process.env.MARKETPLACE_OUTPUT?.trim() || "nexus-marketplace.json",
+    "utf8",
+  ),
+);
 const rawPublicKey = Buffer.from(catalog.publisher.publicKey, "base64url");
 const publicKey = createPublicKey({
   key: Buffer.concat([

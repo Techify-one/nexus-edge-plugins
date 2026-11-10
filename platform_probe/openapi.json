@@ -2,15 +2,29 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Cloudflare Platform Probe API",
-    "version": "1.0.2"
+    "version": "1.0.3"
   },
   "paths": {
     "/api/v1/p/platform_probe/run": {
       "post": {
         "summary": "Exercise all provisioned Cloudflare resources",
         "responses": {
-          "200": { "description": "Resource probe result" },
-          "403": { "description": "Permission denied" }
+          "200": {
+            "description": "Resource probe result"
+          },
+          "403": {
+            "description": "Permission denied"
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "platform_probe_post_run",
+          "permissions": ["platform_probe.status.read"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Exercise all provisioned Cloudflare resources",
+            "pt-BR": "Testar recursos Cloudflare provisionados"
+          }
         }
       }
     }

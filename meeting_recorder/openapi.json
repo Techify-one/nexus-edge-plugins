@@ -1,42 +1,258 @@
 {
   "openapi": "3.1.0",
-  "info": { "title": "Nexus Meeting Recorder API", "version": "2.1.2" },
+  "info": {
+    "title": "Nexus Meeting Recorder API",
+    "version": "2.1.3"
+  },
   "paths": {
     "/api/v1/p/meeting_recorder/overview": {
       "get": {
         "summary": "Read recorder overview",
-        "responses": { "200": { "description": "Overview" } }
+        "responses": {
+          "200": {
+            "description": "Overview"
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "meeting_recorder_get_overview",
+          "permissions": ["meeting_recorder.recording.read"],
+          "optionalPermissions": ["meeting_recorder.recording.read_all"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "Read recorder overview",
+            "pt-BR": "Consultar resumo das gravações"
+          }
+        }
       }
     },
     "/api/v1/p/meeting_recorder/recordings": {
       "get": {
         "summary": "List recordings",
-        "responses": { "200": { "description": "Recordings" } }
+        "responses": {
+          "200": {
+            "description": "Recordings"
+          }
+        },
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        ],
+        "x-nexus-mcp": {
+          "name": "meeting_recorder_get_recordings",
+          "permissions": ["meeting_recorder.recording.read"],
+          "optionalPermissions": ["meeting_recorder.recording.read_all"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "List recordings",
+            "pt-BR": "Listar gravações"
+          }
+        }
       },
       "post": {
         "summary": "Start a recording",
-        "responses": { "201": { "description": "Recording" } }
+        "responses": {
+          "201": {
+            "description": "Recording"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "clientSessionId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "sourceType": {
+                    "type": "string",
+                    "enum": [
+                      "microphone",
+                      "tab",
+                      "display",
+                      "microphone_tab",
+                      "microphone_display"
+                    ]
+                  },
+                  "language": {
+                    "type": "string",
+                    "enum": ["pt-BR", "en", "auto"]
+                  },
+                  "mimeType": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  },
+                  "segmentDurationMs": {
+                    "type": "integer",
+                    "minimum": 10000,
+                    "maximum": 30000
+                  },
+                  "autoTranscribe": {
+                    "type": "boolean"
+                  },
+                  "consentVersion": {
+                    "type": "string",
+                    "const": "2026-08-28"
+                  },
+                  "consentAcknowledged": {
+                    "type": "boolean",
+                    "const": true
+                  }
+                },
+                "additionalProperties": false,
+                "required": [
+                  "clientSessionId",
+                  "title",
+                  "sourceType",
+                  "language",
+                  "mimeType",
+                  "segmentDurationMs",
+                  "consentVersion",
+                  "consentAcknowledged"
+                ]
+              }
+            }
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "meeting_recorder_post_recordings",
+          "permissions": ["meeting_recorder.recording.create"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Start a recording",
+            "pt-BR": "Criar registro de gravação"
+          }
+        }
       }
     },
     "/api/v1/p/meeting_recorder/recordings/{recordingId}": {
       "get": {
         "summary": "Read a recording",
-        "responses": { "200": { "description": "Recording" } }
+        "responses": {
+          "200": {
+            "description": "Recording"
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "meeting_recorder_get_recordings_recordingId",
+          "permissions": ["meeting_recorder.recording.read"],
+          "optionalPermissions": ["meeting_recorder.recording.read_all"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "Read a recording",
+            "pt-BR": "Consultar gravação"
+          }
+        }
       },
       "patch": {
         "summary": "Update a recording",
-        "responses": { "200": { "description": "Updated recording" } }
+        "responses": {
+          "200": {
+            "description": "Updated recording"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  },
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                },
+                "additionalProperties": false,
+                "required": ["title", "version"]
+              }
+            }
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "meeting_recorder_patch_recordings_recordingId",
+          "permissions": ["meeting_recorder.recording.update"],
+          "optionalPermissions": ["meeting_recorder.recording.manage_all"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Update a recording",
+            "pt-BR": "Editar gravação"
+          }
+        }
       },
       "delete": {
         "summary": "Delete a recording",
-        "responses": { "204": { "description": "Deleted" } }
+        "responses": {
+          "204": {
+            "description": "Deleted"
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "meeting_recorder_delete_recordings_recordingId",
+          "permissions": ["meeting_recorder.recording.delete"],
+          "optionalPermissions": ["meeting_recorder.recording.manage_all"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Delete a recording",
+            "pt-BR": "Iniciar exclusão de gravação"
+          }
+        }
       }
     },
     "/api/v1/p/meeting_recorder/recordings/{recordingId}/segments/{sequence}/transient": {
       "put": {
         "summary": "Transcribe a browser segment without retaining its audio",
         "responses": {
-          "200": { "description": "Transcript saved" },
+          "200": {
+            "description": "Transcript saved"
+          },
           "409": {
             "description": "Segment conflict or transcription in progress"
           }
@@ -46,17 +262,177 @@
     "/api/v1/p/meeting_recorder/settings": {
       "get": {
         "summary": "Read recorder settings",
-        "responses": { "200": { "description": "Settings" } }
+        "responses": {
+          "200": {
+            "description": "Settings"
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "meeting_recorder_get_settings",
+          "permissions": ["meeting_recorder.settings.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "Read recorder settings",
+            "pt-BR": "Consultar configuração do gravador"
+          }
+        }
       },
       "put": {
         "summary": "Update recorder settings",
-        "responses": { "200": { "description": "Updated settings" } }
+        "responses": {
+          "200": {
+            "description": "Updated settings"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "defaultLanguage": {
+                    "type": "string",
+                    "enum": ["pt-BR", "en", "auto"]
+                  },
+                  "autoTranscribe": {
+                    "type": "boolean"
+                  },
+                  "maximumMinutes": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 240
+                  },
+                  "storageLimitBytes": {
+                    "type": "integer",
+                    "minimum": 104857600,
+                    "maximum": 8589934592
+                  },
+                  "version": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                },
+                "additionalProperties": false,
+                "required": [
+                  "defaultLanguage",
+                  "autoTranscribe",
+                  "maximumMinutes",
+                  "storageLimitBytes",
+                  "version"
+                ]
+              }
+            }
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "meeting_recorder_put_settings",
+          "permissions": ["meeting_recorder.settings.update"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Update recorder settings",
+            "pt-BR": "Editar configuração do gravador"
+          }
+        }
       }
     },
     "/api/v1/public/p/meeting_recorder/telegram/webhook": {
       "post": {
         "summary": "Receive Telegram updates through the Core gateway",
-        "responses": { "200": { "description": "Update accepted" } }
+        "responses": {
+          "200": {
+            "description": "Update accepted"
+          }
+        }
+      }
+    },
+    "/api/v1/p/meeting_recorder/recordings/{recordingId}/transcript": {
+      "get": {
+        "summary": "Read a recording transcript",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "x-required-permissions": ["meeting_recorder.recording.read"],
+        "x-nexus-mcp": {
+          "name": "meeting_recorder_get_recordings_recordingId_transcript",
+          "permissions": ["meeting_recorder.recording.read"],
+          "optionalPermissions": ["meeting_recorder.recording.read_all"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "Read a recording transcript",
+            "pt-BR": "Consultar transcrição de gravação"
+          }
+        }
+      }
+    },
+    "/api/v1/p/meeting_recorder/recordings/{recordingId}/segments": {
+      "get": {
+        "summary": "List recording segments",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "x-required-permissions": ["meeting_recorder.recording.read"],
+        "x-nexus-mcp": {
+          "name": "meeting_recorder_get_recordings_recordingId_segments",
+          "permissions": ["meeting_recorder.recording.read"],
+          "optionalPermissions": ["meeting_recorder.recording.read_all"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "List recording segments",
+            "pt-BR": "Listar segmentos de gravação"
+          }
+        }
+      }
+    },
+    "/api/v1/p/meeting_recorder/storage": {
+      "get": {
+        "summary": "Read storage usage",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "x-required-permissions": ["meeting_recorder.storage.read"],
+        "x-nexus-mcp": {
+          "name": "meeting_recorder_get_storage",
+          "permissions": ["meeting_recorder.storage.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "Read storage usage",
+            "pt-BR": "Consultar uso do armazenamento"
+          }
+        }
+      }
+    },
+    "/api/v1/p/meeting_recorder/recordings/{recordingId}/deletion-steps": {
+      "post": {
+        "summary": "Advance recording deletion",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "x-required-permissions": ["meeting_recorder.recording.delete"],
+        "x-nexus-mcp": {
+          "name": "meeting_recorder_post_recordings_recordingId_deletion_steps",
+          "permissions": ["meeting_recorder.recording.delete"],
+          "optionalPermissions": ["meeting_recorder.recording.manage_all"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Advance recording deletion",
+            "pt-BR": "Concluir etapa de exclusão de gravação"
+          }
+        }
       }
     }
   }

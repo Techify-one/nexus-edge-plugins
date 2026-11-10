@@ -1,29 +1,206 @@
 {
   "openapi": "3.1.0",
-  "info": { "title": "Nexus CRM API", "version": "2.0.4" },
+  "info": {
+    "title": "Nexus CRM API",
+    "version": "2.0.5"
+  },
   "paths": {
     "/api/v1/p/crm/leads": {
       "get": {
         "summary": "List leads",
-        "responses": { "200": { "description": "Lead collection" } }
+        "responses": {
+          "200": {
+            "description": "Lead collection"
+          }
+        },
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        ],
+        "x-nexus-mcp": {
+          "name": "crm_get_leads",
+          "permissions": ["crm.lead.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "List leads",
+            "pt-BR": "Listar leads"
+          }
+        }
       },
       "post": {
         "summary": "Create a lead",
-        "responses": { "201": { "description": "Created lead" } }
+        "responses": {
+          "201": {
+            "description": "Created lead"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 160
+                  },
+                  "email": {
+                    "type": "string",
+                    "maxLength": 254
+                  },
+                  "phone": {
+                    "type": "string",
+                    "maxLength": 40
+                  },
+                  "company": {
+                    "type": "string",
+                    "maxLength": 160
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": ["new", "qualified", "won", "lost"]
+                  },
+                  "notes": {
+                    "type": "string",
+                    "maxLength": 5000
+                  }
+                },
+                "additionalProperties": false,
+                "required": ["name"]
+              }
+            }
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "crm_post_leads",
+          "permissions": ["crm.lead.create"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Create a lead",
+            "pt-BR": "Criar lead"
+          }
+        }
       }
     },
     "/api/v1/p/crm/leads/{leadId}": {
       "get": {
         "summary": "Get a lead",
-        "responses": { "200": { "description": "Lead" } }
+        "responses": {
+          "200": {
+            "description": "Lead"
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "crm_get_leads_leadId",
+          "permissions": ["crm.lead.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "Get a lead",
+            "pt-BR": "Consultar lead"
+          }
+        }
       },
       "patch": {
         "summary": "Update a lead",
-        "responses": { "200": { "description": "Updated lead" } }
+        "responses": {
+          "200": {
+            "description": "Updated lead"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 160
+                  },
+                  "email": {
+                    "type": "string",
+                    "maxLength": 254
+                  },
+                  "phone": {
+                    "type": "string",
+                    "maxLength": 40
+                  },
+                  "company": {
+                    "type": "string",
+                    "maxLength": 160
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": ["new", "qualified", "won", "lost"]
+                  },
+                  "notes": {
+                    "type": "string",
+                    "maxLength": 5000
+                  },
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                },
+                "additionalProperties": false,
+                "required": ["version"]
+              }
+            }
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "crm_patch_leads_leadId",
+          "permissions": ["crm.lead.update"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Update a lead",
+            "pt-BR": "Editar lead"
+          }
+        }
       },
       "delete": {
         "summary": "Delete a lead",
-        "responses": { "204": { "description": "Deleted" } }
+        "responses": {
+          "204": {
+            "description": "Deleted"
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "crm_delete_leads_leadId",
+          "permissions": ["crm.lead.delete"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Delete a lead",
+            "pt-BR": "Excluir lead"
+          }
+        }
       }
     }
   }

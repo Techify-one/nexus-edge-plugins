@@ -1,37 +1,210 @@
 {
   "openapi": "3.1.0",
-  "info": { "title": "Nexus Soletrando API", "version": "2.0.3" },
+  "info": {
+    "title": "Nexus Soletrando API",
+    "version": "2.0.4"
+  },
   "paths": {
     "/api/v1/p/soletrando/overview": {
       "get": {
         "summary": "Read spelling overview",
-        "responses": { "200": { "description": "Overview" } }
+        "responses": {
+          "200": {
+            "description": "Overview"
+          }
+        },
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          }
+        ],
+        "x-nexus-mcp": {
+          "name": "soletrando_get_overview",
+          "permissions": ["soletrando.child.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "Read spelling overview",
+            "pt-BR": "Consultar resumo do Soletrando"
+          }
+        }
       }
     },
     "/api/v1/p/soletrando/children": {
       "post": {
         "summary": "Create a child profile",
-        "responses": { "201": { "description": "Created profile" } }
+        "responses": {
+          "201": {
+            "description": "Created profile"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 50
+                  }
+                },
+                "additionalProperties": false,
+                "required": ["name"]
+              }
+            }
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "soletrando_post_children",
+          "permissions": ["soletrando.child.create"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Create a child profile",
+            "pt-BR": "Criar perfil de criança"
+          }
+        }
       }
     },
     "/api/v1/p/soletrando/children/{childId}": {
       "get": {
         "summary": "Read a child profile and progress",
-        "responses": { "200": { "description": "Child profile" } }
+        "responses": {
+          "200": {
+            "description": "Child profile"
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "soletrando_get_children_childId",
+          "permissions": ["soletrando.child.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "Read a child profile and progress",
+            "pt-BR": "Consultar perfil e progresso de criança"
+          }
+        }
       },
       "patch": {
         "summary": "Update a child profile",
-        "responses": { "200": { "description": "Updated profile" } }
+        "responses": {
+          "200": {
+            "description": "Updated profile"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 50
+                  },
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                },
+                "additionalProperties": false,
+                "required": ["name", "version"]
+              }
+            }
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "soletrando_patch_children_childId",
+          "permissions": ["soletrando.child.update"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Update a child profile",
+            "pt-BR": "Editar perfil de criança"
+          }
+        }
       },
       "delete": {
         "summary": "Delete a child profile",
-        "responses": { "204": { "description": "Deleted" } }
+        "responses": {
+          "204": {
+            "description": "Deleted"
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "soletrando_delete_children_childId",
+          "permissions": ["soletrando.child.delete"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Delete a child profile",
+            "pt-BR": "Excluir perfil de criança"
+          }
+        }
       }
     },
     "/api/v1/public/p/soletrando/play/{token}": {
       "get": {
         "summary": "Open a public spelling session",
-        "responses": { "200": { "description": "Public session" } }
+        "responses": {
+          "200": {
+            "description": "Public session"
+          }
+        }
+      }
+    },
+    "/api/v1/p/soletrando/children/{childId}/rotate-link": {
+      "post": {
+        "summary": "Rotate a child access link",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "x-required-permissions": ["soletrando.child.update"],
+        "x-nexus-mcp": {
+          "name": "soletrando_post_children_childId_rotate_link",
+          "permissions": ["soletrando.child.update"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Rotate a child access link",
+            "pt-BR": "Renovar link de acesso de criança"
+          }
+        }
+      }
+    },
+    "/api/v1/p/soletrando/settings/transcription": {
+      "get": {
+        "summary": "Read transcription settings",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "x-required-permissions": ["soletrando.settings.read"],
+        "x-nexus-mcp": {
+          "name": "soletrando_get_settings_transcription",
+          "permissions": ["soletrando.settings.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "Read transcription settings",
+            "pt-BR": "Consultar configuração de transcrição"
+          }
+        }
       }
     }
   }

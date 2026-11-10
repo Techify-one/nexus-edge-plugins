@@ -1,5 +1,5 @@
 {
   "category": "Gestão financeira",
   "description": "Controle receitas, despesas, contas, recorrências e fechamento mensal no Nexus Edge, com comprovantes privados e histórico auditável.",
-  "changelog": "Exibe média mensal de entradas e saídas (semanal ×4, mensal mantida, anual ÷12, respeitando intervalos), com cálculo exato e arredondamento único. Move menus para a barra Voltar nos hosts compatíveis e remove o botão Gerar 90 dias da tela."
+  "changelog": "Adiciona ações MCP com permissões explícitas, validação dos campos e títulos em português e inglês. A ativação e as ações permitidas são controladas nos detalhes do plugin e persistem nas atualizações. Requer Core 1.1.0-beta.16."
 }

@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Nexus Edge Financeiro API",
-    "version": "1.1.3",
+    "version": "1.1.4",
     "description": "Authenticated financial records. Monetary values are integer cents encoded as strings. All operations require the current Nexus session or a permitted API key."
   },
   "paths": {
@@ -55,7 +55,17 @@
               "maximum": 200
             }
           }
-        ]
+        ],
+        "x-nexus-mcp": {
+          "name": "financeiro_get_empresas",
+          "permissions": ["financeiro.empresas.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "List empresas",
+            "pt-BR": "Listar empresas"
+          }
+        }
       },
       "post": {
         "operationId": "financeiro_post_empresas",
@@ -93,6 +103,16 @@
                 "$ref": "#/components/schemas/CompanyInput"
               }
             }
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "financeiro_post_empresas",
+          "permissions": ["financeiro.empresas.create"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Create empresas",
+            "pt-BR": "Criar empresas"
           }
         }
       }
@@ -157,7 +177,17 @@
               "maximum": 200
             }
           }
-        ]
+        ],
+        "x-nexus-mcp": {
+          "name": "financeiro_get_contas",
+          "permissions": ["financeiro.contas.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "List contas",
+            "pt-BR": "Listar contas"
+          }
+        }
       },
       "post": {
         "operationId": "financeiro_post_contas",
@@ -208,6 +238,16 @@
                 "$ref": "#/components/schemas/AccountInput"
               }
             }
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "financeiro_post_contas",
+          "permissions": ["financeiro.contas.create"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Create contas",
+            "pt-BR": "Criar contas"
           }
         }
       }
@@ -272,7 +312,17 @@
               "maximum": 200
             }
           }
-        ]
+        ],
+        "x-nexus-mcp": {
+          "name": "financeiro_get_categorias",
+          "permissions": ["financeiro.categorias.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "List categorias",
+            "pt-BR": "Listar categorias"
+          }
+        }
       },
       "post": {
         "operationId": "financeiro_post_categorias",
@@ -323,6 +373,16 @@
                 "$ref": "#/components/schemas/CategoryInput"
               }
             }
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "financeiro_post_categorias",
+          "permissions": ["financeiro.categorias.create"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Create categorias",
+            "pt-BR": "Criar categorias"
           }
         }
       }
@@ -387,7 +447,17 @@
               "maximum": 200
             }
           }
-        ]
+        ],
+        "x-nexus-mcp": {
+          "name": "financeiro_get_lancamentos",
+          "permissions": ["financeiro.lancamentos.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "List lancamentos",
+            "pt-BR": "Listar lançamentos"
+          }
+        }
       },
       "post": {
         "operationId": "financeiro_post_lancamentos",
@@ -438,6 +508,16 @@
                 "$ref": "#/components/schemas/EntryInput"
               }
             }
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "financeiro_post_lancamentos",
+          "permissions": ["financeiro.lancamentos.create"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Create lancamentos",
+            "pt-BR": "Criar lançamentos"
           }
         }
       }
@@ -502,7 +582,17 @@
               "maximum": 200
             }
           }
-        ]
+        ],
+        "x-nexus-mcp": {
+          "name": "financeiro_get_transferencias",
+          "permissions": ["financeiro.transferencias.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "List transferencias",
+            "pt-BR": "Listar transferências"
+          }
+        }
       },
       "post": {
         "operationId": "financeiro_post_transferencias",
@@ -553,6 +643,16 @@
                 "$ref": "#/components/schemas/TransferInput"
               }
             }
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "financeiro_post_transferencias",
+          "permissions": ["financeiro.transferencias.create"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Create transferencias",
+            "pt-BR": "Criar transferências"
           }
         }
       }
@@ -627,7 +727,17 @@
             },
             "description": "Accent-insensitive description and counterparty search, applied before pagination."
           }
-        ]
+        ],
+        "x-nexus-mcp": {
+          "name": "financeiro_get_recorrencias",
+          "permissions": ["financeiro.recorrencias.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "List recorrencias",
+            "pt-BR": "Listar recorrências"
+          }
+        }
       },
       "post": {
         "operationId": "financeiro_post_recorrencias",
@@ -680,7 +790,17 @@
             }
           }
         },
-        "description": "Creates the recurrence and its next eligible occurrence atomically. The entry remains open and no financial movement or payment is created."
+        "description": "Creates the recurrence and its next eligible occurrence atomically. The entry remains open and no financial movement or payment is created.",
+        "x-nexus-mcp": {
+          "name": "financeiro_post_recorrencias",
+          "permissions": ["financeiro.recorrencias.create"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Create recorrencias",
+            "pt-BR": "Criar recorrências"
+          }
+        }
       }
     },
     "/api/v1/p/financeiro/fechamentos": {
@@ -743,7 +863,17 @@
               "maximum": 200
             }
           }
-        ]
+        ],
+        "x-nexus-mcp": {
+          "name": "financeiro_get_fechamentos",
+          "permissions": ["financeiro.fechamentos.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "List fechamentos",
+            "pt-BR": "Listar fechamentos"
+          }
+        }
       },
       "post": {
         "operationId": "financeiro_post_fechamentos",
@@ -794,6 +924,16 @@
                 "$ref": "#/components/schemas/CloseInput"
               }
             }
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "financeiro_post_fechamentos",
+          "permissions": ["financeiro.fechamentos.close"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Create fechamentos",
+            "pt-BR": "Criar fechamentos"
           }
         }
       }
@@ -858,7 +998,17 @@
               "maximum": 200
             }
           }
-        ]
+        ],
+        "x-nexus-mcp": {
+          "name": "financeiro_get_visoes",
+          "permissions": ["financeiro.visoes.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "List visoes",
+            "pt-BR": "Listar visões"
+          }
+        }
       },
       "post": {
         "operationId": "financeiro_post_visoes",
@@ -909,6 +1059,16 @@
                 "$ref": "#/components/schemas/ViewInput"
               }
             }
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "financeiro_post_visoes",
+          "permissions": ["financeiro.visoes.create"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Create visoes",
+            "pt-BR": "Criar visões"
           }
         }
       }
@@ -963,6 +1123,16 @@
                 "$ref": "#/components/schemas/CompanyInputPatch"
               }
             }
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "financeiro_patch_empresas_id",
+          "permissions": ["financeiro.empresas.update"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Update empresas",
+            "pt-BR": "Editar empresas"
           }
         }
       }
@@ -1029,6 +1199,16 @@
               }
             }
           }
+        },
+        "x-nexus-mcp": {
+          "name": "financeiro_patch_contas_id",
+          "permissions": ["financeiro.contas.update"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Update contas",
+            "pt-BR": "Editar contas"
+          }
         }
       }
     },
@@ -1093,6 +1273,16 @@
                 "$ref": "#/components/schemas/CategoryInputPatch"
               }
             }
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "financeiro_patch_categorias_id",
+          "permissions": ["financeiro.categorias.update"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Update categorias",
+            "pt-BR": "Editar categorias"
           }
         }
       }
@@ -1159,6 +1349,16 @@
               }
             }
           }
+        },
+        "x-nexus-mcp": {
+          "name": "financeiro_patch_lancamentos_id",
+          "permissions": ["financeiro.lancamentos.update"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Update lancamentos",
+            "pt-BR": "Editar lançamentos"
+          }
         }
       },
       "get": {
@@ -1212,7 +1412,17 @@
               "maxLength": 120
             }
           }
-        ]
+        ],
+        "x-nexus-mcp": {
+          "name": "financeiro_get_lancamentos_id",
+          "permissions": ["financeiro.lancamentos.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "Entry details with movements and receipts",
+            "pt-BR": "Consultar lançamento, movimentações e comprovantes"
+          }
+        }
       }
     },
     "/api/v1/p/financeiro/lancamentos/{id}/cancelar": {
@@ -1276,6 +1486,16 @@
                 "$ref": "#/components/schemas/ReasonInput"
               }
             }
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "financeiro_post_lancamentos_id_cancelar",
+          "permissions": ["financeiro.lancamentos.cancel"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Cancel unpaid entry",
+            "pt-BR": "Cancelar lançamento não pago"
           }
         }
       }
@@ -1342,6 +1562,16 @@
               }
             }
           }
+        },
+        "x-nexus-mcp": {
+          "name": "financeiro_post_lancamentos_id_baixas",
+          "permissions": ["financeiro.movimentos.create"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Record a partial or full settlement",
+            "pt-BR": "Registrar baixa parcial ou integral"
+          }
         }
       }
     },
@@ -1405,7 +1635,17 @@
               "maximum": 200
             }
           }
-        ]
+        ],
+        "x-nexus-mcp": {
+          "name": "financeiro_get_movimentos",
+          "permissions": ["financeiro.movimentos.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "List financial movements",
+            "pt-BR": "Listar movimentações financeiras"
+          }
+        }
       }
     },
     "/api/v1/p/financeiro/movimentos/{id}/estornar": {
@@ -1469,6 +1709,16 @@
                 "$ref": "#/components/schemas/ReversalInput"
               }
             }
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "financeiro_post_movimentos_id_estornar",
+          "permissions": ["financeiro.movimentos.reverse"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Reverse a settlement",
+            "pt-BR": "Estornar baixa"
           }
         }
       }
@@ -1535,6 +1785,16 @@
               }
             }
           }
+        },
+        "x-nexus-mcp": {
+          "name": "financeiro_post_transferencias_id_estornar",
+          "permissions": ["financeiro.transferencias.reverse"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Reverse both transfer movements atomically",
+            "pt-BR": "Estornar transferência"
+          }
         }
       }
     },
@@ -1600,6 +1860,16 @@
               }
             }
           }
+        },
+        "x-nexus-mcp": {
+          "name": "financeiro_patch_recorrencias_id",
+          "permissions": ["financeiro.recorrencias.update"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Edit future recurring occurrences",
+            "pt-BR": "Editar próximas ocorrências de recorrência"
+          }
         }
       }
     },
@@ -1654,6 +1924,16 @@
               }
             }
           }
+        },
+        "x-nexus-mcp": {
+          "name": "financeiro_post_recorrencias_previa",
+          "permissions": ["financeiro.recorrencias.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "Preview up to 90 days of occurrences",
+            "pt-BR": "Simular até 90 dias de recorrências"
+          }
         }
       }
     },
@@ -1707,6 +1987,16 @@
                 "$ref": "#/components/schemas/GenerateInput"
               }
             }
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "financeiro_post_recorrencias_gerar",
+          "permissions": ["financeiro.recorrencias.generate"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Generate occurrences idempotently",
+            "pt-BR": "Gerar lançamentos recorrentes"
           }
         }
       }
@@ -1773,6 +2063,16 @@
               }
             }
           }
+        },
+        "x-nexus-mcp": {
+          "name": "financeiro_post_fechamentos_id_reabrir",
+          "permissions": ["financeiro.fechamentos.reopen"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Reopen closed month with reason",
+            "pt-BR": "Reabrir mês fechado com justificativa"
+          }
         }
       }
     },
@@ -1826,7 +2126,17 @@
               "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
             }
           }
-        ]
+        ],
+        "x-nexus-mcp": {
+          "name": "financeiro_get_resumo",
+          "permissions": ["financeiro.resumo.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "Financial summary by cash and competence",
+            "pt-BR": "Consultar resumo por caixa e competência"
+          }
+        }
       }
     },
     "/api/v1/p/financeiro/visoes/{id}": {
@@ -1881,7 +2191,17 @@
               "maxLength": 120
             }
           }
-        ]
+        ],
+        "x-nexus-mcp": {
+          "name": "financeiro_delete_visoes_id",
+          "permissions": ["financeiro.visoes.delete"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Delete own saved view",
+            "pt-BR": "Excluir visão salva"
+          }
+        }
       }
     },
     "/api/v1/p/financeiro/auditoria": {
@@ -1944,7 +2264,17 @@
               "maximum": 200
             }
           }
-        ]
+        ],
+        "x-nexus-mcp": {
+          "name": "financeiro_get_auditoria",
+          "permissions": ["financeiro.auditoria.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "Financial audit trail",
+            "pt-BR": "Consultar auditoria financeira"
+          }
+        }
       }
     },
     "/api/v1/p/financeiro/relatorios/csv": {
@@ -2011,7 +2341,17 @@
               "enum": ["competencia", "caixa"]
             }
           }
-        ]
+        ],
+        "x-nexus-mcp": {
+          "name": "financeiro_get_relatorios_csv",
+          "permissions": ["financeiro.relatorios.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "Export financial CSV",
+            "pt-BR": "Exportar relatório financeiro CSV"
+          }
+        }
       }
     },
     "/api/v1/p/financeiro/anexos": {
@@ -2074,7 +2414,17 @@
               "maximum": 200
             }
           }
-        ]
+        ],
+        "x-nexus-mcp": {
+          "name": "financeiro_get_anexos",
+          "permissions": ["financeiro.anexos.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "List private financial receipts",
+            "pt-BR": "Listar comprovantes financeiros"
+          }
+        }
       },
       "post": {
         "operationId": "financeiro_post_anexos",
@@ -2267,7 +2617,17 @@
               "maxLength": 120
             }
           }
-        ]
+        ],
+        "x-nexus-mcp": {
+          "name": "financeiro_delete_anexos_id",
+          "permissions": ["financeiro.anexos.delete"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Remove a receipt link",
+            "pt-BR": "Remover vínculo de comprovante"
+          }
+        }
       }
     },
     "/api/v1/p/financeiro/avisos/configuracao": {
@@ -2311,7 +2671,17 @@
               "maxLength": 120
             }
           }
-        ]
+        ],
+        "x-nexus-mcp": {
+          "name": "financeiro_get_avisos_configuracao",
+          "permissions": ["financeiro.avisos.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "Read reminder configuration",
+            "pt-BR": "Consultar configuração de lembretes"
+          }
+        }
       },
       "put": {
         "operationId": "financeiro_put_avisos_configuracao",
@@ -2363,6 +2733,16 @@
               }
             }
           }
+        },
+        "x-nexus-mcp": {
+          "name": "financeiro_put_avisos_configuracao",
+          "permissions": ["financeiro.avisos.manage"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Configure reminders",
+            "pt-BR": "Configurar lembretes"
+          }
         }
       }
     },
@@ -2407,7 +2787,17 @@
               "maxLength": 120
             }
           }
-        ]
+        ],
+        "x-nexus-mcp": {
+          "name": "financeiro_post_avisos_enviar",
+          "permissions": ["financeiro.avisos.manage"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Send due reminder if configured",
+            "pt-BR": "Enviar lembrete pendente"
+          }
+        }
       }
     },
     "/api/v1/p/financeiro/health": {
@@ -2438,6 +2828,16 @@
           "409": {
             "description": "Concurrent write, idempotency or closed-period conflict"
           }
+        },
+        "x-nexus-mcp": {
+          "name": "financeiro_get_health",
+          "permissions": ["financeiro.empresas.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "Plugin health",
+            "pt-BR": "Verificar funcionamento do plugin"
+          }
         }
       }
     },
@@ -2455,6 +2855,16 @@
           },
           "403": {
             "description": "Permission denied"
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "financeiro_get_webhooks_status",
+          "permissions": ["financeiro.avisos.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "Read non-secret outgoing webhook configuration status",
+            "pt-BR": "Consultar situação do webhook de saída"
           }
         }
       }
@@ -2491,7 +2901,17 @@
             "description": "Permission denied"
           }
         },
-        "description": "Includes exact monthly averages of active rules: weekly x4 / interval, monthly / interval, yearly / (12 x interval); total rounded once to cents."
+        "description": "Includes exact monthly averages of active rules: weekly x4 / interval, monthly / interval, yearly / (12 x interval); total rounded once to cents.",
+        "x-nexus-mcp": {
+          "name": "financeiro_get_recorrencias_resumo",
+          "permissions": ["financeiro.recorrencias.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "Projected recurring income and expenses for the selected month across every active rule",
+            "pt-BR": "Consultar projeção mensal de receitas e despesas recorrentes"
+          }
+        }
       }
     }
   },

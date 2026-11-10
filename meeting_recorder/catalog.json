@@ -1,4 +1,5 @@
 {
   "category": "Produtividade",
-  "description": "Grave reuniões e transcreva diretamente no navegador, sem R2. Ative armazenamento privado e reprodução de áudio quando quiser; importe arquivos ou receba mensagens de voz do Telegram."
+  "description": "Grave reuniões e transcreva diretamente no navegador, sem R2. Ative armazenamento privado e reprodução de áudio quando quiser; importe arquivos ou receba mensagens de voz do Telegram.",
+  "changelog": "Adiciona ações MCP com permissões explícitas, validação dos campos e títulos em português e inglês. A ativação e as ações permitidas são controladas nos detalhes do plugin e persistem nas atualizações. Requer Core 1.1.0-beta.16."
 }

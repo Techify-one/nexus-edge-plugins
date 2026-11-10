@@ -1,39 +1,341 @@
 {
   "openapi": "3.1.0",
-  "info": { "title": "Nexus Meta Ads API", "version": "2.0.3" },
+  "info": {
+    "title": "Nexus Meta Ads API",
+    "version": "2.0.4"
+  },
   "paths": {
     "/api/v1/p/meta_ads/accounts": {
       "get": {
         "summary": "List configured ad accounts",
-        "responses": { "200": { "description": "Ad accounts" } }
+        "responses": {
+          "200": {
+            "description": "Ad accounts"
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "meta_ads_get_accounts",
+          "permissions": ["meta_ads.account.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "List configured ad accounts",
+            "pt-BR": "Listar contas de anúncios"
+          }
+        }
       },
       "post": {
         "summary": "Add an ad account",
-        "responses": { "201": { "description": "Created account" } }
+        "responses": {
+          "201": {
+            "description": "Created account"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 120
+                  },
+                  "adAccountId": {
+                    "type": "string",
+                    "minLength": 6,
+                    "maxLength": 34
+                  },
+                  "enabled": {
+                    "type": "boolean"
+                  }
+                },
+                "additionalProperties": false,
+                "required": ["name", "adAccountId"]
+              }
+            }
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "meta_ads_post_accounts",
+          "permissions": ["meta_ads.account.create"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Add an ad account",
+            "pt-BR": "Adicionar conta de anúncios"
+          }
+        }
       }
     },
     "/api/v1/p/meta_ads/campaigns": {
       "get": {
         "summary": "List campaigns",
-        "responses": { "200": { "description": "Campaigns" } }
+        "responses": {
+          "200": {
+            "description": "Campaigns"
+          }
+        },
+        "parameters": [
+          {
+            "name": "accountIds",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            }
+          }
+        ],
+        "x-nexus-mcp": {
+          "name": "meta_ads_get_campaigns",
+          "permissions": ["meta_ads.campaign.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "List campaigns",
+            "pt-BR": "Listar campanhas"
+          }
+        }
       }
     },
     "/api/v1/p/meta_ads/adsets": {
       "get": {
         "summary": "List ad sets",
-        "responses": { "200": { "description": "Ad sets" } }
+        "responses": {
+          "200": {
+            "description": "Ad sets"
+          }
+        },
+        "parameters": [
+          {
+            "name": "accountIds",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            }
+          },
+          {
+            "name": "campaignIds",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 5000
+            }
+          }
+        ],
+        "x-nexus-mcp": {
+          "name": "meta_ads_get_adsets",
+          "permissions": ["meta_ads.adset.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "List ad sets",
+            "pt-BR": "Listar conjuntos de anúncios"
+          }
+        }
       }
     },
     "/api/v1/p/meta_ads/ads": {
       "get": {
         "summary": "List ads",
-        "responses": { "200": { "description": "Ads" } }
+        "responses": {
+          "200": {
+            "description": "Ads"
+          }
+        },
+        "parameters": [
+          {
+            "name": "accountIds",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            }
+          },
+          {
+            "name": "campaignIds",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 5000
+            }
+          }
+        ],
+        "x-nexus-mcp": {
+          "name": "meta_ads_get_ads",
+          "permissions": ["meta_ads.ad.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "List ads",
+            "pt-BR": "Listar anúncios"
+          }
+        }
       }
     },
     "/api/v1/p/meta_ads/insights": {
       "get": {
         "summary": "Read advertising insights",
-        "responses": { "200": { "description": "Insights" } }
+        "responses": {
+          "200": {
+            "description": "Insights"
+          }
+        },
+        "parameters": [
+          {
+            "name": "accountIds",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            }
+          },
+          {
+            "name": "adIds",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 20000
+            }
+          },
+          {
+            "name": "since",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "until",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "x-nexus-mcp": {
+          "name": "meta_ads_get_insights",
+          "permissions": ["meta_ads.insight.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "Read advertising insights",
+            "pt-BR": "Consultar métricas de anúncios"
+          }
+        }
+      }
+    },
+    "/api/v1/p/meta_ads/accounts/{accountId}": {
+      "patch": {
+        "summary": "Update an ad account",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "x-required-permissions": ["meta_ads.account.update"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 2,
+                    "maxLength": 120
+                  },
+                  "adAccountId": {
+                    "type": "string",
+                    "minLength": 6,
+                    "maxLength": 34
+                  },
+                  "enabled": {
+                    "type": "boolean"
+                  },
+                  "version": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                },
+                "additionalProperties": false,
+                "required": ["name", "adAccountId", "version"]
+              }
+            }
+          }
+        },
+        "x-nexus-mcp": {
+          "name": "meta_ads_patch_accounts_accountId",
+          "permissions": ["meta_ads.account.update"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Update an ad account",
+            "pt-BR": "Editar conta de anúncios"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an ad account",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "x-required-permissions": ["meta_ads.account.delete"],
+        "x-nexus-mcp": {
+          "name": "meta_ads_delete_accounts_accountId",
+          "permissions": ["meta_ads.account.delete"],
+          "readOnly": false,
+          "destructive": true,
+          "titles": {
+            "en": "Delete an ad account",
+            "pt-BR": "Excluir conta de anúncios"
+          }
+        }
+      }
+    },
+    "/api/v1/p/meta_ads/accounts/discover": {
+      "get": {
+        "summary": "Discover accessible ad accounts",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "x-required-permissions": ["meta_ads.account.read"],
+        "x-nexus-mcp": {
+          "name": "meta_ads_get_accounts_discover",
+          "permissions": ["meta_ads.account.read"],
+          "readOnly": true,
+          "destructive": false,
+          "titles": {
+            "en": "Discover accessible ad accounts",
+            "pt-BR": "Descobrir contas de anúncios acessíveis"
+          }
+        }
       }
     }
   }
