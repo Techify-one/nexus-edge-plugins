@@ -60,21 +60,21 @@ test(
       await runScheduled(env, "generate");
       assert.equal(
         (await ledger.list(companies[0].id, "lancamentos")).length,
-        20,
+        1,
       );
       assert.equal(
         (await ledger.list(companies[1].id, "lancamentos")).length,
-        0,
+        1,
       );
       await runScheduled(env, "generate");
       assert.equal(
         (await ledger.list(companies[1].id, "lancamentos")).length,
-        20,
+        1,
       );
       await runScheduled(env, "generate");
       assert.equal(
         (await ledger.list(companies[0].id, "lancamentos")).length,
-        40,
+        1,
       );
       await runScheduled(env, "notices");
       await runScheduled(env, "webhooks");
@@ -188,7 +188,7 @@ test(
       );
       assert.equal(armCount, 1);
       await scheduler.alarm();
-      assert.equal((await ledger.list(company.id, "lancamentos")).length, 20);
+      assert.equal((await ledger.list(company.id, "lancamentos")).length, 1);
       assert.equal(values.get("step"), 1);
       await scheduler.alarm();
       assert.equal(values.get("step"), 2);

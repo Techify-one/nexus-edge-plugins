@@ -1,6 +1,6 @@
 import { addDays, civil, month, monthEnd } from "./dates.js";
 
-export type Frequencia = "DIA" | "SEMANA" | "MES";
+export type Frequencia = "DIA" | "SEMANA" | "MES" | "ANO";
 export type AjusteFimDeSemana = "MANTER" | "ANTECIPAR" | "ADIAR";
 
 export interface Regra {
@@ -31,8 +31,8 @@ export interface Janela {
 export class RegraInvalida extends Error {}
 
 export function validarRegra(regra: Regra): void {
-  if (!regra || !["DIA", "SEMANA", "MES"].includes(regra.frequencia)) {
-    throw new RegraInvalida("Frequência deve ser DIA, SEMANA ou MES.");
+  if (!regra || !["DIA", "SEMANA", "MES", "ANO"].includes(regra.frequencia)) {
+    throw new RegraInvalida("Frequência deve ser DIA, SEMANA, MES ou ANO.");
   }
   if (
     !Number.isInteger(regra.intervalo) ||
@@ -147,13 +147,17 @@ export function nominal(
   const base = partes(ancora);
   if (!Number.isSafeInteger(n) || n < 0)
     throw new RegraInvalida("Índice deve ser um inteiro não negativo.");
-  if (regra.frequencia !== "MES") {
+  if (regra.frequencia !== "MES" && regra.frequencia !== "ANO") {
     return somarDias(
       ancora,
       n * regra.intervalo * (regra.frequencia === "SEMANA" ? 7 : 1),
     );
   }
-  const total = base.a * 12 + base.m - 1 + n * regra.intervalo;
+  const total =
+    base.a * 12 +
+    base.m -
+    1 +
+    n * regra.intervalo * (regra.frequencia === "ANO" ? 12 : 1);
   const a = Math.floor(total / 12);
   const m = (total % 12) + 1;
   const prefixo = mesIso(a, m);
@@ -183,11 +187,13 @@ export function ajustarFimDeSemana(
 }
 
 function indiceDoPeriodo(regra: Regra, ancora: string, data: string): number {
-  if (regra.frequencia === "MES") {
+  if (regra.frequencia === "MES" || regra.frequencia === "ANO") {
     const base = partes(ancora);
     const alvo = partes(data);
     const meses = (alvo.a - base.a) * 12 + alvo.m - base.m;
-    return Math.floor(meses / regra.intervalo);
+    return Math.floor(
+      meses / (regra.intervalo * (regra.frequencia === "ANO" ? 12 : 1)),
+    );
   }
   const dias =
     (Date.parse(`${data}T00:00:00Z`) - Date.parse(`${ancora}T00:00:00Z`)) /
@@ -271,6 +277,8 @@ export function descreverRegra(regra: Regra): string {
     base = n === 1 ? "todo dia" : `a cada ${n} dias`;
   else if (regra.frequencia === "SEMANA")
     base = n === 1 ? "toda semana" : `a cada ${n} semanas`;
+  else if (regra.frequencia === "ANO")
+    base = n === 1 ? "todo ano" : `a cada ${n} anos`;
   else {
     const periodo =
       n === 1
@@ -295,4 +303,26 @@ export function descreverRegra(regra: Regra): string {
     ADIAR: " (fim de semana adia para segunda)",
   }[regra.ajuste_fds];
   return `${base}${ajuste}`;
+}
+
+/** Periods follow the installation's civil calendar; weeks start on Monday. */
+export function periodoAtual(
+  regra: Regra,
+  data: string,
+): { de: string; ate: string } {
+  civil(data);
+  if (regra.frequencia === "DIA") return { de: data, ate: data };
+  if (regra.frequencia === "SEMANA") {
+    const de = addDays(data, -((diaDaSemana(data) + 6) % 7));
+    return { de, ate: addDays(de, 6) };
+  }
+  if (
+    regra.frequencia === "ANO" ||
+    (regra.frequencia === "MES" && regra.intervalo % 12 === 0)
+  )
+    return {
+      de: `${data.slice(0, 4)}-01-01`,
+      ate: `${data.slice(0, 4)}-12-31`,
+    };
+  return { de: `${data.slice(0, 7)}-01`, ate: monthEnd(data) };
 }

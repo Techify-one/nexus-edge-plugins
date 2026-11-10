@@ -189,6 +189,47 @@ try {
     fullPage: true,
   });
   assert.deepEqual(errors, []);
+  await page.getByRole("link", { name: "Recorrências", exact: true }).click();
+  await page.getByRole("button", { name: "Adicionar", exact: true }).click();
+  const dialog = page.getByRole("dialog");
+  const frequency = dialog.getByLabel("Frequência", { exact: true });
+  assert.deepEqual(await frequency.locator("option").allTextContents(), [
+    "Semanal",
+    "Mensal",
+    "Anual",
+  ]);
+  await dialog
+    .getByLabel("Descrição", { exact: true })
+    .fill("Recorrência mensal real E2E");
+  await dialog.getByLabel("Valor", { exact: true }).fill("25,01");
+  await dialog
+    .getByLabel("Categoria", { exact: true })
+    .selectOption(category.id);
+  await frequency.selectOption("MES");
+  await dialog.getByRole("button", { name: "Salvar", exact: true }).click();
+  await page
+    .getByText("Recorrência mensal real E2E", { exact: true })
+    .waitFor();
+  await page
+    .locator(".metric-label")
+    .filter({ hasText: "Despesas recorrentes no mês" })
+    .waitFor();
+  assert.equal((await ledger.list(company.id, "recorrencias")).length, 1);
+  assert.equal(
+    (await ledger.list(company.id, "lancamentos")).filter(
+      (e) => e.statusLancamento === "LANCADO",
+    ).length,
+    1,
+  );
+  assert.equal(
+    (await ledger.recurrenceSummary(company.id, mes)).despesasCentavos,
+    "2501",
+  );
+  await page.screenshot({
+    path: "/tmp/financeiro-real-recurrences.png",
+    fullPage: true,
+  });
+  assert.deepEqual(errors, []);
   console.log(
     JSON.stringify({
       ok: true,

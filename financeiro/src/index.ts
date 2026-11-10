@@ -132,7 +132,7 @@ app.onError((error, c) => {
 });
 app.get("/health", (c) => {
   permission(c, "empresas.read");
-  return c.json({ ok: true, plugin: "financeiro", version: "1.0.1" });
+  return c.json({ ok: true, plugin: "financeiro", version: "1.1.0" });
 });
 app.post("/__installer/smoke", async (c) => {
   assert(
@@ -356,6 +356,15 @@ app.post("/recorrencias", async (c) => {
     { data: await service(c).createRecurrence(company(c), await input(c)) },
     201,
   );
+});
+app.get("/recorrencias/resumo", async (c) => {
+  permission(c, "recorrencias.read");
+  return c.json({
+    data: await service(c).recurrenceSummary(
+      company(c),
+      schemas.monthSchema.parse(c.req.query("mes") ?? today().slice(0, 7)),
+    ),
+  });
 });
 app.post("/recorrencias/previa", async (c) => {
   permission(c, "recorrencias.read");
@@ -710,10 +719,10 @@ export async function runScheduled(
     };
     try {
       if (job === "generate") {
-        const generated = await new LedgerService(db, context).generate(
-          row.id,
-          {},
-        );
+        const generated = await new LedgerService(
+          db,
+          context,
+        ).generateAutomatic(row.id);
         if (!generated.concluido)
           console.info("financeiro generation continuation pending", {
             companyId: row.id,

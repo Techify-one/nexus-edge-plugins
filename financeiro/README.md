@@ -34,7 +34,7 @@ Configure segredos opcionais pelo painel de plugins do Nexus, sem gravá-los no 
 
 O receptor deve validar `X-Financeiro-Signature: v1=<hex>` como HMAC SHA256 de `X-Financeiro-Timestamp + '.' + corpo bruto`, validar a janela temporal e deduplicar `X-Financeiro-Event-Id`. Não há redirects, IPs ou destinos arbitrários enviados por usuário. A allowlist é uma fronteira de confiança do operador, não DNS pinning. Eventos carregam identificadores, não cópias de contatos ou documentos. Mudança de destino bloqueia entregas já vinculadas ao endereço anterior.
 
-Um Durable Object SQLite privado alterna geração, avisos e webhooks por alarmes a cada sete minutos, sem consumir nenhum Cron Trigger da conta. O Installer arma o agendamento; desinstalação interrompe os alarmes e preserva o armazenamento. Um cursor persistente percorre uma empresa por invocação; geração limita 20 ocorrências e webhooks três eventos por lote. Novas invocações continuam idempotentemente, sem executar um pagamento. Para muitas empresas ou importações extensas, use a geração manual em lotes e dimensione as cotas do plano Workers. O horizonte é de 90 dias; recuperação histórica usa janela explícita. Não há garantia de geração instantânea de todos os lotes.
+Um Durable Object SQLite privado alterna geração, avisos e webhooks por alarmes a cada sete minutos, sem consumir nenhum Cron Trigger da conta. O Installer arma o agendamento; desinstalação interrompe os alarmes e preserva o armazenamento. Um cursor persistente percorre uma empresa por invocação; geração limita 20 ocorrências e webhooks três eventos por lote. Novas invocações continuam idempotentemente, sem executar um pagamento. Para muitas empresas ou importações extensas, use a geração manual em lotes e dimensione as cotas do plano Workers. A geração manual oferece janela de 90 dias; a automática acompanha o período de cada regra e seu cursor de recuperação. Não há garantia de geração instantânea de todos os lotes.
 
 ## Desenvolvimento e testes
 
@@ -67,3 +67,13 @@ Os testes exercitam rollback após falha na segunda perna de transferência, CAS
 O script `tests/frontend.browser.mjs` valida pt-BR/en, claro/escuro, mobile, permissões reduzidas e fluxos de formulário com API controlada. `tests/browser.integration.mjs` conecta a interface real ao backend Hono e D1 local real, validando cadastro, baixa parcial, transferência, resumo e fechamento/reabertura. Execute com `node --import tsx financeiro/tests/browser.integration.mjs`; `PLAYWRIGHT_MODULE` pode selecionar uma instalação existente do Playwright. Nenhum desses scripts grava dados de produção.
 
 Testes locais não comprovam instalação, release assinada, concessão de permissões pelo host, configuração de R2/Telegram ou funcionamento no hub. O aceite de produção exige concluir o Installer oficial e conferir runtime, API e interface no hub. Consulte PARITY.md antes de migrar clientes ou dados do módulo antigo.
+
+## Recorrências automáticas
+
+A tela oferece Semanal, Mensal e Anual. Regras antigas diárias ou com intervalo mensal de 12 meses continuam compatíveis. A data de referência define o dia semanal e o dia/mês anual; ano bissexto preserva a âncora original.
+
+Ao salvar uma recorrência, a próxima ocorrência elegível é registrada atomicamente em Lançamentos, inclusive quando estiver a mais de 90 dias. Ela aparece como Lançado e Em aberto; não existe baixa automática. Recorrências com valor estimado continuam exigindo confirmação antes de pagar/receber.
+
+O agendador privado lança as ocorrências da semana atual (segunda a domingo), mês atual ou ano atual, conforme a regra. A execução ocorre em lotes nas verificações periódicas, sem depender de uma aba aberta. Um cursor por regra recupera lacunas após interrupções. Períodos fechados, ocorrências canceladas e lançamentos já existentes não são recriados. A geração manual de 90 dias continua disponível.
+
+Os totais da tela Recorrências são a previsão das regras ativas para o mês selecionado, contando cada ocorrência semanal, mensal e anual aplicável. Consideram todas as páginas e não representam valores já pagos.

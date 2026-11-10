@@ -65,6 +65,15 @@ export const financeiroFrontendMessages = {
     "financeiro.intervalo": "Intervalo",
     "financeiro.dia": "Diária",
     "financeiro.semana": "Semanal",
+    "financeiro.semanal": "Semanal",
+    "financeiro.anual": "Anual",
+    "financeiro.receitasRecorrentes": "Receitas recorrentes no mês",
+    "financeiro.despesasRecorrentes": "Despesas recorrentes no mês",
+    "financeiro.totaisRecorrentesNota":
+      "Previsão das ocorrências ativas no mês selecionado, sem registrar pagamentos. Totais incluem todas as páginas.",
+    "financeiro.lancado": "Lançado",
+    "financeiro.automacaoRecorrencias":
+      "A próxima ocorrência é lançada ao salvar. As demais são lançadas automaticamente no início de cada período, em aberto para conferência e alteração.",
     "financeiro.mensal": "Mensal",
     "financeiro.diaMes": "Dia do mês",
     "financeiro.diaSemana": "Dia da semana",
@@ -260,6 +269,15 @@ export const financeiroFrontendMessages = {
     "financeiro.intervalo": "Interval",
     "financeiro.dia": "Daily",
     "financeiro.semana": "Weekly",
+    "financeiro.semanal": "Weekly",
+    "financeiro.anual": "Yearly",
+    "financeiro.receitasRecorrentes": "Recurring income this month",
+    "financeiro.despesasRecorrentes": "Recurring expenses this month",
+    "financeiro.totaisRecorrentesNota":
+      "Projected active occurrences in the selected month, without recording payments. Totals include every page.",
+    "financeiro.lancado": "Posted",
+    "financeiro.automacaoRecorrencias":
+      "The next occurrence is posted when saved. Other occurrences are posted automatically at the start of each period, open for review and editing.",
     "financeiro.mensal": "Monthly",
     "financeiro.diaMes": "Day of month",
     "financeiro.diaSemana": "Weekday",

@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Nexus Edge Financeiro API",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "description": "Authenticated financial records. Monetary values are integer cents encoded as strings. All operations require the current Nexus session or a permitted API key."
   },
   "paths": {
@@ -669,7 +669,8 @@
               }
             }
           }
-        }
+        },
+        "description": "Creates the recurrence and its next eligible occurrence atomically. The entry remains open and no financial movement or payment is created."
       }
     },
     "/api/v1/p/financeiro/fechamentos": {
@@ -2447,6 +2448,40 @@
           }
         }
       }
+    },
+    "/api/v1/p/financeiro/recorrencias/resumo": {
+      "get": {
+        "operationId": "financeiro_get_recorrencias_resumo",
+        "summary": "Projected recurring income and expenses for the selected month across every active rule",
+        "x-required-permissions": ["financeiro.recorrencias.read"],
+        "parameters": [
+          {
+            "name": "empresaId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "mes",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Exact cents and occurrence counts for active recurring income and expenses"
+          },
+          "403": {
+            "description": "Permission denied"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2745,7 +2780,7 @@
         "additionalProperties": false,
         "properties": {
           "frequencia": {
-            "enum": ["DIA", "SEMANA", "MES"]
+            "enum": ["DIA", "SEMANA", "MES", "ANO"]
           },
           "intervalo": {
             "type": "integer",

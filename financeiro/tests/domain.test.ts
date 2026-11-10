@@ -470,3 +470,19 @@ describe("recurrence calendar", () => {
     );
   });
 });
+
+describe("explicit yearly recurrence", () => {
+  it("keeps the annual anchor across leap years and skips no February obligation", () => {
+    const yearly: Regra = {
+      frequencia: "ANO",
+      intervalo: 1,
+      ajuste_fds: "MANTER",
+    };
+    expect(nominal(yearly, "2024-02-29", 1)).toBe("2025-02-28");
+    expect(nominal(yearly, "2024-02-29", 4)).toBe("2028-02-29");
+    expect(datas(yearly, "2024-02-29", "2026-01-01", "2026-12-31")).toEqual([
+      "2026-02-28",
+    ]);
+    expect(descreverRegra(yearly)).toBe("todo ano");
+  });
+});

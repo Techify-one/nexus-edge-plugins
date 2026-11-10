@@ -85,7 +85,7 @@ export const transferSchema = z
   .strict();
 export const ruleSchema = z
   .object({
-    frequencia: z.enum(["DIA", "SEMANA", "MES"]),
+    frequencia: z.enum(["DIA", "SEMANA", "MES", "ANO"]),
     intervalo: z.number().int().min(1).max(366),
     dia_mes: z.number().int().min(1).max(31).optional(),
     semana_do_mes: z

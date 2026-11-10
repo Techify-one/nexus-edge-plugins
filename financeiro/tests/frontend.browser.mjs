@@ -171,6 +171,10 @@ async function configure(
       return reply({ tableId: path.split("/").at(-1), config: null });
     if (request.method() === "GET") {
       if (resource === "resumo") return reply({ data: summary });
+      if (resource === "recorrencias" && id === "resumo")
+        return reply({
+          data: { receitasCentavos: "50000", despesasCentavos: "10000" },
+        });
       if (resource === "avisos")
         return reply({
           data: {

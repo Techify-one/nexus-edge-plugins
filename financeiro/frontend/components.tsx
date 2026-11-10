@@ -242,9 +242,21 @@ export function RecordForm({
     ancora: String(record?.ancora ?? today()),
     inicio: String(record?.inicio ?? today()),
     fim: String(record?.fim ?? ""),
-    frequencia: existing?.regra?.frequencia ?? "MES",
-    intervalo: String(existing?.regra?.intervalo ?? 1),
-    dia_mes: String(existing?.regra?.dia_mes ?? 1),
+    frequencia:
+      existing?.regra?.frequencia === "MES" &&
+      existing.regra.intervalo % 12 === 0
+        ? "ANO"
+        : (existing?.regra?.frequencia ?? "MES"),
+    intervalo: String(
+      existing?.regra?.frequencia === "MES" &&
+        existing.regra.intervalo % 12 === 0
+        ? existing.regra.intervalo / 12
+        : (existing?.regra?.intervalo ?? 1),
+    ),
+    dia_mes: String(
+      existing?.regra?.dia_mes ??
+        Number(String(record?.ancora ?? today()).slice(8)),
+    ),
     semana_do_mes: String(existing?.regra?.semana_do_mes ?? 1),
     dia_semana: String(existing?.regra?.dia_semana ?? 1),
     ajuste_fds: existing?.regra?.ajuste_fds ?? "MANTER",
@@ -312,17 +324,36 @@ export function RecordForm({
       .map((a) => ({ value: a.id, label: a.nome })),
   ];
   const rule = (): Rule => ({
-    frequencia: form.frequencia as Rule["frequencia"],
-    intervalo: Number(form.intervalo),
+    frequencia:
+      form.frequencia === "ANO" && existing?.regra?.frequencia === "MES"
+        ? "MES"
+        : (form.frequencia as Rule["frequencia"]),
+    intervalo:
+      Number(form.intervalo) *
+      (form.frequencia === "ANO" && existing?.regra?.frequencia === "MES"
+        ? 12
+        : 1),
     ajuste_fds: form.ajuste_fds as Rule["ajuste_fds"],
-    ...(form.frequencia === "MES"
-      ? monthlyMode === "day"
-        ? { dia_mes: Number(form.dia_mes) }
-        : {
-            semana_do_mes: Number(form.semana_do_mes),
-            dia_semana: Number(form.dia_semana),
-          }
-      : {}),
+    ...(form.frequencia === "ANO" && existing?.regra?.frequencia === "MES"
+      ? {
+          ...(existing.regra.dia_mes !== undefined
+            ? { dia_mes: existing.regra.dia_mes }
+            : {}),
+          ...(existing.regra.semana_do_mes !== undefined
+            ? {
+                semana_do_mes: existing.regra.semana_do_mes,
+                dia_semana: existing.regra.dia_semana,
+              }
+            : {}),
+        }
+      : form.frequencia === "MES"
+        ? monthlyMode === "day"
+          ? { dia_mes: Number(form.dia_mes) }
+          : {
+              semana_do_mes: Number(form.semana_do_mes),
+              dia_semana: Number(form.dia_semana),
+            }
+        : {}),
   });
   const body = (): Record<string, unknown> => {
     if (resource === "empresas") return { nome: form.nome, ativo };
@@ -553,9 +584,12 @@ export function RecordForm({
               {input("inicio", "financeiro.inicio", "date")}
               {input("fim", "financeiro.fim", "date", false)}
               {select("frequencia", "financeiro.frequencia", [
-                { value: "DIA", label: t("financeiro.dia") },
-                { value: "SEMANA", label: t("financeiro.semana") },
+                { value: "SEMANA", label: t("financeiro.semanal") },
                 { value: "MES", label: t("financeiro.mensal") },
+                { value: "ANO", label: t("financeiro.anual") },
+                ...(existing?.regra?.frequencia === "DIA"
+                  ? [{ value: "DIA", label: t("financeiro.dia") }]
+                  : []),
               ])}
               {input("intervalo", "financeiro.intervalo", "number", true, {
                 min: 1,

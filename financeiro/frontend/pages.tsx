@@ -54,6 +54,7 @@ import type { MessageKey } from "./i18n.js";
 
 const statusKey: Record<string, MessageKey> = {
   ABERTO: "financeiro.aberto",
+  LANCADO: "financeiro.lancado",
   PARCIAL: "financeiro.parcial",
   LIQUIDADO: "financeiro.liquidado",
   CANCELADO: "financeiro.cancelado",
@@ -438,6 +439,9 @@ export function EntriesPage() {
     cols.amount("valorCentavos", "financeiro.valor"),
     cols.amount("pendenteCentavos", "financeiro.aberto", "warning"),
     cols.status("situacao"),
+    textColumn<Entry>("statusLancamento", t("financeiro.lancamentos"), (row) =>
+      row.recorrenciaId ? t("financeiro.lancado") : "",
+    ),
     textColumn("confirmado", t("financeiro.estimados"), (row) =>
       t(row.confirmado ? "financeiro.confirmado" : "financeiro.estimado"),
     ),
@@ -848,9 +852,18 @@ function EntryDetails({
 }
 
 export function RecurrencesPage() {
-  const { empresaId, t, can, refresh } = useFinance();
+  const { api, empresaId, mes, host, t, can, refresh } = useFinance();
   const cols = useColumns();
   const state = useList<Recurrence>("recorrencias");
+  const totals = useResource<
+    Single<{ receitasCentavos: string; despesasCentavos: string }>
+  >(
+    api,
+    empresaId && can("recorrencias")
+      ? scoped("/recorrencias/resumo", empresaId, { mes })
+      : null,
+    refresh,
+  );
   const [editing, setEditing] = useState<{ row?: Row } | null>(null);
   const [action, setAction] = useState<ConfirmAction | null>(null);
   const changeStatus = (row: Recurrence, status: string) =>
@@ -897,6 +910,33 @@ export function RecurrencesPage() {
             </Button>
           )}
         </PageActions>
+        <ErrorBox error={totals.error} />
+        {totals.data && (
+          <div className="grid gap-3 sm:grid-cols-2">
+            <MetricCard
+              label={t("financeiro.receitasRecorrentes")}
+              tone="success"
+              value={formatMoney(
+                totals.data.data.receitasCentavos,
+                host.locale,
+              )}
+            />
+            <MetricCard
+              label={t("financeiro.despesasRecorrentes")}
+              tone="warning"
+              value={formatMoney(
+                totals.data.data.despesasCentavos,
+                host.locale,
+              )}
+            />
+          </div>
+        )}
+        <p className="text-sm text-slate-500">
+          {t("financeiro.totaisRecorrentesNota")}
+        </p>
+        <p className="text-sm text-slate-500">
+          {t("financeiro.automacaoRecorrencias")}
+        </p>
         <Records<Recurrence>
           resource="recorrencias"
           state={state}
@@ -909,11 +949,15 @@ export function RecurrencesPage() {
             cols.date("inicio", "financeiro.inicio"),
             textColumn<Recurrence>("regra", t("financeiro.frequencia"), (row) =>
               t(
-                row.regra.frequencia === "DIA"
-                  ? "financeiro.dia"
-                  : row.regra.frequencia === "SEMANA"
-                    ? "financeiro.semana"
-                    : "financeiro.mensal",
+                row.regra.frequencia === "ANO" ||
+                  (row.regra.frequencia === "MES" &&
+                    row.regra.intervalo % 12 === 0)
+                  ? "financeiro.anual"
+                  : row.regra.frequencia === "DIA"
+                    ? "financeiro.dia"
+                    : row.regra.frequencia === "SEMANA"
+                      ? "financeiro.semana"
+                      : "financeiro.mensal",
               ),
             ),
             textColumn("versao", t("financeiro.revisao")),

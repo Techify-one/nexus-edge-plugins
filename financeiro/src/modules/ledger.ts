@@ -5,8 +5,14 @@ import {
 } from "@nexus/plugin-sdk/backend";
 import { assert } from "../errors.js";
 import { money, amount } from "../domain/money.js";
-import { today, addDays, civil, month } from "../domain/dates.js";
-import { proximas, validarRegra, type Regra } from "../domain/recurrence.js";
+import { today, addDays, civil, month, monthEnd } from "../domain/dates.js";
+import {
+  proximas,
+  validarRegra,
+  periodoAtual,
+  type Regra,
+  type Ocorrencia,
+} from "../domain/recurrence.js";
 import {
   type Entity,
   type Snapshot,
@@ -184,6 +190,74 @@ function createEntryIn(s: Snapshot, input: Input, extra: Input = {}): Entity {
   if (liquidacao) settleIn(s, entry, liquidacao as Input);
   return entry;
 }
+function occurrenceClosed(s: Snapshot, o: Ocorrencia): boolean {
+  return s.records.fechamentos.some(
+    (f) =>
+      f.status === "FECHADO" &&
+      (String(f.mes) >= o.dataNominal.slice(0, 7) ||
+        String(f.mes) >= o.vencimento.slice(0, 7)),
+  );
+}
+function occurrenceExists(
+  s: Snapshot,
+  recurrence: Entity,
+  key: string,
+): boolean {
+  return s.records.lancamentos.some(
+    (e) => e.recorrenciaId === recurrence.id && e.ocorrencia === key,
+  );
+}
+function recurrenceOccurrences(
+  r: Entity,
+  de: string,
+  ate: string,
+  limite = 2000,
+): Ocorrencia[] {
+  return proximas(r.regra as Regra, String(r.ancora), {
+    inicio: String(r.inicio),
+    fim: r.fim ? String(r.fim) : null,
+    de,
+    ate,
+    limite,
+  }).filter((o) => !(r.excecoes as string[]).includes(o.chave));
+}
+function launchOccurrence(s: Snapshot, r: Entity, o: Ocorrencia): Entity {
+  return createEntryIn(
+    s,
+    {
+      descricao: r.descricao,
+      tipo: r.tipo,
+      valorCentavos: r.valorCentavos,
+      categoriaId: r.categoriaId,
+      contaPrevistaId: r.contaPrevistaId,
+      observacao: r.observacao,
+      contraparte: r.contraparte,
+      confirmado: r.confirmado === true,
+      competencia: o.dataNominal,
+      vencimento: o.vencimento,
+    },
+    {
+      recorrenciaId: r.id,
+      ocorrencia: o.chave,
+      recorrenciaVersao: r.versao,
+      statusLancamento: "LANCADO",
+    },
+  );
+}
+function launchNext(s: Snapshot, r: Entity, date: string): Entity | null {
+  const de = [date, String(r.inicio), String(r.ancora)].sort().at(-1)!;
+  const year = Math.min(9999, Number(de.slice(0, 4)) + 8);
+  // A fifth weekday may skip months; annual rules can have multi-year intervals.
+  const rule = r.regra as Regra;
+  const years = rule.frequencia === "ANO" ? rule.intervalo + 1 : 8;
+  const ate = `${Math.min(9999, Math.max(year, Number(de.slice(0, 4)) + years))}-12-31`;
+  const candidate = recurrenceOccurrences(r, de, ate).find(
+    (o) => !occurrenceClosed(s, o),
+  );
+  if (!candidate || occurrenceExists(s, r, candidate.chave)) return null;
+  return launchOccurrence(s, r, candidate);
+}
+
 export function summarize(s: Snapshot, mes: string): Input {
   month(mes);
   let receitas = 0n,
@@ -664,7 +738,15 @@ export class LedgerService {
     );
     return this.write(companyId, "recorrencias.create", (s) => {
       refs(s, parsed);
-      return push(s, "recorrencias", { ...parsed, status: "ATIVA", versao: 1 });
+      const recurrence = push(s, "recorrencias", {
+        ...parsed,
+        status: "ATIVA",
+        versao: 1,
+        geracaoAte: today(),
+        automacaoInicio: today(),
+      });
+      launchNext(s, recurrence, today());
+      return recurrence;
     });
   }
   preview(input: unknown) {
@@ -760,7 +842,100 @@ export class LedgerService {
           recorrenciaVersao: r.versao,
         });
       }
+      if (r.status === "ATIVA") launchNext(s, r, today());
       return r;
+    });
+  }
+  recurrenceSummary(companyId: string, mes: string) {
+    month(mes);
+    return consistentRead(this.db, companyId, (s) => {
+      let receitas = 0n,
+        despesas = 0n,
+        receitasOcorrencias = 0,
+        despesasOcorrencias = 0;
+      for (const r of s.records.recorrencias.filter(
+        (r) => r.status === "ATIVA",
+      )) {
+        const projected = new Map(
+          recurrenceOccurrences(r, `${mes}-01`, monthEnd(mes)).map((o) => [
+            o.chave,
+            value(r),
+          ]),
+        );
+        for (const entry of s.records.lancamentos.filter(
+          (e) =>
+            e.recorrenciaId === r.id && String(e.competencia).startsWith(mes),
+        )) {
+          if (entry.cancelado) projected.delete(String(entry.ocorrencia));
+          else projected.set(String(entry.ocorrencia), value(entry));
+        }
+        for (const cents of projected.values()) {
+          if (r.tipo === "RECEITA") {
+            receitas += cents;
+            receitasOcorrencias++;
+          } else {
+            despesas += cents;
+            despesasOcorrencias++;
+          }
+        }
+      }
+      return {
+        mes,
+        receitasCentavos: amount(receitas),
+        despesasCentavos: amount(despesas),
+        receitasOcorrencias,
+        despesasOcorrencias,
+      };
+    });
+  }
+  generateAutomatic(companyId: string, date = today()) {
+    civil(date);
+    return this.write(companyId, "recorrencias.generate", (s) => {
+      let generated = 0,
+        remaining = 0;
+      for (const r of s.records.recorrencias.filter(
+        (r) => r.status === "ATIVA",
+      )) {
+        const category = s.records.categorias.find(
+          (c) => c.id === r.categoriaId,
+        );
+        const account = r.contaPrevistaId
+          ? s.records.contas.find((a) => a.id === r.contaPrevistaId)
+          : null;
+        if (!category?.ativo || (r.contaPrevistaId && !account?.ativo))
+          continue;
+        const period = periodoAtual(r.regra as Regra, date);
+        const cursor =
+          typeof r.geracaoAte === "string" ? r.geracaoAte : period.de;
+        const initial =
+          typeof r.automacaoInicio === "string" ? r.automacaoInicio : period.de;
+        const start = cursor < period.de ? cursor : period.de;
+        const de = initial > start ? initial : start;
+        const ate =
+          addDays(de, 365) < period.ate ? addDays(de, 365) : period.ate;
+        const occurrences = de <= ate ? recurrenceOccurrences(r, de, ate) : [];
+        let complete = true;
+        for (const occurrence of occurrences) {
+          if (
+            occurrenceExists(s, r, occurrence.chave) ||
+            occurrenceClosed(s, occurrence)
+          )
+            continue;
+          if (generated >= 20) {
+            remaining++;
+            complete = false;
+            continue;
+          }
+          launchOccurrence(s, r, occurrence);
+          generated++;
+        }
+        if (complete && de <= ate && r.geracaoAte !== ate) r.geracaoAte = ate;
+      }
+      return {
+        gerados: generated,
+        restantes: remaining,
+        concluido: remaining === 0,
+      };
     });
   }
   generate(companyId: string, input: unknown) {
@@ -828,6 +1003,7 @@ export class LedgerService {
               recorrenciaId: r.id,
               ocorrencia: o.chave,
               recorrenciaVersao: r.versao,
+              statusLancamento: "LANCADO",
             },
           );
           generated++;

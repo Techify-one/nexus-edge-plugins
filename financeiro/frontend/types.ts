@@ -29,7 +29,7 @@ export type Entry = Row & {
   observacao?: string;
 };
 export type Rule = {
-  frequencia: "DIA" | "SEMANA" | "MES";
+  frequencia: "DIA" | "SEMANA" | "MES" | "ANO";
   intervalo: number;
   dia_mes?: number;
   semana_do_mes?: number;
