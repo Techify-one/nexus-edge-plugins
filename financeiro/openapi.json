@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Nexus Edge Financeiro API",
-    "version": "1.1.5",
+    "version": "1.1.6",
     "description": "Authenticated financial records. Monetary values are integer cents encoded as strings. All operations require the current Nexus session or a permitted API key."
   },
   "paths": {

@@ -1,5 +1,5 @@
 {
   "category": "Gestão financeira",
   "description": "Controle receitas, despesas, contas, recorrências e fechamento mensal no Nexus Edge, com comprovantes privados e histórico auditável.",
-  "changelog": "Corrige perda de foco na busca em hosts com atualização de rota sem remontagem. Agrupa digitação com debounce e reduz leituras desnecessárias no banco, preservando consistência, permissões e regras financeiras."
+  "changelog": "Permite redimensionar e salvar a largura da coluna Ações. Mantém todos os botões dentro da célula, com quebra de linha em larguras menores. Adota o padrão compartilhado de tabelas corrigido."
 }

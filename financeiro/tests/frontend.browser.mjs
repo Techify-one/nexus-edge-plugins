@@ -115,7 +115,19 @@ const state = {
   lancamentos: [],
   movimentos: [],
   transferencias: [],
-  recorrencias: [],
+  recorrencias: [
+    {
+      id: "recurrence-fixture",
+      descricao: "Aluguel fixture",
+      tipo: "DESPESA",
+      valorCentavos: "10000",
+      status: "ATIVA",
+      ancora: date,
+      inicio: date,
+      versao: 1,
+      regra: { frequencia: "MES", intervalo: 1 },
+    },
+  ],
   fechamentos: [],
   visoes: [],
   auditoria: [],
@@ -341,6 +353,78 @@ try {
   assert.equal(await page.locator(".financeiro > nav").count(), 0);
   await page.getByText("Média mensal de entradas", { exact: true }).waitFor();
   await page.getByText("Média mensal de saídas", { exact: true }).waitFor();
+  await page.getByText("Aluguel fixture", { exact: true }).waitFor();
+  const actionHeader = page.locator('th[data-column-key="__nexus_actions"]');
+  const actionHandle = actionHeader.getByRole("separator");
+  const checkActionBounds = async () => {
+    const bounds = await page
+      .locator('td[data-column-key="__nexus_actions"]')
+      .first()
+      .evaluate((cell) => {
+        const c = cell.getBoundingClientRect();
+        return [...cell.querySelectorAll("button")].map((button) => {
+          const b = button.getBoundingClientRect();
+          return {
+            inside:
+              b.left >= c.left - 1 &&
+              b.right <= c.right + 1 &&
+              b.top >= c.top - 1 &&
+              b.bottom <= c.bottom + 1,
+          };
+        });
+      });
+    assert.equal(bounds.length, 3);
+    assert.ok(bounds.every((b) => b.inside));
+  };
+  await checkActionBounds();
+  const neighborWidth = await page
+    .locator("col")
+    .nth(7)
+    .evaluate((c) => c.getBoundingClientRect().width);
+  await actionHandle.focus();
+  await actionHandle.press("Home");
+  await checkActionBounds();
+  assert.equal(
+    Math.round(
+      await actionHeader.evaluate((c) => c.getBoundingClientRect().width),
+    ),
+    144,
+  );
+  assert.equal(
+    await page
+      .locator("col")
+      .nth(7)
+      .evaluate((c) => c.getBoundingClientRect().width),
+    neighborWidth,
+  );
+  await actionHandle.press("ArrowRight");
+  await checkActionBounds();
+  await actionHandle.press("End");
+  await checkActionBounds();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await checkActionBounds();
+  await page
+    .locator(".app-table-shell")
+    .evaluate((e) => (e.scrollLeft = e.scrollWidth));
+  await actionHandle.press("Home");
+  await checkActionBounds();
+  await page.screenshot({
+    path: "/tmp/financeiro-actions-mobile.png",
+    fullPage: true,
+  });
+  await page.setViewportSize({ width: 1366, height: 900 });
+  await actionHandle.press("ArrowRight");
+  const box = await actionHandle.boundingBox();
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(box.x - 60, box.y + box.height / 2, { steps: 8 });
+  await page.mouse.up();
+  await checkActionBounds();
+  await actionHandle.press("End");
+  await page.screenshot({
+    path: "/tmp/financeiro-actions-desktop.png",
+    fullPage: true,
+  });
   await page.waitForTimeout(400);
   const search = page.getByRole("searchbox");
   const inputHandle = await search.elementHandle();

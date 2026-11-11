@@ -21,7 +21,7 @@ O SDK publicado pode ser consumido sem checkout do Core:
 ```json
 {
   "dependencies": {
-    "@nexus/plugin-sdk": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/plugin-sdk-v1.1.2/nexus-plugin-sdk-1.1.2.tgz"
+    "@nexus/plugin-sdk": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/plugin-sdk-v1.1.3/nexus-plugin-sdk-1.1.3.tgz"
   }
 }
 ```
@@ -96,3 +96,17 @@ O plugin fixa `packageFormat`, `manifestVersion`, `engines.hostApi`,
 `engines.coreApi`, `coreMinVersion`, `compatibilityDate` e providers. Mudanças
 compatíveis recebem nova versão SemVer. Não reutilize uma versão com bytes
 diferentes e não mude editor/origem de um plugin instalado.
+
+## Actions column sizing
+
+Use the shared configurable table unchanged. Actions stays pinned on the right,
+not reorderable, hideable or sortable, but supports independent resizing from
+144 to 640 px (default 240). Width is saved per user/table under the reserved
+`columnSizing.__nexus_actions` key. Do not reuse this key for data columns.
+
+Keep action buttons in the shared wrapping container, including groups of three
+or more actions and long translated labels. Test mouse/touch/keyboard resize,
+unchanged neighboring widths, reload/reset, dark/mobile layouts and button
+bounds in a real browser. Never hardcode a feature-local Actions width or hide
+an overflowing action. Existing plugins with bundled assets need a rebuilt,
+versioned release to adopt shared component fixes.
