@@ -1,7 +1,7 @@
 {
   "catalogVersion": 1,
   "name": "Techify",
-  "revision": "cQkKcuR4O32UOGmmnQ93AtQnyxk6iiml",
+  "revision": "6xMfTuO-1hkmSa3TrcdIrkjB7NS_ty3k",
   "publisher": {
     "id": "techify",
     "name": "Techify",
@@ -287,7 +287,7 @@
       ],
       "releases": [
         {
-          "version": "1.1.5",
+          "version": "1.1.6",
           "channel": "stable",
           "manifest": {
             "manifestVersion": 2,
@@ -299,7 +299,7 @@
               "id": "techify",
               "name": "Techify"
             },
-            "version": "1.1.5",
+            "version": "1.1.6",
             "apiVersion": 1,
             "coreMinVersion": "1.1.0-beta.16",
             "compatibilityDate": "2026-09-15",
@@ -547,10 +547,10 @@
             ]
           },
           "artifact": {
-            "url": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/financeiro-v1.1.5/financeiro.plugin.zip",
-            "sha256": "R5TSm157NYWCtqS7qu0vDGa6dB0KDoCx_V-CU5zhTnQ",
-            "signature": "bbEz_XFK37k3v07GGvhHUcj7Gr8RSwB0HWmeXDJTpe5CXozMa6bdcIJiH2G48JBmM3b5uN33Rc5pGbwdG3AUAA",
-            "bytes": 421378
+            "url": "https://github.com/Techify-one/nexus-edge-plugins/releases/download/financeiro-v1.1.6/financeiro.plugin.zip",
+            "sha256": "QefjQbupGp0g7OOpTDFWr7PcEMqIPaZpbRUNCDfUuNw",
+            "signature": "i_Py1kL6lQ1Z1r3G6O5IK3QDNI62Q55C5PKrh-Bi5KEtSzndYROMyfId0zvW9eGpszd5zvPmuHdBjUUrB9JUCQ",
+            "bytes": 422071
           }
         }
       ]
@@ -1103,6 +1103,6 @@
   "signature": {
     "algorithm": "Ed25519",
     "keyId": "publisher-v1",
-    "value": "YcW4qQQ3QO1FMMoIv4mNd4KjLeIetRlhb3WGNxnq1_9AsttOvctW5o7qKxtS6qeuXKLvgEVlnCRRu1I37nqZDA"
+    "value": "mIlJ3KMUJ59vyYUdgtUo_VsnvSKS9a3Mlgh4lU9ETfnvHfMLDFHgLWXjUmLIhhpTbb1wJ8VpTsn9LLXzD6ZQCg"
   }
 }
